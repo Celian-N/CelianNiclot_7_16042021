@@ -1,12 +1,10 @@
 const express = require('express');
 
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+
+const usersRoutes = require('./routes/users');
 
 const app = express();
-
-//userproject7
-//mdp-project7
-
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -23,5 +21,12 @@ app.use((req, res, next) => {
 
 app.use(bodyParser.json());
 
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// app.get("/", (req, res) => {
+//   res.json({ message: "Welcome to application." });
+// });
+
+app.use('/users', usersRoutes);
 
 module.exports = app;
