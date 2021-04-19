@@ -1,29 +1,5 @@
 const User = require('../models/users.js');
 
-// Create and Save a new User
-exports.create = (req, res) => {
-  // Validate request
-  if (!req.body) {
-    res.status(400).json({ message: 'Content can not be empty!' });
-  }
-
-  // Create a User
-  const user = new User({
-    email: req.body.email,
-    name: req.body.name,
-    active: req.body.active,
-  });
-
-  // Save User in the database
-  User.create(user, (err, data) => {
-    if (err)
-      res.status(500).json({
-        message: err.message || 'Some error occurred while creating the user.',
-      });
-    else res.status(201).json(data);
-  });
-};
-
 // Retrieve all Users from the database.
 exports.findAll = (req, res) => {
   User.getAll((err, data) => {
@@ -88,17 +64,5 @@ exports.delete = (req, res) => {
         });
       }
     } else res.status(200).json({ message: `User was deleted successfully!` });
-  });
-};
-
-// Delete all Users from the database.
-exports.deleteAll = (req, res) => {
-  User.removeAll((err, data) => {
-    if (err)
-      res.status(500).json({
-        message:
-          err.message || "Some error occurred while removing all users."
-      });
-    else res.status(200).json({ message: `All users were deleted successfully!` });
   });
 };
