@@ -7,7 +7,6 @@ const User = function (user) {
   this.password = user.password;
   this.job = user.job;
   this.creation_date = user.creationDate;
-  this.email = user.email;
   this.active = user.active;
 };
 
@@ -27,7 +26,6 @@ User.create = (newUser, result) => {
       lastname: newUser.lastname,
       job: newUser.job,
       creationDate: newUser.creation_date,
-      email: newUser.email,
       active: newUser.active,
     });
   });
