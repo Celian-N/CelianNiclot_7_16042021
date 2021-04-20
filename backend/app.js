@@ -4,6 +4,8 @@ const bodyParser = require('body-parser');
 
 const usersRoutes = require('./routes/users');
 const authRoutes = require('./routes/auth');
+const publicationsRoutes = require('./routes/publications');
+
 
 
 const app = express();
@@ -31,6 +33,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/users', usersRoutes);
 app.use('/auth', authRoutes);
+app.use('/publications', publicationsRoutes);
 
 
 
