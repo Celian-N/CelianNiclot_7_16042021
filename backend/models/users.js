@@ -79,16 +79,15 @@ User.getAll = (result) => {
       result(null, err);
       return;
     }
-
-    console.log('users: ', res);
+    
     result(null, res);
   });
 };
 
 User.updateById = (id, user, result) => {
   sql.query(
-    'UPDATE USERS SET email = ?, firstname = ?, lastname = ?, job = ?, active = ? WHERE id = ?',
-    [user.email, user.name, user.active, id],
+    'UPDATE USERS SET email = ?, firstname = ?, lastname = ?, job = ? WHERE id = ?',
+    [user.email, user.firstname,  user.lastname, user.job, id],
     (err, res) => {
       if (err) {
         console.log('error: ', err);

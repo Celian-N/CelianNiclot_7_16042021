@@ -22,13 +22,13 @@ exports.signup = (req, res, next) => {
     });
 
     // Save User in the database
-    User.create(user, (err, data) => {
+    User.create(user, (err, user) => {
       if (err)
         return res.status(500).json({
           message:
             err.message || 'Some error occurred while creating the user.',
         });
-      return res.status(201).json(data);
+      return res.status(201).json(user);
     });
   });
 };
