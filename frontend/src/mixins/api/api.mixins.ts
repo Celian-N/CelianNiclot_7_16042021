@@ -1,10 +1,8 @@
-import { useRouter } from 'vue-router';
-import Cookies from 'js-cookie';
+import { ICreateUser } from '../../interface/user/user'
 
 export const useApi = ()=>{
-  const router = useRouter();
 
-  const login = async (email:string, password : string) => {
+  const loginCall = async (email:string, password : string) => {
     const request = {
       method: 'POST',
       headers: {
@@ -15,13 +13,29 @@ export const useApi = ()=>{
         password: password,
       }),
     };
-    await fetch('http://localhost:3000/auth/login', request)
+    return await fetch('http://localhost:3000/auth/login', request)
       .then((result) => {
         return result.json();
       })
       .then((res) => {
-        router.push({ name: 'Home' });
-        Cookies.set('groupomania_token', res.token, { expires: 7 });
+        return res
+      })
+      .catch((error) => alert('Erreur :' + error));
+  }
+  const signupCall = async (user : ICreateUser) => {
+    const request = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({...user}),
+    };
+   return await fetch('http://localhost:3000/auth/signup', request)
+      .then((result) => {
+        return result.json();
+      })
+      .then((res) => {
+        return res
       })
       .catch((error) => alert('Erreur :' + error));
   }
@@ -37,5 +51,5 @@ export const useApi = ()=>{
     .catch((error) => alert('Erreur :' + error));
   }
 
-  return {login, getAllUsers}
+  return {loginCall, getAllUsers, signupCall}
 }

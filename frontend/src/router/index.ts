@@ -18,7 +18,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/login",
     name: "Login",
     component: () => import("../pages/Login.vue"),
-  }
+  },
+  // {
+  //   path: '*',
+  //   component: () => import('pages/Error404/Error404.vue')
+  // }
 ];
 
 const router = createRouter({
