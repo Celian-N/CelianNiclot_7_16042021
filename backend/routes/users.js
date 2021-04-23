@@ -4,9 +4,6 @@ const router = express.Router()
 
 const users = require('../controllers/users')
 
-  // Create a new User
-  router.post("/", users.create);
-
   // Retrieve all Users
   router.get("/", users.findAll);
 
@@ -19,7 +16,5 @@ const users = require('../controllers/users')
   // Delete a User with customerId
   router.delete("/:userId", users.delete);
 
-  // Create a new User
-  router.delete("/", users.deleteAll);
 
 module.exports = router;
