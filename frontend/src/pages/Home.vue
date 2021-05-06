@@ -1,28 +1,39 @@
 <template>
   <div class="home">
     <button @click="logout">Se deconnecter</button>
-    {{ test }}
+    <Publications
+      :publications="publications"
+      :user="user"
+      @deletePublication="(val) => deleteSelectedPublication(val)"
+    />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, SetupContext } from 'vue';
-import { useApi } from '../mixins/api/api.mixins';
+import { defineComponent, onMounted, SetupContext, computed } from 'vue';
 import { useUser } from '../store/user/user.store';
+import { usePublications } from '../store/publications/publications.store';
+import Publications from '../components/Publications/Publications.vue';
 
 export default defineComponent({
   name: 'Home',
+  components: {
+    Publications,
+  },
   setup(props, context: SetupContext) {
-    const test = ref({});
-    const { logout } = useUser();
+    const { logout, getUser } = useUser();
+    const { deletePublication, getAllPublications, fetchPublications } = usePublications();
 
-    const { getAllUsers } = useApi();
+    const publications = computed(() => getAllPublications.value);
 
-    onMounted(async () => {
-      test.value = await getAllUsers();
-    });
+    const user = computed(() => getUser.value);
 
-    return { test, logout };
+    const deleteSelectedPublication = async (id: number) => {
+      const result = await deletePublication(id);
+      if (!result) return console.warn('Une erreur esr survenue, impossible de supprimer la publication');
+    };
+
+    return { logout, deleteSelectedPublication, publications, user };
   },
 });
 </script>

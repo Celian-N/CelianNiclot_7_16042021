@@ -1,10 +1,11 @@
 const express = require('express');
 
 const bodyParser = require('body-parser');
+const path = require('path');
 
 const usersRoutes = require('./routes/users');
 const authRoutes = require('./routes/auth');
-
+const publicationsRoutes = require('./routes/publications');
 
 const app = express();
 
@@ -25,13 +26,10 @@ app.use(bodyParser.json());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// app.get("/", (req, res) => {
-//   res.json({ message: "Welcome to application." });
-// });
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use('/users', usersRoutes);
 app.use('/auth', authRoutes);
-
-
+app.use('/publications', publicationsRoutes);
 
 module.exports = app;

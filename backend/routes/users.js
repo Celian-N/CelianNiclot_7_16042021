@@ -1,20 +1,19 @@
-const express = require('express')
+const express = require('express');
 
-const router = express.Router()
+const router = express.Router();
 
-const users = require('../controllers/users')
+const users = require('../controllers/users');
 
-  // Retrieve all Users
-  router.get("/", users.findAll);
+// Retrieve all Users
+router.get('/', users.findAll);
 
-  // Retrieve a single User with customerId
-  router.get("/:userId", users.findOne);
+//Retrieve a single User with customerId
+router.get('/:userId', users.findOne);
 
-  // Update a User with customerId
-  router.put("/:userId", users.update);
+// Update a User with customerId
+router.put('/:userId', users.update);
 
-  // Delete a User with customerId
-  router.delete("/:userId", users.delete);
-
+// Delete a User with customerId
+router.delete('/:userId', users.delete);
 
 module.exports = router;

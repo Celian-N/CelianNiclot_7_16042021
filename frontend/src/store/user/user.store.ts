@@ -10,7 +10,7 @@ export const userStoreProvider = () => {
 };
 
 export function useUser() {
-  const { setUser, updateUser,clearUser, ...rest } = inject('userStore') as typeof userStore;
+  const { setUser, getUser, updateUser, clearUser, ...rest } = inject('userStore') as typeof userStore;
 
   const { loginCall, signupCall } = useApi();
   const router = useRouter();
@@ -25,15 +25,15 @@ export function useUser() {
 
   const signup = async (user: ICreateUser) => {
     const userCreated = await signupCall(user);
-    if (!userCreated.email || !userCreated.active) return console.log('userCreated :',userCreated);
+    if (!userCreated.email || !userCreated.active) return console.log('userCreated :', userCreated);
 
     await login(userCreated.email, user.password);
   };
   const logout = () => {
     Cookies.remove('groupomania_token');
-    clearUser()
+    clearUser();
     router.push({ name: 'Login' });
   };
 
-  return { setUser, updateUser, login, signup, logout, ...rest };
+  return { setUser, getUser, updateUser, login, signup, logout, ...rest };
 }
