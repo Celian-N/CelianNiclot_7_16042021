@@ -28,6 +28,23 @@ exports.findOne = (req, res) => {
   });
 };
 
+// Find Me
+exports.me = (req, res) => {
+  User.findById(req.userId, (err, user) => {
+    if (err) {
+      if (err.kind === 'not_found') {
+        res.status(404).json({
+          message: `Not found User with id ${userId}.`,
+        });
+      } else {
+        res.status(500).json({
+          message: 'Error retrieving User with id ' + userId,
+        });
+      }
+    } else res.status(200).json(user);
+  });
+};
+
 // Update a User identified by the userId in the request
 exports.update = (req, res) => {
   // Validate Request
