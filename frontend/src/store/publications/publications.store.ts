@@ -25,8 +25,8 @@ export function usePublications() {
     getPostByIdCall,
   } = useApi();
 
-  const fetchPublications = async () => {
-    const publications = await getAllPostsCall();
+  const fetchPublications = async (page?:number) => {
+    const publications = await getAllPostsCall(page);
     if (!publications) return;
 
     setPublications(publications);

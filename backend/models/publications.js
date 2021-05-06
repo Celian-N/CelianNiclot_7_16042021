@@ -63,9 +63,14 @@ Publication.findById = (publicationId, userId, result) => {
   );
 };
 
-Publication.getAll = (result) => {
+Publication.getAll = (selectedPage, result) => {
+
+  const limit = 5
+  // calculate offset
+  const offset = (selectedPage - 1) * limit
+  
   sql.query(
-    `SELECT id, author_id as authorId, user_liked as userLiked, image_url as imageUrl, gif_url as gifUrl, video_url as videoUrl, text, link, creation_date as creationDate FROM Publications ORDER BY creationDate DESC`,
+    `SELECT id, author_id as authorId, user_liked as userLiked, image_url as imageUrl, gif_url as gifUrl, video_url as videoUrl, text, link, creation_date as creationDate FROM Publications ORDER BY creationDate DESC LIMIT ${offset}, ${limit}`,
     (err, res) => {
       if (err) {
         console.log('error: ', err);

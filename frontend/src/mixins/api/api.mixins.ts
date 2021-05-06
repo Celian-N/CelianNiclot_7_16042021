@@ -62,8 +62,8 @@ export const useApi = () => {
         alert('Erreur :' + error)
       });
   };
-  const getAllPostsCall = async () => {
-    return await fetch('http://localhost:3000/publications', {
+  const getAllPostsCall = async (page?:number) => {
+    return await fetch(`http://localhost:3000/publications/?page=${page}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
