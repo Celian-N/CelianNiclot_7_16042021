@@ -1,24 +1,31 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
-import {isUserLoggedIn} from '../mixins/auth/auth.mixins'
+import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router';
+import { isUserLoggedIn } from '../mixins/auth/auth.mixins';
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: "/",
-    name: "Home",
-    component: ()=> import('../pages/Home.vue'),
-    meta: { requiresAuth: true }
+    path: '/',
+    component: () => import('../layouts/HomeLayout.vue'),
+    children: [
+      {
+        path: '',
+        name: 'Home',
+        component: () => import('../pages/Home.vue'),
+        meta: { requiresAuth: true },
+      },
+      {
+        path: '/edit-post/:publicationId',
+        name: 'EditPost',
+        component: () => import('../pages/EditPublication.vue'),
+        meta: { requiresAuth: true },
+      },
+    ],
   },
   {
-    path: "/about",
-    name: "About",
-    component: () => import("../views/About.vue"),
-    meta: { requiresAuth: true }
+    path: '/login',
+    name: 'Login',
+    component: () => import('../pages/Login.vue'),
   },
-  {
-    path: "/login",
-    name: "Login",
-    component: () => import("../pages/Login.vue"),
-  },
+
   // {
   //   path: '*',
   //   component: () => import('pages/Error404/Error404.vue')
@@ -31,17 +38,17 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.matched.some(record => record.meta.requiresAuth)) {
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!isUserLoggedIn()) {
       next({
         path: '/login',
-        query: { redirect: to.fullPath }
-      })
+        query: { redirect: to.fullPath },
+      });
     } else {
-      next()
+      next();
     }
   } else {
-    next()
+    next();
   }
-})
+});
 export default router;
