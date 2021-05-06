@@ -1,10 +1,10 @@
-import { readonly, ref } from 'vue';
+import { readonly, ref, computed, watch } from 'vue';
 import { IUser } from '../../interface/user/user';
 
 type UserStateInterface = IUser;
 
 const userState = ref<UserStateInterface>({
-  id: '',
+  id: 0,
   email: '',
   firstname: '',
   lastname: '',
@@ -19,23 +19,15 @@ const setters = {
     userState.value = { ...userState.value, ...updatedProperties };
   },
   clearUser: () => {
-    userState.value = { id: '', email: '', firstname: '', lastname: '', active: true };
+    userState.value = { id: 0, email: '', firstname: '', lastname: '', active: true };
   },
 };
 
 const getters = {
-  getEmail(state: UserStateInterface) {
-    return state.email;
-  },
-  getUserId(state: UserStateInterface) {
-    return state.id;
-  },
-  getUser(state: UserStateInterface) {
-    return state;
-  },
-  getUserIsActive(state: UserStateInterface) {
-    return state.active;
-  },
+  getUser: computed(() => userState.value),
+  getUserEmail: computed(() => userState.value.email),
+  getUserId: computed(() => userState.value.id),
+  getUserIsActive: computed(() => userState.value.active),
 };
 
 export const userStore = {

@@ -8,7 +8,7 @@ export interface ICreateUser{
 }
 
 export interface IUser{
-  id:string;
+  id:number;
   firstname :string;
   lastname:string;
   email : string;
