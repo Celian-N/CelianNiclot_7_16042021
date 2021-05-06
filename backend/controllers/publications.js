@@ -97,16 +97,17 @@ exports.update = (req, res) => {
     (err, publication) => {
       if (err) {
         if (err.kind === 'not_found') {
-          res.status(404).json({
+          return res.status(404).json({
             message: `Not found Publication with id ${req.params.publicationId}.`,
           });
         } else {
-          res.status(500).json({
+          return res.status(500).json({
             message:
               'Error updating Publication with id ' + req.params.publicationId,
           });
         }
-      } else res.status(200).json(publication);
+      }
+      return res.status(200).json(publication);
     }
   );
 };
