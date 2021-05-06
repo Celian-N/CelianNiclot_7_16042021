@@ -4,9 +4,10 @@ const Publication = function (publication) {
   this.author_id = publication.authorId;
   this.user_liked = publication.userLiked;
   this.image_url = publication.imageUrl;
+  this.gif_url = publication.gifUrl;
   this.video_url = publication.videoUrl;
   this.text = publication.text;
-  this.link = publication.link
+  this.link = publication.link;
   this.creation_date = publication.creationDate;
 };
 
@@ -18,14 +19,28 @@ Publication.create = (newPublication, result) => {
       return;
     }
 
-    console.log('created publication: ', { id: res.insertId, ...newPublication });
-    result(null, { id: res.insertId, ...newPublication });
+    console.log('created publication: ', {
+      id: res.insertId,
+      ...newPublication,
+    });
+    result(null, {
+      id: res.insertId,
+      text : newPublication.text,
+      link: newPublication.link,
+      authorId: newPublication.author_id,
+      imageUrl: newPublication.image_url,
+      gifUrl: newPublication.gif_url,
+      videoUrl: newPublication.video_url,
+      creationDate: newPublication.creation_date,
+      userLiked: newPublication.user_liked,
+    });
   });
 };
 
-Publication.findById = (publicationId, result) => {
+Publication.findById = (publicationId, userId, result) => {
   sql.query(
-    `SELECT author_id as authorId, user_liked as userLiked, image_url as imageUrl, video_url as videoUrl, text, link, creation_date as creationDate FROM Publications WHERE id = ${publicationId}`,
+    'SELECT author_id as authorId, user_liked as userLiked, image_url as imageUrl, video_url as videoUrl, text, link, creation_date as creationDate FROM Publications WHERE id = ?',
+    publicationId,
     (err, res) => {
       if (err) {
         console.log('error: ', err);
@@ -34,7 +49,10 @@ Publication.findById = (publicationId, result) => {
       }
 
       if (res.length) {
-        console.log('publication: ', res[0]);
+        if (res[0].authorId !== userId) {
+          result({ kind: 'unauthorized' }, null);
+          return;
+        }
         result(null, res[0]);
         return;
       }
@@ -45,23 +63,9 @@ Publication.findById = (publicationId, result) => {
   );
 };
 
-Publication.getAll = (pagination, result) => {
-  sql.query(`SELECT author_id as authorId, user_liked as userLiked, image_url as imageUrl, video_url as videoUrl, text, link, creation_date as creationDate FROM Publications ORDER BY nom DESC LIMIT ${pagination.number}`, (err, res) => {
-    if (err) {
-      console.log('error: ', err);
-      result(null, err);
-      return;
-    }
-
-    console.log('users: ', res);
-    result(null, res);
-  });
-};
-
-Publication.updateById = (publicationId, publication, result) => {
+Publication.getAll = (result) => {
   sql.query(
-    'UPDATE Publications SET user_liked = ?, image_url = ?, video_url = ? , text = ?, link = ? WHERE id = ?',
-    [publication.userLiked, publication.imageUrl, publication.videoUrl, publication.text, publication.link, publicationId],
+    `SELECT id, author_id as authorId, user_liked as userLiked, image_url as imageUrl, gif_url as gifUrl, video_url as videoUrl, text, link, creation_date as creationDate FROM Publications ORDER BY creationDate DESC`,
     (err, res) => {
       if (err) {
         console.log('error: ', err);
@@ -69,20 +73,37 @@ Publication.updateById = (publicationId, publication, result) => {
         return;
       }
 
-      if (res.affectedRows == 0) {
-        // not found Customer with the id
-        result({ kind: 'not_found' }, null);
-        return;
-      }
-
-      console.log('updated publication: ', { id: publicationId, ...publication });
-      result(null, { id: publicationId, ...publication });
+      console.log('publications: ', res);
+      result(null, res);
     }
   );
 };
 
-Publication.remove = (publicationId, result) => {
-  sql.query('DELETE FROM Publications WHERE id = ?', publicationId, (err, res) => {
+Publication.updateById = (publicationId, userId, publication, result) => {
+  const sqlOptions = `${
+    publication.imageUrl || publication.imageUrl === null
+      ? 'image_url = ?,'
+      : ''
+  }${publication.gifUrl || publication.gifUrl === null ? 'gif_url = ?,' : ''}${
+    publication.videoUrl || publication.videoUrl === null
+      ? 'video_url = ?,'
+      : ''
+  }${publication.text || publication.text === null ? 'text = ?,' : ''}${
+    publication.link || publication.link === null ? 'link = ?,' : ''
+  }`;
+
+  const splitOptions = sqlOptions.split(',');
+  splitOptions.pop();
+  const fullOptions = splitOptions.join();
+
+  const sqlQuery = `UPDATE Publications SET ${fullOptions} WHERE id = ? AND author_id = ?`;
+
+  const requestValues = [];
+  Object.values(publication).forEach((element) => requestValues.push(element));
+  requestValues.push(parseInt(publicationId));
+  requestValues.push(userId);
+
+  sql.query(sqlQuery, requestValues, (err, res) => {
     if (err) {
       console.log('error: ', err);
       result(null, err);
@@ -95,9 +116,36 @@ Publication.remove = (publicationId, result) => {
       return;
     }
 
-    console.log('deleted publication with id: ', publicationId);
-    result(null, res);
+    console.log('updated publication: ', {
+      id: publicationId,
+      ...publication,
+    });
+    result(null, { id: publicationId, ...publication });
   });
 };
 
-module.exports = Publications;
+Publication.remove = (publicationId, userId, result) => {
+  sql.query(
+    'DELETE FROM Publications WHERE id = ? AND author_id = ?',
+    [publicationId, userId],
+    (err, res) => {
+      if (err) {
+        console.log('error: ', err);
+        result(null, err);
+        return;
+      }
+
+      if (res.affectedRows == 0) {
+        console.log('res :', res);
+        // not found Customer with the id
+        result({ kind: 'not_found' }, null);
+        return;
+      }
+
+      console.log('deleted publication with id: ', publicationId);
+      result(null, res);
+    }
+  );
+};
+
+module.exports = Publication;
