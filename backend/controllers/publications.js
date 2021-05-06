@@ -32,7 +32,9 @@ exports.create = (req, res) => {
 
 // Retrieve all Publications from the database.
 exports.findAll = (req, res) => {
-  Publication.getAll((err, publications) => {
+
+  const selectedPage = req.query.page
+  Publication.getAll(selectedPage, (err, publications) => {
     if (err)
       return res.status(500).json({
         message:
