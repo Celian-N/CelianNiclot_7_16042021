@@ -1,6 +1,6 @@
 module.exports = (req, res, next) => {
   if (!req.file) {
-    next();
+    return next();
   }
 
   try {
@@ -9,7 +9,7 @@ module.exports = (req, res, next) => {
       throw 'Fichier trop volumineux !';
     }
     else {
-      next();
+      return next();
     }
   } catch (error) {
     res.status(500).json({ error: error | 'Fichier trop volumineux !' });
