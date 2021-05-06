@@ -33,7 +33,7 @@ User.create = (newUser, result) => {
 
 User.findById = (userId, result) => {
   sql.query(
-    `SELECT email, firstname, lastname, job, creation_date as creationDate FROM Users WHERE id = ${userId}`,
+    `SELECT id, email, firstname, lastname, job, creation_date as creationDate FROM Users WHERE id = ${userId}`,
     (err, res) => {
       if (err) {
         console.log('error: ', err);

@@ -34,7 +34,6 @@ exports.signup = (req, res, next) => {
 };
 
 exports.login = (req, res, next) => {
-  console.log('req : ', req.body)
   User.findByEmail(req.body.email, (err, user) => {
     if (err) {
       if (err.kind === 'not_found') {
