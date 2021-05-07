@@ -22,7 +22,7 @@ Comment.create = (newComment, result) => {
     });
     result(null, {
       id: res.insertId,
-      text : newComment.text,
+      text: newComment.text,
       authorId: newComment.author_id,
       publicationId: newComment.publication_id,
       creationDate: newComment.creation_date,
@@ -57,9 +57,31 @@ Comment.findById = (commentId, userId, result) => {
   );
 };
 
-Comment.getAll = (result) => {
+Comment.getAll = (publicationId, selectedPage, result) => {
+  const limit = 5;
+  // calculate offset
+  const offset = ((selectedPage - 1) * limit) +1;
+
+  const sqlQuery = `SELECT id, author_id as authorId, publication_id as publicationId, user_liked as userLiked, text, creation_date as creationDate FROM Comments WHERE publication_id = ? ORDER BY creationDate DESC LIMIT ${
+    selectedPage ? `${offset}, ${limit}` : '1'
+  }`;
+
+  sql.query(sqlQuery, publicationId, (err, res) => {
+    if (err) {
+      console.log('error: ', err);
+      result(null, err);
+      return;
+    }
+
+    console.log('comments: ', res);
+    result(null, res);
+  });
+};
+
+Comment.updateById = (commentId, userId, newCommentText, result) => {
   sql.query(
-    `SELECT id, author_id as authorId, publication_id as publicationId user_liked as userLiked, text, creation_date as creationDate FROM Comments FROM Comments ORDER BY creationDate DESC`,
+    'UPDATE Comments SET text = ? WHERE id = ? AND author_id = ?',
+    [newCommentText, commentId, userId],
     (err, res) => {
       if (err) {
         console.log('error: ', err);
@@ -67,33 +89,19 @@ Comment.getAll = (result) => {
         return;
       }
 
-      console.log('comments: ', res);
-      result(null, res);
+      if (res.affectedRows == 0) {
+        // not found Customer with the id
+        result({ kind: 'not_found' }, null);
+        return;
+      }
+
+      console.log('updated comment: ', {
+        id: commentId,
+        text : newCommentText
+      });
+      result(null, { id: commentId,  text : newCommentText });
     }
   );
-};
-
-Comment.updateById = (commentId, userId, comment, result) => {
-
-  sql.query('UPDATE Comments SET text = ? WHERE id = ? AND author_id = ?', [comment.text, commentId, userId], (err, res) => {
-    if (err) {
-      console.log('error: ', err);
-      result(null, err);
-      return;
-    }
-
-    if (res.affectedRows == 0) {
-      // not found Customer with the id
-      result({ kind: 'not_found' }, null);
-      return;
-    }
-
-    console.log('updated comment: ', {
-      id: commentId,
-      ...comment,
-    });
-    result(null, { id: commentId, ...comment });
-  });
 };
 
 Comment.remove = (commentId, userId, result) => {

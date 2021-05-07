@@ -7,12 +7,12 @@ const auth = require('../middleware/auth');
 
 router.get('/', auth, comments.findAll);
 
-router.get('/:publicationId', auth, comments.findOne);
+router.get('/:publicationId', auth, comments.findForPublication);
 
-router.post('/', auth, comments.create);
+router.post('/:publicationId', auth, comments.create);
 
-router.put('/:publicationId', auth, comments.update);
+router.put('/:commentId', auth, comments.update);
 
-router.delete('/:publicationId', auth, comments.delete);
+router.delete('/:commentId', auth, comments.delete);
 
 module.exports = router;
