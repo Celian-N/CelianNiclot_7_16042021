@@ -77,8 +77,6 @@ Publication.getAll = (selectedPage, result) => {
         result(null, err);
         return;
       }
-
-      console.log('publications: ', res);
       result(null, res);
     }
   );

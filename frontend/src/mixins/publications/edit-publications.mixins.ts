@@ -69,6 +69,7 @@ export const useEditPublications = (context: SetupContext) => {
   };
   const setInitPost = (post: ICreatePublication) => {
     previewImage.value = null;
+    writeVideoLink.value = null;
     post.text = null;
     post.imageUrl = null;
     post.gifUrl = null;

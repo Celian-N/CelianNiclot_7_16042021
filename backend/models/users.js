@@ -86,7 +86,7 @@ User.getAll = (result) => {
 
 User.updateById = (id, user, result) => {
   sql.query(
-    'UPDATE USERS SET email = ?, firstname = ?, lastname = ?, job = ? WHERE id = ?',
+    'UPDATE Users SET email = ?, firstname = ?, lastname = ?, job = ? WHERE id = ?',
     [user.email, user.firstname,  user.lastname, user.job, id],
     (err, res) => {
       if (err) {
