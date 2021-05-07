@@ -4,6 +4,7 @@ import Cookies from 'js-cookie';
 import axios from 'axios';
 
 export const useApi = () => {
+  //LOGIN AND SIGNUP
   const loginCall = async (email: string, password: string) => {
     const request = {
       method: 'POST',
@@ -42,6 +43,8 @@ export const useApi = () => {
       .catch((error) => alert('Erreur :' + error));
   };
 
+  //PUBLICATIONS
+
   const createPublicationCall = async (publication: ICreatePublication, image?: File) => {
     const formData = new FormData();
     formData.append('publication', JSON.stringify(publication));
@@ -58,11 +61,11 @@ export const useApi = () => {
         return res.data;
       })
       .catch((error) => {
-        console.log(error)
-        alert('Erreur :' + error)
+        console.log(error);
+        alert('Erreur :' + error);
       });
   };
-  const getAllPostsCall = async (page?:number) => {
+  const getAllPostsCall = async (page?: number) => {
     return await fetch(`http://localhost:3000/publications/?page=${page}`, {
       method: 'GET',
       headers: {
@@ -139,6 +142,8 @@ export const useApi = () => {
       .catch((error) => alert('Erreur :' + error));
   };
 
+  //USERS
+
   const getAllUsers = async () => {
     return await fetch('http://localhost:3000/users', { method: 'GET' })
       .then((result) => {
@@ -167,6 +172,84 @@ export const useApi = () => {
       .catch((error) => alert('Erreur :' + error));
   };
 
+  //COMMENTS
+  const getCommentsCall = async (publicationId: number, page?: number) => {
+    const request = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + Cookies.get('groupomania_token'),
+      },
+    };
+    const queryPage = page ? `?page=${page}` : '';
+    return await fetch(`http://localhost:3000/comments/${publicationId}${queryPage}`, request)
+      .then((result) => {
+        return result.json();
+      })
+      .then((res) => {
+        return res;
+      })
+      .catch((error) => alert('Erreur :' + error));
+  };
+
+  const createCommentCall = async (publicationId: number, newComment: string) => {
+    const request = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + Cookies.get('groupomania_token'),
+      },
+      body: JSON.stringify({ comment: newComment }),
+    };
+    return await fetch(`http://localhost:3000/comments/${publicationId}`, request)
+      .then((result) => {
+        return result.json();
+      })
+      .then((res) => {
+        return res;
+      })
+      .catch((error) => alert('Erreur :' + error));
+  };
+  const deleteCommentCall = async (commentId: number) => {
+    return await fetch(`http://localhost:3000/comments/${commentId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + Cookies.get('groupomania_token'),
+      },
+    })
+      .then((result) => {
+        return result.json();
+      })
+      .then((res) => {
+        return res;
+      })
+      .catch((error) => {
+        console.log(error);
+        alert('Erreur :' + error);
+      });
+  };
+  const editCommentCall = async (commentId: number, newComment: string) => {
+    return await fetch(`http://localhost:3000/comments/${commentId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + Cookies.get('groupomania_token'),
+      },
+      body: JSON.stringify({ newComment: newComment }),
+    })
+      .then((result) => {
+        return result.json();
+      })
+      .then((res) => {
+        return res;
+      })
+      .catch((error) => {
+        console.log(error);
+        alert('Erreur :' + error);
+      });
+  };
+
   return {
     loginCall,
     getAllUsers,
@@ -177,5 +260,9 @@ export const useApi = () => {
     getCurrentUser,
     editPublicationCall,
     getPostByIdCall,
+    getCommentsCall,
+    createCommentCall,
+    deleteCommentCall,
+    editCommentCall,
   };
 };
