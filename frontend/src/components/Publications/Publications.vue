@@ -28,7 +28,7 @@ export default defineComponent({
   },
   components: {
     Publication,
-    PublicationInput,
-  },
+    PublicationInput
+  }
 });
 </script>
