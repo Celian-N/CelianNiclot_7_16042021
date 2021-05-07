@@ -129,6 +129,7 @@ export default defineComponent({
         editedPost.value.videoUrl = publication.videoUrl || undefined;
         editedPost.value.text = publication.text || undefined;
         editedPost.value.link = publication.link || undefined;
+        useEditPost.showAddLink.value = editedPost.value.link ? true : false
         return;
       }
       if (allEditedPost.value.authorId !== getUser.value.id) {
@@ -140,6 +141,7 @@ export default defineComponent({
       editedPost.value.videoUrl = allEditedPost.value.videoUrl || undefined;
       editedPost.value.text = allEditedPost.value.text || undefined;
       editedPost.value.link = allEditedPost.value.link || undefined;
+      useEditPost.showAddLink.value = editedPost.value.link ? true : false
       return;
     });
 
