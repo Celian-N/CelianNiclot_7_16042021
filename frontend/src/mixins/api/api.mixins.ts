@@ -142,6 +142,27 @@ export const useApi = () => {
       .catch((error) => alert('Erreur :' + error));
   };
 
+  const likePublicationCall = async (publicationId: number, userId:number) => {
+    return await fetch(`http://localhost:3000/publications/${publicationId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + Cookies.get('groupomania_token'),
+      },
+      body: JSON.stringify({userId:userId})
+    })
+      .then((result) => {
+        return result.json();
+      })
+      .then((res) => {
+        return res;
+      })
+      .catch((error) => {
+        console.log(error);
+        alert('Erreur :' + error);
+      });
+  };
+
   //USERS
 
   const getAllUsers = async () => {
@@ -250,6 +271,27 @@ export const useApi = () => {
       });
   };
 
+  const likeCommentCall = async (commentId: number, userId:number) => {
+    return await fetch(`http://localhost:3000/comments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + Cookies.get('groupomania_token'),
+      },
+      body: JSON.stringify({commentId : commentId, userId:userId})
+    })
+      .then((result) => {
+        return result.json();
+      })
+      .then((res) => {
+        return res;
+      })
+      .catch((error) => {
+        console.log(error);
+        alert('Erreur :' + error);
+      });
+  };
+
   return {
     loginCall,
     getAllUsers,
@@ -264,5 +306,7 @@ export const useApi = () => {
     createCommentCall,
     deleteCommentCall,
     editCommentCall,
+    likePublicationCall,
+    likeCommentCall
   };
 };
