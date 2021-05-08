@@ -32,8 +32,7 @@ exports.create = (req, res) => {
 
 // Retrieve all Publications from the database.
 exports.findAll = (req, res) => {
-
-  const selectedPage = req.query.page
+  const selectedPage = req.query.page;
   Publication.getAll(selectedPage, (err, publications) => {
     if (err)
       return res.status(500).json({
@@ -121,7 +120,6 @@ exports.delete = (req, res) => {
     req.userId,
     (err, publication) => {
       if (err) {
-        console.log('errorFInd :', err)
         if (err.kind === 'not_found') {
           res.status(404).json({
             message: `Not found Publication with id ${req.params.publicationId}.`,
@@ -138,10 +136,11 @@ exports.delete = (req, res) => {
           });
         }
       } else {
-          Publication.remove(req.params.publicationId, req.userId, (error, data) => {
+        Publication.remove(
+          req.params.publicationId,
+          req.userId,
+          (error, data) => {
             if (error) {
-        console.log('err : ', error)
-
               if (error.kind === 'not_found') {
                 res.status(404).json({
                   message: `Not found Publication with id ${req.params.publicationId}.`,
@@ -154,18 +153,83 @@ exports.delete = (req, res) => {
                 });
               }
             } else {
-              if(publication.imageUrl){
+              if (publication.imageUrl) {
                 const filename = publication.imageUrl.split('/images/')[1];
-        
-                fs.unlink(`images/${filename}`, ()=>{console.log('FICHIER SUPPRIMÉ')})
+
+                fs.unlink(`images/${filename}`, () => {
+                  console.log('FICHIER SUPPRIMÉ');
+                });
               }
               res.status(200).json({
                 message: `Publication was deleted successfully!`,
                 id: req.params.publicationId,
               });
             }
-              
+          }
+        );
+      }
+    }
+  );
+};
+
+// Like a Publication identified by the publicationId in the request
+exports.like = (req, res) => {
+  // Validate Request
+  if (!req.body) {
+    res.status(400).json({ message: 'Content can not be empty!' });
+  }
+  console.log('BODY :', req.body);
+  Publication.findById(
+    req.params.publicationId,
+    req.userId,
+    (err, publication) => {
+      if (err) {
+        if (err.kind === 'not_found') {
+          res.status(404).json({
+            message: `Not found Publication with id ${req.params.publicationId}.`,
           });
+        } else {
+          res.status(500).json({
+            message:
+              'Error retrieving Publication with id ' +
+              req.params.publicationId,
+          });
+        }
+      } else {
+        console.log('BODY IN LIKE :', req.body)
+        const publicationLikes = JSON.parse(publication.userLiked);
+        const userIndex = publicationLikes.indexOf(req.body.userId);
+   
+        if (userIndex >= 0) {
+          publicationLikes.splice(userIndex, 1);
+        } else {
+          publicationLikes.push(req.body.userId);
+        }
+        console.log(publicationLikes)
+        Publication.handleLike(
+          req.params.publicationId,
+          JSON.stringify(publicationLikes),
+          (err, publicationLikes) => {
+            if (err) {
+              if (err.kind === 'not_found') {
+                res.status(404).json({
+                  message: `An error occured when liking publication rwith id ${req.params.publicationId}.`,
+                });
+              } else {
+                res.status(500).json({
+                  message:
+                    'Error retrieving Publication with id ' +
+                    req.params.publicationId,
+                });
+              }
+            } else {
+              res.status(200).json({
+                message: `Publication liked successfully!`,
+                publicationLikes: JSON.parse(publicationLikes),
+              });
+            }
+          }
+        );
       }
     }
   );

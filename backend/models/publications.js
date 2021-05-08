@@ -151,4 +151,28 @@ Publication.remove = (publicationId, userId, result) => {
   );
 };
 
+Publication.handleLike = (publicationId, publicationLikes, result) => {
+  sql.query(
+    `UPDATE Publications SET user_liked = ? WHERE id = ?`,
+    [publicationLikes, publicationId],
+    (err, res) => {
+      if (err) {
+        console.log('error: ', err);
+        result(null, err);
+        return;
+      }
+
+      if (res.affectedRows == 0) {
+        console.log('res :', res);
+        // not found Customer with the id
+        result({ kind: 'not_found' }, null);
+        return;
+      }
+
+      console.log('Liked publication with id: ', publicationId);
+      result(null, publicationLikes);
+    }
+  );
+};
+
 module.exports = Publication;
