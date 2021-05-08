@@ -11,6 +11,8 @@ router.get('/:publicationId', auth, comments.findForPublication);
 
 router.post('/:publicationId', auth, comments.create);
 
+router.post('/', auth, comments.like);
+
 router.put('/:commentId', auth, comments.update);
 
 router.delete('/:commentId', auth, comments.delete);
