@@ -33,7 +33,7 @@ Comment.create = (newComment, result) => {
 
 Comment.findById = (commentId, userId, result) => {
   sql.query(
-    'SELECT author_id as authorId, publication_id as publicationId user_liked as userLiked, text, creation_date as creationDate FROM Comments WHERE id = ?',
+    'SELECT author_id as authorId, publication_id as publicationId, user_liked as userLiked, text, creation_date as creationDate FROM Comments WHERE id = ?',
     commentId,
     (err, res) => {
       if (err) {
@@ -127,5 +127,31 @@ Comment.remove = (commentId, userId, result) => {
     }
   );
 };
+
+
+Comment.handleLike = (commentId, commentLikes, result) => {
+  sql.query(
+    `UPDATE Comments SET user_liked = ? WHERE id = ?`,
+    [commentLikes, commentId],
+    (err, res) => {
+      if (err) {
+        console.log('error: ', err);
+        result(null, err);
+        return;
+      }
+
+      if (res.affectedRows == 0) {
+        console.log('res :', res);
+        // not found Customer with the id
+        result({ kind: 'not_found' }, null);
+        return;
+      }
+
+      console.log('Liked comment with id: ', commentId);
+      result(null, commentLikes);
+    }
+  );
+};
+
 
 module.exports = Comment;

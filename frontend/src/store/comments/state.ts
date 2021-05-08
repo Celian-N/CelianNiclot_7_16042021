@@ -22,6 +22,19 @@ const setters = {
       [commentId]: { ...commentsState.value[commentId], text : updatedComment },
     };
   },
+  updateLikeComment: (commentId: number, userId: number) => {
+    const copy = commentsState.value[commentId].userLiked;
+    const userIndex = copy.indexOf(userId);
+    if (userIndex >= 0) {
+      copy.splice(userIndex, 1);
+    } else {
+      copy.push(userId);
+    }
+    commentsState.value = {
+      ...commentsState.value,
+      [commentId]: { ...commentsState.value[commentId], userLiked: copy },
+    };
+  },
   clearComments: () => {
     commentsState.value = {};
   },

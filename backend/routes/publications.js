@@ -13,6 +13,8 @@ router.get('/:publicationId', auth, publications.findOne);
 
 router.post('/', auth, multer, checkFileSize, publications.create);
 
+router.post('/:publicationId', auth, publications.like);
+
 router.put('/:publicationId', auth, multer, checkFileSize, publications.update);
 
 router.delete('/:publicationId', auth, publications.delete);

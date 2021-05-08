@@ -1,5 +1,5 @@
 import { IPublication } from '@/interface/publications/publication';
-import { readonly, ref, computed, watch } from 'vue';
+import { readonly, ref, computed } from 'vue';
 
 type PublicationStateInterface = Record<string, IPublication>;
 
@@ -20,6 +20,19 @@ const setters = {
     publicationsState.value = {
       ...publicationsState.value,
       [publicationId]: { ...publicationsState.value[publicationId], ...updatedProperties },
+    };
+  },
+  updateLikePublication: (publicationId: number, userId: number) => {
+    const copy = publicationsState.value[publicationId].userLiked;
+    const userIndex = copy.indexOf(userId);
+    if (userIndex >= 0) {
+      copy.splice(userIndex, 1);
+    } else {
+      copy.push(userId);
+    }
+    publicationsState.value = {
+      ...publicationsState.value,
+      [publicationId]: { ...publicationsState.value[publicationId], userLiked: copy },
     };
   },
   clearPublications: () => {
@@ -46,9 +59,9 @@ const getters = {
       link: publicationsState.value[id] ? publicationsState.value[id].link : null,
     };
   },
-  getEditedImageById : (id:string)=>{
-    return publicationsState.value[id] ? publicationsState.value[id].imageUrl:null
-  }
+  getEditedImageById: (id: string) => {
+    return publicationsState.value[id] ? publicationsState.value[id].imageUrl : null;
+  },
 };
 
 export const publicationsStore = {

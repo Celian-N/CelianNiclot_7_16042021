@@ -7,6 +7,7 @@
           :publication="publication"
           :user="user"
           @onDeletePublication="(val) => $emit('deletePublication', val)"
+          @onLikePublication="(val) => $emit('likePublication', val)"
         />
       </div>
     </div>
@@ -14,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
+import { defineComponent, PropType, watch, ref } from 'vue';
 import { IPublication } from '../../interface/publications/publication';
 import Publication from './Publication.vue';
 import PublicationInput from './PublicationInput.vue';
@@ -29,6 +30,19 @@ export default defineComponent({
   components: {
     Publication,
     PublicationInput
+  }, 
+  setup(props){
+    const sortedPublications = ref<IPublication[]>([])
+
+     watch(
+      () => props.publications,
+      (value) => {
+        if(!value) return;
+        sortedPublications.value = value.sort((a, b) => {
+          return +new Date(b.creationDate) - +new Date(a.creationDate);
+        });
+      }
+    );
   }
 });
 </script>

@@ -8,11 +8,17 @@ export const commentsStoreProvider = () => {
 };
 
 export function useComments() {
-  const { setComments, getAllComments, updateComment, clearComments, removeComment, ...rest } = inject(
-    'commentsStore'
-  ) as typeof commentsStore;
+  const {
+    setComments,
+    getAllComments,
+    updateComment,
+    clearComments,
+    removeComment,
+    updateLikeComment,
+    ...rest
+  } = inject('commentsStore') as typeof commentsStore;
 
-  const { getCommentsCall, createCommentCall, deleteCommentCall, editCommentCall } = useApi();
+  const { getCommentsCall, createCommentCall, deleteCommentCall, editCommentCall, likeCommentCall } = useApi();
 
   const fetchFirstComment = async (publicationId: number) => {
     const comment = await getCommentsCall(publicationId);
@@ -47,11 +53,20 @@ export function useComments() {
 
   const editComment = async (commentId: number, newComment: string) => {
     const editedComment = (await editCommentCall(commentId, newComment)) as IComment;
-    console.log('editedComment :', editedComment)
+
     if (!editedComment) return;
-  
-    updateComment(commentId,  newComment);
+
+    updateComment(commentId, newComment);
     return editedComment;
+  };
+
+  const likeComment = async (commentId: number, userId: number) => {
+    const likedComment = await likeCommentCall(commentId, userId);
+
+    if (!likedComment) return;
+
+    updateLikeComment(commentId, userId);
+    return likedComment;
   };
 
   return {
@@ -60,10 +75,10 @@ export function useComments() {
     createComment,
     deleteComment,
     editComment,
+    likeComment,
     ...rest,
   };
 }
-
 
 // const deleteComment = async (commentId: number) => {
 //   const deletedComment = await deleteCommentCall(commentId);

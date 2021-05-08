@@ -137,3 +137,68 @@ exports.delete = (req, res) => {
         });
   });
 };
+
+
+// Like a Comment identified by the commentId in the request
+exports.like = (req, res) => {
+  // Validate Request
+  if (!req.body) {
+    res.status(400).json({ message: 'Content can not be empty!' });
+  }
+  console.log('BODY :', req.body);
+  Comment.findById(
+    req.body.commentId,
+    req.userId,
+    (err, comment) => {
+      if (err) {
+        if (err.kind === 'not_found') {
+          res.status(404).json({
+            message: `Not found Comment with id ${req.body.commentId}.`,
+          });
+        } else {
+          res.status(500).json({
+            message:
+              'Error retrieving Comment with id ' +
+              req.body.commentId,
+          });
+        }
+      } else {
+        console.log('BODY IN LIKE :', req.body)
+        const commentLikes = JSON.parse(comment.userLiked);
+        const userIndex = commentLikes.indexOf(req.body.userId);
+   
+        if (userIndex >= 0) {
+          commentLikes.splice(userIndex, 1);
+        } else {
+          commentLikes.push(req.body.userId);
+        }
+        console.log(commentLikes)
+        Comment.handleLike(
+          req.body.commentId,
+          JSON.stringify(commentLikes),
+          (err, commentLikes) => {
+            if (err) {
+              if (err.kind === 'not_found') {
+                res.status(404).json({
+                  message: `An error occured when liking comment rwith id ${req.body.commentId}.`,
+                });
+              } else {
+                res.status(500).json({
+                  message:
+                    'Error retrieving Comment with id ' +
+                    req.body.commentId,
+                });
+              }
+            } else {
+              res.status(200).json({
+                message: `Comment liked successfully!`,
+                commentLikes: JSON.parse(commentLikes),
+              });
+            }
+          }
+        );
+      }
+    }
+  );
+};
+

@@ -39,7 +39,7 @@ Publication.create = (newPublication, result) => {
 
 Publication.findById = (publicationId, userId, result) => {
   sql.query(
-    'SELECT author_id as authorId, user_liked as userLiked, image_url as imageUrl, video_url as videoUrl, text, link, creation_date as creationDate FROM Publications WHERE id = ?',
+    'SELECT author_id as authorId, user_liked as userLiked, image_url as imageUrl, gif_url as gifUrl, video_url as videoUrl, text, link, creation_date as creationDate FROM Publications WHERE id = ?',
     publicationId,
     (err, res) => {
       if (err) {
@@ -147,6 +147,30 @@ Publication.remove = (publicationId, userId, result) => {
 
       console.log('deleted publication with id: ', publicationId);
       result(null, res);
+    }
+  );
+};
+
+Publication.handleLike = (publicationId, publicationLikes, result) => {
+  sql.query(
+    `UPDATE Publications SET user_liked = ? WHERE id = ?`,
+    [publicationLikes, publicationId],
+    (err, res) => {
+      if (err) {
+        console.log('error: ', err);
+        result(null, err);
+        return;
+      }
+
+      if (res.affectedRows == 0) {
+        console.log('res :', res);
+        // not found Customer with the id
+        result({ kind: 'not_found' }, null);
+        return;
+      }
+
+      console.log('Liked publication with id: ', publicationId);
+      result(null, publicationLikes);
     }
   );
 };

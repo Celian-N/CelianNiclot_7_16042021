@@ -55,8 +55,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, SetupContext, onMounted, watch, reactive, computed } from 'vue';
-import { fetchGifs } from '../helpers/gifs/gifs';
+import { defineComponent, ref, SetupContext, onMounted, watch, computed } from 'vue';
 import { ICreatePublication, IPublication } from '../interface/publications/publication';
 import { usePublications } from '../store/publications/publications.store';
 import { useUser } from '../store/user/user.store';
@@ -112,7 +111,7 @@ export default defineComponent({
     );
 
     onMounted(async () => {
-
+      
       if (!allEditedPost.value) {
         const currentUserId = ref(getUser.value.id)
         if(currentUserId.value == 0){
@@ -120,6 +119,7 @@ export default defineComponent({
           currentUserId.value = currentUser.id
         }
         const publication = await fetchPublicationById(parseInt(editedPostId.value));
+        
         if (publication.authorId !== currentUserId.value) {
           console.warn('Vous ne pouvez pas modifier cette publication');
           return router.push({ name: 'Home' });
@@ -136,6 +136,7 @@ export default defineComponent({
         console.warn('Vous ne pouvez pas modifier cette publication');
         return router.push({ name: 'Home' });
       }
+
       useEditPost.previewImage.value = allEditedPost.value.imageUrl || undefined;
       editedPost.value.gifUrl = allEditedPost.value.gifUrl || undefined;
       editedPost.value.videoUrl = allEditedPost.value.videoUrl || undefined;
