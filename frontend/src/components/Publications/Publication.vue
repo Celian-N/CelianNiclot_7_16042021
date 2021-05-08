@@ -18,6 +18,10 @@
       <span> LIEN : </span>
       <a :href="publication.link">{{ publication.link }}</a>
     </div>
+    <div>
+      <span>{{ publication.userLiked.length }}</span>
+      <button @click="$emit('onLikePublication', { publicationId: publication.id, userId: user.id })">Like</button>
+    </div>
     <div class="row items-center">
       <button v-if="publication.authorId == user.id" @click="$emit('onDeletePublication', publication.id)">
         Supprimer
@@ -32,6 +36,7 @@
       @loadMoreComments="loadMoreComments"
       @onDeleteComment="onDeleteComment"
       @onSaveComment="saveComment"
+      @onLikeComment="onLikeComment"
     />
     <div v-if="showAddComment" class="column bg-secondary">
       <input id="comment" name="comment" type="text" v-model="newComment" placeholder="Commentaire" />
@@ -78,6 +83,7 @@ export default defineComponent({
       getCommentsByPublication,
       deleteComment,
       editComment,
+      likeComment
     } = useComments();
 
     const publicationComments = computed(() => getCommentsByPublication(props.publication.id));
@@ -109,6 +115,12 @@ export default defineComponent({
       commentsRef.value.closeEditingMode(options.commentId);
     };
 
+    const onLikeComment = async (options: { commentId: number; userId: number }) => {
+      const likedComment = await likeComment(options.commentId, options.userId);
+
+      if (!likedComment) return;
+    };
+
     onMounted(async () => {
       await fetchFirstComment(props.publication.id);
     });
@@ -124,6 +136,7 @@ export default defineComponent({
       commentsRef,
       onDeleteComment,
       saveComment,
+      onLikeComment
     };
   },
 });

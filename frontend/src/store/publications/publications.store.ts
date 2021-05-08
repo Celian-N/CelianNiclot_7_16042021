@@ -14,6 +14,7 @@ export function usePublications() {
     updatePublication,
     clearPublications,
     removePublication,
+    updateLikePublication,
     ...rest
   } = inject('publicationsStore') as typeof publicationsStore;
 
@@ -23,6 +24,7 @@ export function usePublications() {
     createPublicationCall,
     editPublicationCall,
     getPostByIdCall,
+    likePublicationCall,
   } = useApi();
 
   const fetchPublications = async (page?:number) => {
@@ -87,6 +89,14 @@ export function usePublications() {
       return resultEdition;
     }
   };
+  const likePublication = async(publicationId : number, userId : number)=>{
+    const likedPublication = await likePublicationCall(publicationId, userId);
+
+    if (!likedPublication) return;
+
+    updateLikePublication(publicationId, userId);
+    return likedPublication
+  }
 
   return {
     fetchPublications,
@@ -95,6 +105,7 @@ export function usePublications() {
     deletePublication,
     editPublication,
     getAllPublications,
+    likePublication,
     ...rest,
   };
 }

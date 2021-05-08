@@ -2,7 +2,7 @@
 export interface IPublication{
   id:number;
   authorId: number,
-  userLiked: string[],
+  userLiked: number[],
   imageUrl?: string,
   videoUrl?: string,
   gifUrl?: string,

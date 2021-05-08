@@ -5,6 +5,7 @@
       :publications="publications"
       :user="user"
       @deletePublication="(val) => deleteSelectedPublication(val)"
+      @likePublication="(val) => onLikePublication(val)"
     />
   </div>
 </template>
@@ -23,7 +24,7 @@ export default defineComponent({
   },
   setup(props, context: SetupContext) {
     const { logout, getUser } = useUser();
-    const { deletePublication, getAllPublications, fetchPublications } = usePublications();
+    const { deletePublication, getAllPublications, fetchPublications, likePublication } = usePublications();
 
     const publications = computed(() => getAllPublications.value);
 
@@ -34,7 +35,13 @@ export default defineComponent({
       if (!result) return console.warn('Une erreur esr survenue, impossible de supprimer la publication');
     };
 
-    return { logout, deleteSelectedPublication, publications, user };
+    const onLikePublication = async (options: { publicationId: number; userId: number }) => {
+      const likedPublication = await likePublication(options.publicationId, options.userId);
+      if (!likedPublication) return;
+      console.log('Liké !');
+    };
+
+    return { logout, deleteSelectedPublication, publications, user, onLikePublication };
   },
 });
 </script>

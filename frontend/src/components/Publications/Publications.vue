@@ -7,6 +7,7 @@
           :publication="publication"
           :user="user"
           @onDeletePublication="(val) => $emit('deletePublication', val)"
+          @onLikePublication="(val) => $emit('likePublication', val)"
         />
       </div>
     </div>
