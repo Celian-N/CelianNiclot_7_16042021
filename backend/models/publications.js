@@ -39,7 +39,7 @@ Publication.create = (newPublication, result) => {
 
 Publication.findById = (publicationId, userId, result) => {
   sql.query(
-    'SELECT author_id as authorId, user_liked as userLiked, image_url as imageUrl, video_url as videoUrl, text, link, creation_date as creationDate FROM Publications WHERE id = ?',
+    'SELECT author_id as authorId, user_liked as userLiked, image_url as imageUrl, gif_url as gifUrl, video_url as videoUrl, text, link, creation_date as creationDate FROM Publications WHERE id = ?',
     publicationId,
     (err, res) => {
       if (err) {
