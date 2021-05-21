@@ -81,7 +81,7 @@
     />
     <div
       v-if="editedPost.videoUrl || editedPost.gifUrl || editedPost.imageUrl || editedPost.link"
-      class="row justify-center my-md overflow-hidden"
+      class="row justify-center my-md overflow-hidden full-width"
     >
       <div class="position-relative">
         <button
@@ -100,17 +100,18 @@
           ></div>
         </div>
         <div v-if="editedPost.link">
-          <Article :article="articleData" :editingMode="true"/>
+          <Article v-if="articleData.og" :article="articleData" :editingMode="true" />
         </div>
-        <div v-if="editedPost.videoUrl" class="br-sm">
+        <div v-if="editedPost.videoUrl" class="full-width">
           <iframe
-            width="560"
+            width="100%"
             height="315"
             :src="editedPost.videoUrl"
             title="YouTube video player"
             frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen
+            class="br-sm"
           ></iframe>
         </div>
 
@@ -171,7 +172,7 @@ import Avatar from '../components/Avatar/Avatar.vue';
 import InputField from '../components/InputField/InputField.vue';
 import Dialog from '../components/Dialog/Dialog.vue';
 import { showSuccessBanner, showErrorBanner } from '../mixins/banners/banners.mixins';
-import Article from '../components/Article/Article.vue'
+import Article from '../components/Article/Article.vue';
 
 export default defineComponent({
   name: 'EditPublicationPage',
@@ -179,7 +180,7 @@ export default defineComponent({
     Avatar,
     InputField,
     Dialog,
-    Article
+    Article,
   },
   setup(props, context: SetupContext) {
     const { getCurrentUser } = useApi();
@@ -220,11 +221,11 @@ export default defineComponent({
       showModal.value = false;
     };
 
-    const onSetArticle = async ()=>{
-     const articleUrl =  await useEditPost.setArticle(editedPost.value);
-     if(!articleUrl) return;
-     editedPost.value.link = articleUrl
-    }
+    const onSetArticle = async () => {
+      const articleUrl = await useEditPost.setArticle();
+      if (!articleUrl) return;
+      editedPost.value.link = articleUrl;
+    };
 
     const closeEditingMode = () => {
       router.push({ name: 'Home' });
@@ -245,7 +246,7 @@ export default defineComponent({
           currentUserId.value = currentUser.id;
         }
         const publication = await fetchPublicationById(parseInt(editedPostId.value));
-        if(!publication) return router.push({ name: 'Home' });
+        if (!publication) return router.push({ name: 'Home' });
 
         if (publication.authorId !== currentUserId.value) {
           console.warn('Vous ne pouvez pas modifier cette publication');
@@ -257,6 +258,10 @@ export default defineComponent({
         editedPost.value.text = publication.text || undefined;
         editedPost.value.link = publication.link || undefined;
         useEditPost.showAddLink.value = editedPost.value.link ? true : false;
+        if (editedPost.value.link) {
+          useEditPost.writeArticleLink.value = editedPost.value.link;
+           await useEditPost.setArticle()
+        }
         return;
       }
       if (allEditedPost.value.authorId !== getUser.value.id) {
@@ -270,6 +275,10 @@ export default defineComponent({
       editedPost.value.text = allEditedPost.value.text || undefined;
       editedPost.value.link = allEditedPost.value.link || undefined;
       useEditPost.showAddLink.value = editedPost.value.link ? true : false;
+      if (editedPost.value.link) {
+        useEditPost.writeArticleLink.value = editedPost.value.link;
+         await useEditPost.setArticle()
+      }
       return;
     });
 
@@ -280,7 +289,7 @@ export default defineComponent({
       ...useEditPost,
       onSelectGif,
       showModal,
-      onSetArticle
+      onSetArticle,
     };
   },
 });

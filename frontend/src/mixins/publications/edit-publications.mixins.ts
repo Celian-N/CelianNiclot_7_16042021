@@ -17,7 +17,7 @@ export const useEditPublications = (context: SetupContext) => {
   const articleData = ref({})
   const { getArticleCall } = useApi();
 
-  const setArticle = async (post: ICreatePublication) => {
+  const setArticle = async () => {
     if(!writeArticleLink.value) return;
     const metadata = await getArticleCall(writeArticleLink.value);
     if (!metadata) return;
@@ -117,6 +117,10 @@ export const useEditPublications = (context: SetupContext) => {
     if (post.videoUrl) {
       writeVideoLink.value = '';
       return (post.videoUrl = null);
+    }
+    if (post.link) {
+      writeArticleLink.value = '';
+      return (post.link = null);
     }
   };
 

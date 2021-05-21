@@ -221,7 +221,7 @@ export default defineComponent({
       useEditPost.setVideo(createdPost);
     };
     const onSetArticle = async ()=>{
-     const articleUrl =  await useEditPost.setArticle(createdPost);
+     const articleUrl =  await useEditPost.setArticle();
      if(!articleUrl) return;
      createdPost.link = articleUrl
     }
