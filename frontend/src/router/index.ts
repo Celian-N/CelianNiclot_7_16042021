@@ -18,6 +18,18 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('../pages/EditPublication.vue'),
         meta: { requiresAuth: true },
       },
+      {
+        path: '/notifications',
+        name: 'Notifications',
+        component: () => import('../pages/Notifications.vue'),
+        meta: { requiresAuth: true },
+      },
+      {
+        path: '/settings',
+        name: 'Settings',
+        component: () => import('../pages/Settings.vue'),
+        meta: { requiresAuth: true },
+      },
     ],
   },
   {

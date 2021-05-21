@@ -11,13 +11,31 @@ export const useEditPublications = (context: SetupContext) => {
   const gifs = ref([]);
   const searchGif = ref('');
   const showAddLink = ref(false);
+  const showVideoLink = ref(false);
+
+  const showVideo = ()=>{
+    if(showVideoLink.value) return showVideoLink.value = false
+    showVideoLink.value = true
+    showAddLink.value = false
+  }
+  const showArticle = ()=>{
+    if(showAddLink.value) return showAddLink.value = false
+
+    showVideoLink.value = false
+    showAddLink.value = true
+  }
 
   const setVideo = (post: ICreatePublication) => {
     removeFiles(post);
     if (!writeVideoLink.value) return (post.videoUrl = null);
+    console.log('writeVideoLink : ', writeVideoLink.value)
     const createdLink = createVideoLink(writeVideoLink.value);
+    console.log('createdLink : ', createdLink)
+
     if (!createdLink) return (post.videoUrl = null);
     post.videoUrl = createdLink.match(embedRegex) ? createdLink : null;
+    console.log('post.videoUrl : ', post.videoUrl)
+
   };
   const createVideoLink = (writeVideoLink: string) => {
     const splitLink = writeVideoLink.split('=');
@@ -97,10 +115,13 @@ export const useEditPublications = (context: SetupContext) => {
     selectImage,
     pickFile,
     removeFiles,
+    showArticle,
+    showVideo,
     fileInput,
     previewImage,
     writeVideoLink,
     showAddLink,
+    showVideoLink,
     searchGif,
     gifs,
   };

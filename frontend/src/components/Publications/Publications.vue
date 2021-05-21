@@ -1,8 +1,8 @@
 <template>
-  <div>
-    <PublicationInput />
-    <div class="column items-center">
-      <div v-for="publication in publications" :key="`publication-${publication.id}`">
+  <div class="publications-container">
+    <PublicationInput :username="user.firstname" />
+    <div class="column items-center full-width">
+      <div v-for="publication in publications" :key="`publication-${publication.id}`" class="full-width">
         <Publication
           :publication="publication"
           :user="user"
@@ -18,8 +18,8 @@
 import { defineComponent, PropType, watch, ref } from 'vue';
 import { IPublication } from '../../interface/publications/publication';
 import Publication from './Publication.vue';
-import PublicationInput from './PublicationInput.vue';
 import { IUser } from '../../interface/user/user';
+import PublicationInput from './PublicationInput.vue';
 
 export default defineComponent({
   name: 'Publications',
@@ -29,20 +29,35 @@ export default defineComponent({
   },
   components: {
     Publication,
-    PublicationInput
-  }, 
-  setup(props){
-    const sortedPublications = ref<IPublication[]>([])
+    PublicationInput,
+  },
+  setup(props) {
+    const sortedPublications = ref<IPublication[]>([]);
 
-     watch(
+    watch(
       () => props.publications,
       (value) => {
-        if(!value) return;
+        if (!value) return;
         sortedPublications.value = value.sort((a, b) => {
           return +new Date(b.creationDate) - +new Date(a.creationDate);
         });
       }
     );
-  }
+  },
 });
 </script>
+
+<style lang="scss">
+.publications-container {
+  height: 100%;
+  overflow-x: visible;
+  overflow-y: scroll;
+  margin-right: -150px;
+  padding-right: 150px;
+  margin-left: -150px;
+  padding-left: 150px;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+</style>

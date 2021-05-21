@@ -25,20 +25,17 @@ exports.create = (req, res) => {
   });
 };
 
-// Retrieve all Comments from the database.
-exports.findAll = (req, res) => {
-  Comment.getAll((err, comments) => {
+// Retrieve Comments length for publication from the database.
+exports.getLengthFromPublicationId = (req, res) => {
+  const publicationId = req.query.publicationId
+  Comment.getLength(publicationId, (err, commentsLength) => {
     if (err)
       return res.status(500).json({
         message:
           err.message || 'Some error occurred while retrieving comments.',
       });
 
-    res.status(200).json(
-      comments.map((comment) => {
-        return { ...comment, userLiked: JSON.parse(comment.userLiked) };
-      })
-    );
+    res.status(200).json(commentsLength);
   });
 };
 
