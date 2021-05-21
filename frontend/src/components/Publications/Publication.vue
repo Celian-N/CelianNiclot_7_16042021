@@ -1,34 +1,82 @@
 <template>
-  <div class="ma-md column">
-    <img :src="publication.imageUrl" class="max-width" />
+  <div class="my-sm column bg-white pa-md br-md full-width main-shadow" style="box-sizing: border-box">
+    <div class="row items-start justify-between mb-md">
+      <div class="row items-center">
+        <Avatar size="50px" class="mr-sm" />
+        <div class="column items-start">
+          <span class="text-main text-bold">{{ user.firstname }} {{ user.lastname }}</span>
+          <span class="text-caption font-12">{{ publicationMoment }}</span>
+        </div>
+      </div>
+      <div v-if="publication.authorId == user.id" class="position-relative">
+        <IconButton :button="{ size: '30px', icon: 'more_horiz', color: 'primary' }" @onClick="showMenu = !showMenu" />
+        <transition name="fade">
+          <div v-if="showMenu" class="publication-menu column bg-white br-sm input-shadow overflow-hidden">
+            <button
+              v-if="publication.authorId == user.id"
+              class="pa-sm full-width row justify-start items-center font-12"
+              @click="editPublication"
+            >
+              <span class="material-icons-round mr-xs font-20">edit</span>
+              Modifier
+            </button>
+            <button
+              v-if="publication.authorId == user.id"
+              class="pa-sm full-width row justify-start items-center font-12"
+              @click="$emit('onDeletePublication', publication.id)"
+            >
+              <span class="material-icons-round mr-xs font-20">delete</span>
+              Supprimer
+            </button>
+          </div>
+        </transition>
+      </div>
+    </div>
+    <div class="mb-md">{{ publication.text }}</div>
 
-    <img :src="publication.gifUrl" class="max-width" />
-    <div v-if="publication.videoUrl && publication.videoUrl.match(embedRegex)">
-      <iframe
-        width="560"
-        height="315"
-        :src="`${publication.videoUrl}?fs=0&modestbranding=1&iv_load_policy=3`"
-        title="YouTube video player"
-        frameborder="0"
-        allowfullscreen
-      ></iframe>
+    <div v-if="publication.imageUrl || publication.videoUrl || publication.gifUrl" class="column items-center mb-md">
+      <img class="full-width br-sm" v-if="publication.imageUrl" :src="publication.imageUrl" />
+
+      <img class="full-width br-sm" v-if="publication.gifUrl" :src="publication.gifUrl" />
+      <div v-if="publication.videoUrl && publication.videoUrl.match(embedRegex)" class="full-width">
+        <iframe
+          width="100%"
+          height="250"
+          :src="`${publication.videoUrl}?fs=0&modestbranding=1&iv_load_policy=3`"
+          title="YouTube video player"
+          frameborder="0"
+          allowfullscreen
+          class="br-sm"
+        ></iframe>
+      </div>
+      <div v-if="publication.link" class="row">
+        <span> LIEN : </span>
+        <a :href="publication.link">{{ publication.link }}</a>
+      </div>
     </div>
-    <div>TEXT : {{ publication.text }}</div>
-    <div v-if="publication.link" class="row">
-      <span> LIEN : </span>
-      <a :href="publication.link">{{ publication.link }}</a>
-    </div>
-    <div>
-      <span>{{ publication.userLiked.length }}</span>
-      <button @click="$emit('onLikePublication', { publicationId: publication.id, userId: user.id })">Like</button>
-    </div>
-    <div class="row items-center">
-      <button v-if="publication.authorId == user.id" @click="$emit('onDeletePublication', publication.id)">
-        Supprimer
+
+    <div class="row items-center justify-end">
+      <span class="font-12 text-caption mr-xs">{{ commentsLength }}</span>
+      <span class="material-icons-round publication-icons text-caption mr-sm">chat</span>
+
+      <span
+        class="font-12 mr-xs"
+        :class="publication.userLiked.includes(user.id) ? 'text-secondary' : 'text-caption'"
+        >{{ publication.userLiked.length }}</span
+      >
+      <button
+        @click="$emit('onLikePublication', { publicationId: publication.id, userId: user.id })"
+        class="row items-center justify-center"
+      >
+        <span
+          class="material-icons-round publication-icons"
+          :class="publication.userLiked.includes(user.id) ? 'text-secondary' : 'text-caption'"
+          >favorite</span
+        >
       </button>
-      <button v-if="publication.authorId == user.id" @click="editPublication">Modifier</button>
-      <button v-if="publication.authorId == user.id" @click="showAddComment = !showAddComment">Commenter</button>
     </div>
+    <hr class="full-width vertical-separator mb-sm" />
+
     <Comments
       ref="commentsRef"
       :comments="publicationComments"
@@ -38,9 +86,24 @@
       @onSaveComment="saveComment"
       @onLikeComment="onLikeComment"
     />
-    <div v-if="showAddComment" class="column bg-secondary">
-      <input id="comment" name="comment" type="text" v-model="newComment" placeholder="Commentaire" />
-      <button @click="addComment">Ajouter commentaire</button>
+    <div class="row items-center my-sm">
+      <Avatar size="35px" class="mr-sm" />
+      <InputField
+        autogrow
+        @onInput="(val) => (newComment = val)"
+        :value="newComment"
+        placeholder="Commentaire"
+        :customTextareaClass="'pr-sm'"
+        :maxLength="255"
+        borderRadius="8px"
+        style="flex: 1"
+        :button="{
+          icon: 'send',
+          color: 'primary',
+          size: '25px',
+        }"
+        @onClick="addComment"
+      />
     </div>
   </div>
 </template>
@@ -52,6 +115,10 @@ import { IUser } from '../../interface/user/user';
 import { useRouter } from 'vue-router';
 import { useComments } from '../../store/comments/comments.store';
 import Comments from '../Comments/Comments.vue';
+import Avatar from '../Avatar/Avatar.vue';
+import moment from 'moment';
+import InputField from '../InputField/InputField.vue';
+import IconButton from '../IconButton/IconButton.vue';
 
 export interface CommentsRef {
   showLoadMoreButton: boolean;
@@ -66,12 +133,17 @@ export default defineComponent({
   },
   components: {
     Comments,
+    Avatar,
+    InputField,
+    IconButton,
   },
   setup(props) {
+    const showMenu = ref(false);
     const router = useRouter();
     //TODO : DELETE ALL ROWS WITH OLD VIDEO LINK
     const embedRegex = /^(https|http):\/\/(?:www\.)?youtube-nocookie.com\/embed\/[A-z0-9]+/;
 
+    const publicationMoment = moment(props.publication.creationDate).locale('fr').fromNow();
     const editPublication = () => {
       router.push({ name: 'EditPost', params: { publicationId: props.publication.id } });
     };
@@ -83,23 +155,27 @@ export default defineComponent({
       getCommentsByPublication,
       deleteComment,
       editComment,
-      likeComment
+      likeComment,
+      fetchCommentsLength,
     } = useComments();
 
     const publicationComments = computed(() => getCommentsByPublication(props.publication.id));
     const currentCommentsPage = ref(0);
-    const showAddComment = ref(false);
     const newComment = ref('');
+    const commentsLength = ref(0);
 
     const loadMoreComments = async () => {
       currentCommentsPage.value++;
       const moreComments = await fetchMorePublicationComments(props.publication.id, currentCommentsPage.value);
 
-      if (!moreComments.length && commentsRef.value) return (commentsRef.value.showLoadMoreButton = false);
+      if (publicationComments.value.length == commentsLength.value && commentsRef.value)
+        return (commentsRef.value.showLoadMoreButton = false);
     };
     const addComment = async () => {
       const result = await createComment(props.publication.id, newComment.value);
       if (!result) return;
+      console.log(result);
+      newComment.value = '';
     };
 
     const onDeleteComment = async (commentId: number) => {
@@ -123,20 +199,23 @@ export default defineComponent({
 
     onMounted(async () => {
       await fetchFirstComment(props.publication.id);
+      commentsLength.value = await fetchCommentsLength(props.publication.id);
     });
 
     return {
       editPublication,
       embedRegex,
       loadMoreComments,
-      showAddComment,
       newComment,
       addComment,
       publicationComments,
       commentsRef,
       onDeleteComment,
       saveComment,
-      onLikeComment
+      onLikeComment,
+      publicationMoment,
+      showMenu,
+      commentsLength,
     };
   },
 });
@@ -144,5 +223,27 @@ export default defineComponent({
 <style lang="scss" scoped>
 .max-width {
   max-width: 200px;
+}
+.publication-icons {
+  font-size: 20px;
+}
+.publication-menu {
+  position: absolute;
+  top: -10px;
+  left: 40px;
+  transition: opacity 1000ms;
+  & button {
+    &:hover {
+      background: rgba(grey, 0.1);
+    }
+  }
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
