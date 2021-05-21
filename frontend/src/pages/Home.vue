@@ -45,3 +45,14 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="scss">
+.home {
+  overflow: hidden;
+  height: 100%;
+  margin-right: -150px;
+  padding-right: 150px;
+  margin-left: -150px;
+  padding-left: 150px;
+}
+</style>
