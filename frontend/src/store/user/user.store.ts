@@ -25,7 +25,7 @@ export function useUser() {
 
   const signup = async (user: ICreateUser) => {
     const userCreated = await signupCall(user);
-    if (!userCreated.email || !userCreated.active) return console.log('userCreated :', userCreated);
+    if (!userCreated.email || !userCreated.active) return;
 
     await login(userCreated.email, user.password);
   };

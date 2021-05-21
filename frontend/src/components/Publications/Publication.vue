@@ -119,6 +119,7 @@ import Avatar from '../Avatar/Avatar.vue';
 import moment from 'moment';
 import InputField from '../InputField/InputField.vue';
 import IconButton from '../IconButton/IconButton.vue';
+import { showErrorBanner, showSuccessBanner } from '../../mixins/banners/banners.mixins';
 
 export interface CommentsRef {
   showLoadMoreButton: boolean;
@@ -173,21 +174,23 @@ export default defineComponent({
     };
     const addComment = async () => {
       const result = await createComment(props.publication.id, newComment.value);
-      if (!result) return;
-      console.log(result);
+      if (!result) return showErrorBanner('Impossible de poster le commentaire');
       newComment.value = '';
     };
 
     const onDeleteComment = async (commentId: number) => {
       const deletedCommentId = await deleteComment(commentId);
-      if (!deletedCommentId) return;
+      if (!deletedCommentId) return showErrorBanner('Impossible de supprimer le commentaire');
+      showSuccessBanner('Commentaire supprimé avec succès !');
       if (!publicationComments.value.length) return await fetchFirstComment(props.publication.id);
     };
 
     const saveComment = async (options: { commentId: number; newComment: string }) => {
       const editedComment = await editComment(options.commentId, options.newComment);
 
-      if (!editedComment || !editedComment.id || !commentsRef.value) return;
+      if (!editedComment || !editedComment.id || !commentsRef.value)
+        return showErrorBanner('Impossible de modifier le commentaire');
+      showSuccessBanner('Commentaire modifié avec succès !');
       commentsRef.value.closeEditingMode(options.commentId);
     };
 
