@@ -11,6 +11,8 @@ import { useRouter } from 'vue-router';
 import { userStoreProvider } from './store/user/user.store';
 import { publicationsStoreProvider } from './store/publications/publications.store';
 import { commentsStoreProvider } from './store/comments/comments.store';
+import { metaLinksStoreProvider } from './store/metadata/state';
+
 
 
 export default defineComponent({
@@ -19,6 +21,8 @@ export default defineComponent({
     userStoreProvider();
     publicationsStoreProvider();
     commentsStoreProvider();
+    metaLinksStoreProvider()
+    
     const router = useRouter();
 
     onMounted(async function () {
