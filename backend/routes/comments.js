@@ -5,7 +5,7 @@ const router = express.Router();
 const comments = require('../controllers/comments');
 const auth = require('../middleware/auth');
 
-router.get('/', auth, comments.findAll);
+router.get('/', auth, comments.getLengthFromPublicationId);
 
 router.get('/:publicationId', auth, comments.findForPublication);
 

@@ -32,7 +32,7 @@ Publication.create = (newPublication, result) => {
       gifUrl: newPublication.gif_url,
       videoUrl: newPublication.video_url,
       creationDate: newPublication.creation_date,
-      userLiked: newPublication.user_liked,
+      userLiked: JSON.parse(newPublication.user_liked),
     });
   });
 };

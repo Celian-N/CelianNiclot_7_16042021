@@ -26,7 +26,7 @@ Comment.create = (newComment, result) => {
       authorId: newComment.author_id,
       publicationId: newComment.publication_id,
       creationDate: newComment.creation_date,
-      userLiked: newComment.user_liked,
+      userLiked: JSON.parse(newComment.user_liked),
     });
   });
 };
@@ -56,6 +56,19 @@ Comment.findById = (commentId, userId, result) => {
     }
   );
 };
+
+Comment.getLength = (publicationId, result)=>{
+  sql.query('SELECT COUNT(*) as commentsLength FROM Comments WHERE publication_id = ?', publicationId, (err, res) => {
+    if (err) {
+      console.log('error: ', err);
+      result(null, err);
+      return;
+    }
+
+    console.log('commentsLength: ', res[0]);
+    result(null, res[0].commentsLength);
+  });
+}
 
 Comment.getAll = (publicationId, selectedPage, result) => {
   const limit = 5;
