@@ -23,7 +23,7 @@ export const useApi = () => {
       .then((res) => {
         return res;
       })
-      .catch((error) => alert('Erreur :' + error));
+      .catch((error) => console.warn('Erreur :' + error));
   };
   const signupCall = async (user: ICreateUser) => {
     const request = {
@@ -40,7 +40,7 @@ export const useApi = () => {
       .then((res) => {
         return res;
       })
-      .catch((error) => alert('Erreur :' + error));
+      .catch((error) => console.warn('Erreur :' + error));
   };
 
   //PUBLICATIONS
@@ -61,10 +61,29 @@ export const useApi = () => {
         return res.data;
       })
       .catch((error) => {
-        console.log(error);
-        alert('Erreur :' + error);
+        console.warn('Erreur :' + error);
       });
   };
+
+  const getArticleCall = async (link : string) => {
+    return await fetch(`http://localhost:3000/article/?article=${link}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + Cookies.get('groupomania_token'),
+      },
+    })
+      .then((result) => {
+        return result.json();
+      })
+      .then((res) => {
+        return res;
+      })
+      .catch((error) => {
+        console.warn('Erreur :' + error);
+      });
+  };
+
   const getAllPostsCall = async (page?: number) => {
     return await fetch(`http://localhost:3000/publications/?page=${page}`, {
       method: 'GET',
@@ -80,8 +99,7 @@ export const useApi = () => {
         return res;
       })
       .catch((error) => {
-        console.log(error);
-        alert('Erreur :' + error);
+        console.warn('Erreur :' + error);
       });
   };
   const getPostByIdCall = async (publicationId: number) => {
@@ -99,8 +117,7 @@ export const useApi = () => {
         return res;
       })
       .catch((error) => {
-        console.log(error);
-        alert('Erreur :' + error);
+        console.warn('Erreur :' + error);
       });
   };
   const deletePublicationCall = async (publicationId: number) => {
@@ -118,8 +135,7 @@ export const useApi = () => {
         return res;
       })
       .catch((error) => {
-        console.log(error);
-        alert('Erreur :' + error);
+        console.warn('Erreur :' + error);
       });
   };
 
@@ -139,7 +155,7 @@ export const useApi = () => {
       .then((res) => {
         return res.data;
       })
-      .catch((error) => alert('Erreur :' + error));
+      .catch((error) => console.warn('Erreur :' + error));
   };
 
   const likePublicationCall = async (publicationId: number, userId:number) => {
@@ -158,8 +174,7 @@ export const useApi = () => {
         return res;
       })
       .catch((error) => {
-        console.log(error);
-        alert('Erreur :' + error);
+        console.warn('Erreur :' + error);
       });
   };
 
@@ -173,7 +188,7 @@ export const useApi = () => {
       .then((res) => {
         return res;
       })
-      .catch((error) => alert('Erreur :' + error));
+      .catch((error) => console.warn('Erreur :' + error));
   };
 
   const getCurrentUser = async () => {
@@ -190,7 +205,7 @@ export const useApi = () => {
       .then((res) => {
         return res;
       })
-      .catch((error) => alert('Erreur :' + error));
+      .catch((error) => console.warn('Erreur :' + error));
   };
 
   //COMMENTS
@@ -210,7 +225,7 @@ export const useApi = () => {
       .then((res) => {
         return res;
       })
-      .catch((error) => alert('Erreur :' + error));
+      .catch((error) => console.warn('Erreur :' + error));
   }
 
   const getCommentsCall = async (publicationId: number, page?: number) => {
@@ -229,7 +244,7 @@ export const useApi = () => {
       .then((res) => {
         return res;
       })
-      .catch((error) => alert('Erreur :' + error));
+      .catch((error) => console.warn('Erreur :' + error));
   };
 
   const createCommentCall = async (publicationId: number, newComment: string) => {
@@ -248,7 +263,7 @@ export const useApi = () => {
       .then((res) => {
         return res;
       })
-      .catch((error) => alert('Erreur :' + error));
+      .catch((error) => console.warn('Erreur :' + error));
   };
   const deleteCommentCall = async (commentId: number) => {
     return await fetch(`http://localhost:3000/comments/${commentId}`, {
@@ -265,8 +280,7 @@ export const useApi = () => {
         return res;
       })
       .catch((error) => {
-        console.log(error);
-        alert('Erreur :' + error);
+        console.warn('Erreur :' + error);
       });
   };
   const editCommentCall = async (commentId: number, newComment: string) => {
@@ -285,8 +299,7 @@ export const useApi = () => {
         return res;
       })
       .catch((error) => {
-        console.log(error);
-        alert('Erreur :' + error);
+        console.warn('Erreur :' + error);
       });
   };
 
@@ -306,8 +319,7 @@ export const useApi = () => {
         return res;
       })
       .catch((error) => {
-        console.log(error);
-        alert('Erreur :' + error);
+        console.warn('Erreur :' + error);
       });
   };
 
@@ -327,6 +339,7 @@ export const useApi = () => {
     editCommentCall,
     likePublicationCall,
     likeCommentCall,
-    getCommentsLengthCall
+    getCommentsLengthCall,
+    getArticleCall
   };
 };
