@@ -3,7 +3,9 @@
     <HeaderCard class="header-container" />
     <div class="row">
       <div class="column side-panels mr-sm">
-        <div class="row items-center side-panels__panel mt-sm br-md bg-white main-shadow pa-sm justify-between profile-card">
+        <div
+          class="row items-center side-panels__panel mt-sm br-md bg-white main-shadow pa-sm justify-between profile-card"
+        >
           <Avatar size="60px" class="mr-sm" />
           <div class="column items-start">
             <span class="text-main text-bold">{{ user.firstname }} {{ user.lastname }}</span>
@@ -39,6 +41,7 @@ import { navigationTabs } from '../mixins/navigation/navigation.mixins';
 import HeaderCard from '../components/Header/HeaderCard.vue';
 import Avatar from '../components/Avatar/Avatar.vue';
 import moment from 'moment';
+import { showErrorBanner } from '../mixins/banners/banners.mixins';
 
 export default defineComponent({
   name: 'HomeLayout',
@@ -63,6 +66,7 @@ export default defineComponent({
         currentPage.value++;
         const result = await fetchPublications(currentPage.value);
         if (!result.length) {
+          showErrorBanner('Impossible de récupérer les publications');
           window.removeEventListener('scroll', handleScroll);
         }
       }
@@ -95,10 +99,10 @@ export default defineComponent({
     display: none;
   }
 }
-.profile-card{
+.profile-card {
   cursor: pointer;
   transition: all 300ms;
-  &:hover{
+  &:hover {
     background: rgba(#50505096, 0.05);
   }
 }
@@ -117,9 +121,9 @@ export default defineComponent({
   padding-right: 150px;
   margin-left: -150px;
   padding-left: 150px;
-  &::-webkit-scrollbar{
-  display: none;
-}
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 .material-icons-round {
   font-size: 28px;

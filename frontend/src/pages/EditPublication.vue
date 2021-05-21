@@ -3,15 +3,15 @@
     <div class="row items-start">
       <Avatar size="50px" />
       <InputField
-      autogrow
-      @onInput="(val) => (editedPost.text = val)"
-      :value="editedPost.text"
-      :maxLength="500"
-      placeholder="Texte modifié..."
-      class="full-width mb-md"
-      :customTextareaClass="'pt-xs'"
-      :withBackground="false"
-    />
+        autogrow
+        @onInput="(val) => (editedPost.text = val)"
+        :value="editedPost.text"
+        :maxLength="500"
+        placeholder="Texte modifié..."
+        class="full-width mb-md"
+        :customTextareaClass="'pt-xs'"
+        :withBackground="false"
+      />
     </div>
     <hr class="full-width vertical-separator mb-sm" />
     <div class="row items-center justify-around buttons-container">
@@ -73,7 +73,10 @@
       borderRadius="8px"
       class="my-md"
     />
-    <div  v-if="editedPost.videoUrl || editedPost.gifUrl || editedPost.imageUrl" class="row justify-center my-md overflow-hidden">
+    <div
+      v-if="editedPost.videoUrl || editedPost.gifUrl || editedPost.imageUrl"
+      class="row justify-center my-md overflow-hidden"
+    >
       <div class="position-relative">
         <button
           @click="removeFiles(editedPost)"
@@ -108,7 +111,9 @@
       </div>
     </div>
 
-    <button class="post-button bg-primary text-white br-sm py-xs mt-sm" @click="onCreatePublication">Enregistrer</button>
+    <button class="post-button bg-primary text-white br-sm py-xs mt-sm" @click="onCreatePublication">
+      Enregistrer
+    </button>
     <button class="post-button bg-white text-primary br-sm py-xs mt-sm" @click="closeEditingMode">Annuler</button>
 
     <Dialog :showModal="showModal" @close="showModal = false">
@@ -156,11 +161,11 @@ import { useApi } from '../mixins/api/api.mixins';
 import Avatar from '../components/Avatar/Avatar.vue';
 import InputField from '../components/InputField/InputField.vue';
 import Dialog from '../components/Dialog/Dialog.vue';
-
+import { showSuccessBanner, showErrorBanner } from '../mixins/banners/banners.mixins';
 
 export default defineComponent({
   name: 'EditPublicationPage',
-   components: {
+  components: {
     Avatar,
     InputField,
     Dialog,
@@ -169,7 +174,7 @@ export default defineComponent({
     const { getCurrentUser } = useApi();
     const showModal = ref(false);
 
-    const useEditPost = useEditPublications(context)
+    const useEditPost = useEditPublications(context);
 
     const { editPublication, getPublicationById, fetchPublicationById } = usePublications();
     const { getUser } = useUser();
@@ -194,8 +199,8 @@ export default defineComponent({
 
     const onSaveEditedPost = async () => {
       const result = await editPublication(parseInt(editedPostId.value), editedPost.value);
-      if (!result) return;
-
+      if (!result) return showErrorBanner('Impossible de modifier la publication');
+      showSuccessBanner('Publication modifiée avec succès !');
       router.push({ name: 'Home' });
     };
 
@@ -208,7 +213,6 @@ export default defineComponent({
       router.push({ name: 'Home' });
     };
 
-
     watch(
       () => route.currentRoute.value.params.publicationId,
       (newValue) => {
@@ -217,15 +221,14 @@ export default defineComponent({
     );
 
     onMounted(async () => {
-      
       if (!allEditedPost.value) {
-        const currentUserId = ref(getUser.value.id)
-        if(currentUserId.value == 0){
+        const currentUserId = ref(getUser.value.id);
+        if (currentUserId.value == 0) {
           const currentUser = await getCurrentUser();
-          currentUserId.value = currentUser.id
+          currentUserId.value = currentUser.id;
         }
         const publication = await fetchPublicationById(parseInt(editedPostId.value));
-        
+
         if (publication.authorId !== currentUserId.value) {
           console.warn('Vous ne pouvez pas modifier cette publication');
           return router.push({ name: 'Home' });
@@ -235,7 +238,7 @@ export default defineComponent({
         editedPost.value.videoUrl = publication.videoUrl || undefined;
         editedPost.value.text = publication.text || undefined;
         editedPost.value.link = publication.link || undefined;
-        useEditPost.showAddLink.value = editedPost.value.link ? true : false
+        useEditPost.showAddLink.value = editedPost.value.link ? true : false;
         return;
       }
       if (allEditedPost.value.authorId !== getUser.value.id) {
@@ -248,7 +251,7 @@ export default defineComponent({
       editedPost.value.videoUrl = allEditedPost.value.videoUrl || undefined;
       editedPost.value.text = allEditedPost.value.text || undefined;
       editedPost.value.link = allEditedPost.value.link || undefined;
-      useEditPost.showAddLink.value = editedPost.value.link ? true : false
+      useEditPost.showAddLink.value = editedPost.value.link ? true : false;
       return;
     });
 
@@ -258,7 +261,7 @@ export default defineComponent({
       closeEditingMode,
       ...useEditPost,
       onSelectGif,
-      showModal
+      showModal,
     };
   },
 });

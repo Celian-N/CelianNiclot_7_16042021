@@ -3,15 +3,15 @@
     <div class="row items-start">
       <Avatar size="50px" />
       <InputField
-      autogrow
-      @onInput="(val) => (text = val)"
-      :value="text"
-      :maxLength="500"
-      :placeholder="`Quoi de neuf, ${username} ?`"
-      class="full-width mb-md"
-      :customTextareaClass="'pt-xs'"
-      :withBackground="false"
-    />
+        autogrow
+        @onInput="(val) => (text = val)"
+        :value="text"
+        :maxLength="500"
+        :placeholder="`Quoi de neuf, ${username} ?`"
+        class="full-width mb-md"
+        :customTextareaClass="'pt-xs'"
+        :withBackground="false"
+      />
     </div>
     <hr class="full-width vertical-separator mb-sm" />
     <div class="row items-center justify-around buttons-container">
@@ -73,7 +73,7 @@
       borderRadius="8px"
       class="my-md"
     />
-    <div  v-if="videoUrl || gifUrl || imageUrl" class="row justify-center my-md overflow-hidden">
+    <div v-if="videoUrl || gifUrl || imageUrl" class="row justify-center my-md overflow-hidden">
       <div class="position-relative">
         <button
           @click="onRemoveFiles"
@@ -152,6 +152,7 @@ import { useEditPublications } from '../../mixins/publications/edit-publications
 import Avatar from '../Avatar/Avatar.vue';
 import InputField from '../InputField/InputField.vue';
 import Dialog from '../Dialog/Dialog.vue';
+import { showErrorBanner, showSuccessBanner } from '../../mixins/banners/banners.mixins';
 
 //https://www.youtube.com/embed/Zwlaey0gu4c
 //https://www.youtube.com/watch?v=Zwlaey0gu4c&ab_channel=GOTAGA
@@ -188,7 +189,8 @@ export default defineComponent({
       )
         return;
       const result = await createPublication({ ...createdPost });
-      if (!result) return;
+      if (!result) return showErrorBanner('Impossible de poster la publication');
+      showSuccessBanner('Publication postée avec succès !');
       return useEditPost.setInitPost(createdPost);
     };
 

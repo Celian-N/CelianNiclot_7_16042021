@@ -15,7 +15,10 @@
         ></div>
       </div>
 
-      <div class="row items-center justify-center full-width position-relative forms-container" :style="loginOrSignupStep =='login' ? 'height:300px;' : 'height:500px;'">
+      <div
+        class="row items-center justify-center full-width position-relative forms-container"
+        :style="loginOrSignupStep == 'login' ? 'height:300px;' : 'height:500px;'"
+      >
         <div id="login-form" class="column items-center full-width position-absolute">
           <InputField
             type="email"
@@ -25,7 +28,7 @@
             borderRadius="8px"
             :minLength="10"
             :maxLength="100"
-            class="login-input mb-lg mt-xl "
+            class="login-input mb-lg mt-xl"
             fontSize="16px"
           />
           <InputField
@@ -110,6 +113,7 @@
 import { defineComponent, ref, reactive, toRefs } from 'vue';
 import { useUser } from '../store/user/user.store';
 import InputField from '../components/InputField/InputField.vue';
+import { showErrorBanner } from '../mixins/banners/banners.mixins';
 
 export default defineComponent({
   name: 'LoginPage',
@@ -136,31 +140,34 @@ export default defineComponent({
     const onLogin = async () => {
       if (userMail.value.match(emailRegExp)) {
         await login(userMail.value, userPassword.value);
+        return;
       }
+      showErrorBanner('Impossible de se connecter, veuillez rentrer un mail valide');
     };
 
     const onSignup = async () => {
       if (createUser.email.match(emailRegExp)) {
         await signup(createUser);
+        return;
       }
+      showErrorBanner('Impossible de créer un compte, veuillez vérifier vos informations');
     };
 
     const goToSignUp = () => {
       loginOrSignupStep.value = 'signup';
-      const signupContainer = document.getElementById('signup-form')
-      const loginContainer = document.getElementById('login-form')
-      if(!loginContainer || !signupContainer) return;
-      signupContainer.classList.add('signup-show')
-      loginContainer.classList.add('login-hidden')
-
+      const signupContainer = document.getElementById('signup-form');
+      const loginContainer = document.getElementById('login-form');
+      if (!loginContainer || !signupContainer) return;
+      signupContainer.classList.add('signup-show');
+      loginContainer.classList.add('login-hidden');
     };
     const goToLogin = () => {
       loginOrSignupStep.value = 'login';
-      const signupContainer = document.getElementById('signup-form')
-      const loginContainer = document.getElementById('login-form')
-      if(!loginContainer || !signupContainer) return;
-       signupContainer.classList.remove('signup-show')
-       loginContainer.classList.remove('login-hidden')
+      const signupContainer = document.getElementById('signup-form');
+      const loginContainer = document.getElementById('login-form');
+      if (!loginContainer || !signupContainer) return;
+      signupContainer.classList.remove('signup-show');
+      loginContainer.classList.remove('login-hidden');
     };
 
     return {
@@ -178,8 +185,8 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.forms-container{
-transition: all 500ms 300ms;
+.forms-container {
+  transition: all 500ms 300ms;
 }
 .login-hidden {
   left: -100% !important;
@@ -187,7 +194,6 @@ transition: all 500ms 300ms;
 #login-form {
   left: 0;
   transition: all 1s;
-
 }
 #signup-form {
   left: 100%;

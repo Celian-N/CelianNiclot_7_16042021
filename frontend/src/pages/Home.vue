@@ -15,7 +15,7 @@ import { defineComponent, SetupContext, computed } from 'vue';
 import { useUser } from '../store/user/user.store';
 import { usePublications } from '../store/publications/publications.store';
 import Publications from '../components/Publications/Publications.vue';
-import { IPublication } from '../interface/publications/publication';
+import { showSuccessBanner, showErrorBanner } from '../mixins/banners/banners.mixins';
 
 export default defineComponent({
   name: 'Home',
@@ -24,7 +24,7 @@ export default defineComponent({
   },
   setup(props, context: SetupContext) {
     const { logout, getUser } = useUser();
-    const { deletePublication, getAllPublications, fetchPublications, likePublication } = usePublications();
+    const { deletePublication, getAllPublications, likePublication } = usePublications();
 
     const publications = computed(() => getAllPublications.value);
 
@@ -32,16 +32,25 @@ export default defineComponent({
 
     const deleteSelectedPublication = async (id: number) => {
       const result = await deletePublication(id);
-      if (!result) return console.warn('Une erreur esr survenue, impossible de supprimer la publication');
+      if (!result) return showErrorBanner('Impossible de supprimer la publication');
+
+      showSuccessBanner('Publication supprimée avec succès !');
     };
 
     const onLikePublication = async (options: { publicationId: number; userId: number }) => {
       const likedPublication = await likePublication(options.publicationId, options.userId);
       if (!likedPublication) return;
-      console.log('Liké !');
     };
 
-    return { logout, deleteSelectedPublication, publications, user, onLikePublication };
+    return {
+      logout,
+      deleteSelectedPublication,
+      publications,
+      user,
+      onLikePublication,
+      showSuccessBanner,
+      showErrorBanner,
+    };
   },
 });
 </script>
