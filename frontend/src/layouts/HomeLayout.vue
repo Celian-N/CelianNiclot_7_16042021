@@ -65,7 +65,7 @@ export default defineComponent({
       if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
         currentPage.value++;
         const result = await fetchPublications(currentPage.value);
-        if (!result.length) {
+        if (!result || !result.length) {
           showErrorBanner('Impossible de récupérer les publications');
           window.removeEventListener('scroll', handleScroll);
         }
