@@ -67,13 +67,19 @@
     <InputField
       v-if="showAddLink"
       type="url"
-      @onInput="(val) => (link = val)"
-      :value="link"
+      @onInput="(val) => writeArticleLink = val"
+      :value="writeArticleLink"
       placeholder="Lien de l'article"
       borderRadius="8px"
       class="my-md"
+      @onClick="onSetArticle"
+      :button="{
+        icon: 'search',
+        color: 'secondary',
+        size: '30px',
+      }"
     />
-    <div v-if="videoUrl || gifUrl || imageUrl" class="row justify-center my-md overflow-hidden">
+    <div v-if="videoUrl || gifUrl || imageUrl || link" class="row justify-center my-md overflow-hidden">
       <div class="position-relative">
         <button
           @click="onRemoveFiles"
@@ -89,6 +95,9 @@
             :style="{ 'background-image': `url(${previewImage})` }"
             @click="selectImage"
           ></div>
+        </div>
+        <div v-if="link">
+          <Article :article="articleData" :editingMode="true"/>
         </div>
         <div v-if="videoUrl" class="br-sm">
           <iframe
@@ -152,6 +161,7 @@ import { useEditPublications } from '../../mixins/publications/edit-publications
 import Avatar from '../Avatar/Avatar.vue';
 import InputField from '../InputField/InputField.vue';
 import Dialog from '../Dialog/Dialog.vue';
+import Article from '../Article/Article.vue'
 import { showErrorBanner, showSuccessBanner } from '../../mixins/banners/banners.mixins';
 
 //https://www.youtube.com/embed/Zwlaey0gu4c
@@ -162,6 +172,7 @@ export default defineComponent({
     Avatar,
     InputField,
     Dialog,
+    Article
   },
   props: {
     username: { type: String, required: true },
@@ -209,6 +220,11 @@ export default defineComponent({
     const onSetVideo = () => {
       useEditPost.setVideo(createdPost);
     };
+    const onSetArticle = async ()=>{
+     const articleUrl =  await useEditPost.setArticle(createdPost);
+     if(!articleUrl) return;
+     createdPost.link = articleUrl
+    }
 
     return {
       ...toRefs(createdPost),
@@ -219,6 +235,7 @@ export default defineComponent({
       onPickFile,
       onSetVideo,
       showModal,
+      onSetArticle
     };
   },
 });

@@ -1,6 +1,7 @@
 import { ICreatePublication } from '@/interface/publications/publication';
 import { ref, SetupContext } from 'vue';
 import { fetchGifs } from '../../helpers/gifs/gifs';
+import { useApi } from '../api/api.mixins';
 
 export const embedRegex = /^(https|http):\/\/(?:www\.)?youtube-nocookie.com\/embed\/[A-z0-9]+/;
 
@@ -8,34 +9,45 @@ export const useEditPublications = (context: SetupContext) => {
   const fileInput = ref<HTMLInputElement | null>(null);
   const previewImage = ref<string | undefined | null>(null);
   const writeVideoLink = ref<string | undefined | null>(null);
+  const writeArticleLink = ref<string | undefined | null>(null);
   const gifs = ref([]);
   const searchGif = ref('');
   const showAddLink = ref(false);
   const showVideoLink = ref(false);
+  const articleData = ref({})
+  const { getArticleCall } = useApi();
 
-  const showVideo = ()=>{
-    if(showVideoLink.value) return showVideoLink.value = false
-    showVideoLink.value = true
-    showAddLink.value = false
-  }
-  const showArticle = ()=>{
-    if(showAddLink.value) return showAddLink.value = false
+  const setArticle = async (post: ICreatePublication) => {
+    if(!writeArticleLink.value) return;
+    const metadata = await getArticleCall(writeArticleLink.value);
+    if (!metadata) return;
+    articleData.value = metadata.articleData
 
-    showVideoLink.value = false
-    showAddLink.value = true
-  }
+    return writeArticleLink.value
+  };
+
+  const showVideo = () => {
+    if (showVideoLink.value) return (showVideoLink.value = false);
+    showVideoLink.value = true;
+    showAddLink.value = false;
+  };
+  const showArticle = () => {
+    if (showAddLink.value) return (showAddLink.value = false);
+
+    showVideoLink.value = false;
+    showAddLink.value = true;
+  };
 
   const setVideo = (post: ICreatePublication) => {
     removeFiles(post);
     if (!writeVideoLink.value) return (post.videoUrl = null);
-    console.log('writeVideoLink : ', writeVideoLink.value)
+    console.log('writeVideoLink : ', writeVideoLink.value);
     const createdLink = createVideoLink(writeVideoLink.value);
-    console.log('createdLink : ', createdLink)
+    console.log('createdLink : ', createdLink);
 
     if (!createdLink) return (post.videoUrl = null);
     post.videoUrl = createdLink.match(embedRegex) ? createdLink : null;
-    console.log('post.videoUrl : ', post.videoUrl)
-
+    console.log('post.videoUrl : ', post.videoUrl);
   };
   const createVideoLink = (writeVideoLink: string) => {
     const splitLink = writeVideoLink.split('=');
@@ -88,6 +100,7 @@ export const useEditPublications = (context: SetupContext) => {
   const setInitPost = (post: ICreatePublication) => {
     previewImage.value = null;
     writeVideoLink.value = null;
+    writeArticleLink.value = null;
     post.text = null;
     post.imageUrl = null;
     post.gifUrl = null;
@@ -124,5 +137,8 @@ export const useEditPublications = (context: SetupContext) => {
     showVideoLink,
     searchGif,
     gifs,
+    writeArticleLink,
+    setArticle,
+    articleData
   };
 };

@@ -34,8 +34,13 @@
     </div>
     <div class="mb-md">{{ publication.text }}</div>
 
-    <div v-if="publication.imageUrl || publication.videoUrl || publication.gifUrl" class="column items-center mb-md">
+    <div
+      v-if="publication.imageUrl || publication.videoUrl || publication.gifUrl || publication.link"
+      class="column items-center mb-md"
+    >
       <img class="full-width br-sm" v-if="publication.imageUrl" :src="publication.imageUrl" />
+
+      <Article v-if="publicationArticle" :article="publicationArticle" />
 
       <img class="full-width br-sm" v-if="publication.gifUrl" :src="publication.gifUrl" />
       <div v-if="publication.videoUrl && publication.videoUrl.match(embedRegex)" class="full-width">
@@ -48,10 +53,6 @@
           allowfullscreen
           class="br-sm"
         ></iframe>
-      </div>
-      <div v-if="publication.link" class="row">
-        <span> LIEN : </span>
-        <a :href="publication.link">{{ publication.link }}</a>
       </div>
     </div>
 
@@ -120,6 +121,8 @@ import moment from 'moment';
 import InputField from '../InputField/InputField.vue';
 import IconButton from '../IconButton/IconButton.vue';
 import { showErrorBanner, showSuccessBanner } from '../../mixins/banners/banners.mixins';
+import Article from '../Article/Article.vue';
+import { useMetaLinks } from '../../store/metadata/state';
 
 export interface CommentsRef {
   showLoadMoreButton: boolean;
@@ -137,11 +140,12 @@ export default defineComponent({
     Avatar,
     InputField,
     IconButton,
+    Article,
   },
   setup(props) {
     const showMenu = ref(false);
     const router = useRouter();
-    //TODO : DELETE ALL ROWS WITH OLD VIDEO LINK
+
     const embedRegex = /^(https|http):\/\/(?:www\.)?youtube-nocookie.com\/embed\/[A-z0-9]+/;
 
     const publicationMoment = moment(props.publication.creationDate).locale('fr').fromNow();
@@ -159,8 +163,10 @@ export default defineComponent({
       likeComment,
       fetchCommentsLength,
     } = useComments();
+    const { getDataById } = useMetaLinks();
 
     const publicationComments = computed(() => getCommentsByPublication(props.publication.id));
+    const publicationArticle = computed(() => getDataById(props.publication.id));
     const currentCommentsPage = ref(0);
     const newComment = ref('');
     const commentsLength = ref(0);
@@ -219,6 +225,7 @@ export default defineComponent({
       publicationMoment,
       showMenu,
       commentsLength,
+      publicationArticle,
     };
   },
 });

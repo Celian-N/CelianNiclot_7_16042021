@@ -67,14 +67,20 @@
     <InputField
       v-if="showAddLink"
       type="url"
-      @onInput="(val) => (editedPost.link = val)"
-      :value="editedPost.link"
+      @onInput="(val) => (writeArticleLink = val)"
+      :value="writeArticleLink"
       placeholder="Lien de l'article"
       borderRadius="8px"
       class="my-md"
+      @onClick="onSetArticle"
+      :button="{
+        icon: 'search',
+        color: 'secondary',
+        size: '30px',
+      }"
     />
     <div
-      v-if="editedPost.videoUrl || editedPost.gifUrl || editedPost.imageUrl"
+      v-if="editedPost.videoUrl || editedPost.gifUrl || editedPost.imageUrl || editedPost.link"
       class="row justify-center my-md overflow-hidden"
     >
       <div class="position-relative">
@@ -92,6 +98,9 @@
             :style="{ 'background-image': `url(${previewImage})` }"
             @click="selectImage"
           ></div>
+        </div>
+        <div v-if="editedPost.link">
+          <Article :article="articleData" :editingMode="true"/>
         </div>
         <div v-if="editedPost.videoUrl" class="br-sm">
           <iframe
@@ -162,6 +171,7 @@ import Avatar from '../components/Avatar/Avatar.vue';
 import InputField from '../components/InputField/InputField.vue';
 import Dialog from '../components/Dialog/Dialog.vue';
 import { showSuccessBanner, showErrorBanner } from '../mixins/banners/banners.mixins';
+import Article from '../components/Article/Article.vue'
 
 export default defineComponent({
   name: 'EditPublicationPage',
@@ -169,6 +179,7 @@ export default defineComponent({
     Avatar,
     InputField,
     Dialog,
+    Article
   },
   setup(props, context: SetupContext) {
     const { getCurrentUser } = useApi();
@@ -209,6 +220,12 @@ export default defineComponent({
       showModal.value = false;
     };
 
+    const onSetArticle = async ()=>{
+     const articleUrl =  await useEditPost.setArticle(editedPost.value);
+     if(!articleUrl) return;
+     editedPost.value.link = articleUrl
+    }
+
     const closeEditingMode = () => {
       router.push({ name: 'Home' });
     };
@@ -228,6 +245,7 @@ export default defineComponent({
           currentUserId.value = currentUser.id;
         }
         const publication = await fetchPublicationById(parseInt(editedPostId.value));
+        if(!publication) return router.push({ name: 'Home' });
 
         if (publication.authorId !== currentUserId.value) {
           console.warn('Vous ne pouvez pas modifier cette publication');
@@ -262,6 +280,7 @@ export default defineComponent({
       ...useEditPost,
       onSelectGif,
       showModal,
+      onSetArticle
     };
   },
 });
