@@ -194,6 +194,25 @@ export const useApi = () => {
   };
 
   //COMMENTS
+  const getCommentsLengthCall = async (publicationId :number)=> {
+    const request = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + Cookies.get('groupomania_token'),
+      },
+    };
+    const queryPublication = `?publicationId=${publicationId}`;
+    return await fetch(`http://localhost:3000/comments${queryPublication}`, request)
+      .then((result) => {
+        return result.json();
+      })
+      .then((res) => {
+        return res;
+      })
+      .catch((error) => alert('Erreur :' + error));
+  }
+
   const getCommentsCall = async (publicationId: number, page?: number) => {
     const request = {
       method: 'GET',
@@ -307,6 +326,7 @@ export const useApi = () => {
     deleteCommentCall,
     editCommentCall,
     likePublicationCall,
-    likeCommentCall
+    likeCommentCall,
+    getCommentsLengthCall
   };
 };

@@ -18,7 +18,7 @@ export function useComments() {
     ...rest
   } = inject('commentsStore') as typeof commentsStore;
 
-  const { getCommentsCall, createCommentCall, deleteCommentCall, editCommentCall, likeCommentCall } = useApi();
+  const { getCommentsCall, createCommentCall, deleteCommentCall, editCommentCall, likeCommentCall, getCommentsLengthCall } = useApi();
 
   const fetchFirstComment = async (publicationId: number) => {
     const comment = await getCommentsCall(publicationId);
@@ -34,6 +34,13 @@ export function useComments() {
     setComments(comments);
     return comments;
   };
+
+  const fetchCommentsLength = async (publicationId : number) =>{
+    const commentLength = await getCommentsLengthCall(publicationId);
+    if (!commentLength) return 0;
+
+    return commentLength;
+  }
 
   const createComment = async (publicationId: number, newComment: string) => {
     const createdComment = (await createCommentCall(publicationId, newComment)) as IComment;
@@ -76,35 +83,7 @@ export function useComments() {
     deleteComment,
     editComment,
     likeComment,
+    fetchCommentsLength,
     ...rest,
   };
 }
-
-// const deleteComment = async (commentId: number) => {
-//   const deletedComment = await deleteCommentCall(commentId);
-
-//   if (!deletedComment.id) return;
-
-//   removeComment(commentId);
-//   return deletedComment.id;
-// };
-
-// const editComment = async (commentId: number, editedComment: ICreateComment) => {
-//   if (editedComment.imageUrl) {
-//     const resultEdition = await editCommentCall(
-//       commentId,
-//       { ...editedComment },
-//       editedComment.imageUrl
-//     );
-//     if (!resultEdition) return;
-
-//     updateComment(commentId, resultEdition);
-//     return resultEdition;
-//   } else {
-//     const resultEdition = await editCommentCall(commentId, { ...editedComment });
-//     if (!resultEdition) return;
-
-//     updateComment(commentId, resultEdition);
-//     return resultEdition;
-//   }
-// };
