@@ -15,11 +15,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from 'vue';
+import { defineComponent } from 'vue';
 export default defineComponent({
   name: 'ArticlePreview',
   props: {
-    article: { type: Object, required: true },
+    article: { type: Object, required : true },
     editingMode: { type: Boolean, default: false },
   },
   setup(props) {

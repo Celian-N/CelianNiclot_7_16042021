@@ -23,7 +23,7 @@
     <textarea
       v-else
       ref="input"
-      style="flex: 1; height:30px;"
+      style="flex: 1;"
       :value="value"
       :placeholder="placeholder"
       :minlength="minLength"
