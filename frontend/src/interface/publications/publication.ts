@@ -43,3 +43,9 @@ export interface IMetaLink {
     url : string;
   };
 }
+
+export interface IPublicationAuthor {
+  firstname : string,
+  lastname : string,
+  userPic?: string,
+}

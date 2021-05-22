@@ -31,6 +31,8 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/images/publications', express.static(path.join(__dirname, 'images/publications')));
+app.use('/images/profil-pic', express.static(path.join(__dirname, 'images/profil-pic')));
 
 app.use('/users', usersRoutes);
 app.use('/auth', authRoutes);

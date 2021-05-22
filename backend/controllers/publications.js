@@ -15,7 +15,7 @@ exports.create = (req, res) => {
     authorId: req.userId,
     userLiked: JSON.stringify([]),
     imageUrl: req.file
-      ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+      ? `${req.protocol}://${req.get('host')}/${req.imagePath}/${req.file.filename}`
       : null,
     creationDate: new Date(),
   });
@@ -135,7 +135,7 @@ exports.update = (req, res) => {
   const publicationRequest = req.file
     ? {
         ...JSON.parse(req.body.publication),
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${
+        imageUrl: `${req.protocol}://${req.get('host')}/${req.imagePath}/${
           req.file.filename
         }`,
       }

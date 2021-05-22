@@ -1,6 +1,6 @@
 <template>
-  <div class="publications-container">
-    <PublicationInput :username="user.firstname" />
+  <div class="publications-container" ref="scrollableContainer">
+    <PublicationInput :username="user.firstname" :profilPic="user.userPic" />
     <div class="column items-center full-width">
       <div v-for="publication in publications" :key="`publication-${publication.id}`" class="full-width">
         <Publication
@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, watch, ref } from 'vue';
+import { defineComponent, PropType, watch, ref, onMounted, onBeforeUnmount } from 'vue';
 import { IPublication } from '../../interface/publications/publication';
 import Publication from './Publication.vue';
 import { IUser } from '../../interface/user/user';
@@ -31,8 +31,9 @@ export default defineComponent({
     Publication,
     PublicationInput,
   },
-  setup(props) {
+  setup(props, context) {
     const sortedPublications = ref<IPublication[]>([]);
+    const scrollableContainer = ref<HTMLElement | null>(null);
 
     watch(
       () => props.publications,
@@ -43,6 +44,31 @@ export default defineComponent({
         });
       }
     );
+
+    const handleScroll = async () => {
+      if (!scrollableContainer.value) return;
+
+      if (
+        scrollableContainer.value.scrollTop + scrollableContainer.value.clientHeight >=
+        scrollableContainer.value.scrollHeight
+      ) {
+        context.emit('loadMoreResources');
+      }
+    };
+
+    const removeEventListener = () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+
+    onMounted(() => {
+      if (!scrollableContainer.value) return;
+      scrollableContainer.value.addEventListener('scroll', handleScroll, { passive: true });
+    });
+
+    onBeforeUnmount(() => {
+      removeEventListener();
+    });
+    return { scrollableContainer };
   },
 });
 </script>

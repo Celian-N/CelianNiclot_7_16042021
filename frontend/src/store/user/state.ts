@@ -25,6 +25,16 @@ const setters = {
 
 const getters = {
   getUser: computed(() => userState.value),
+  getUserPic: computed(() => userState.value.userPic),
+  getUserInfos: computed(() => {
+    return {
+      id: userState.value.id,
+      firstname: userState.value.firstname,
+      lastname: userState.value.lastname,
+      email: userState.value.email,
+      job: userState.value.job
+    };
+  }),
   getUserEmail: computed(() => userState.value.email),
   getUserId: computed(() => userState.value.id),
   getUserIsActive: computed(() => userState.value.active),

@@ -8,6 +8,7 @@ const User = function (user) {
   this.job = user.job;
   this.creation_date = user.creationDate;
   this.active = user.active;
+  this.user_pic = user.userPic
 };
 
 User.create = (newUser, result) => {
@@ -27,13 +28,14 @@ User.create = (newUser, result) => {
       job: newUser.job,
       creationDate: newUser.creation_date,
       active: newUser.active,
+      userPic : newUser.user_pic
     });
   });
 };
 
 User.findById = (userId, result) => {
   sql.query(
-    `SELECT id, email, firstname, lastname, job, creation_date as creationDate FROM Users WHERE id = ${userId}`,
+    `SELECT id, email, firstname, lastname, job, creation_date as creationDate , user_pic as userPic FROM Users WHERE id = ${userId}`,
     (err, res) => {
       if (err) {
         console.log('error: ', err);
@@ -73,21 +75,8 @@ User.findByEmail = (userEmail, result) => {
 };
 
 User.getAll = (result) => {
-  sql.query('SELECT email, firstname, lastname, job, creation_date as creationDate FROM Users', (err, res) => {
-    if (err) {
-      console.log('error: ', err);
-      result(null, err);
-      return;
-    }
-    
-    result(null, res);
-  });
-};
-
-User.updateById = (id, user, result) => {
   sql.query(
-    'UPDATE Users SET email = ?, firstname = ?, lastname = ?, job = ? WHERE id = ?',
-    [user.email, user.firstname,  user.lastname, user.job, id],
+    'SELECT email, firstname, lastname, job, creation_date as creationDate, user_pic as userPic FROM Users',
     (err, res) => {
       if (err) {
         console.log('error: ', err);
@@ -95,16 +84,47 @@ User.updateById = (id, user, result) => {
         return;
       }
 
-      if (res.affectedRows == 0) {
-        // not found Customer with the id
-        result({ kind: 'not_found' }, null);
-        return;
-      }
-
-      console.log('updated user: ', { id: id, ...user });
-      result(null, { id: id, ...user });
+      result(null, res);
     }
   );
+};
+
+User.updateById = (userId, user, result) => {
+  const sqlQuery = `UPDATE Users SET email = ?, firstname = ?, lastname = ?, job = ?${
+    user.userPic || user.userPic === null
+      ? ', user_pic = ?'
+      : ''
+  }${
+    user.password ? ', password = ?' : ''
+  }  WHERE id = ?`;
+  console.log('sqlQuery :', sqlQuery)
+  const requestValues = [user.email, user.firstname, user.lastname, user.job];
+  if (user.userPic) {
+    requestValues.push(user.userPic);
+  }
+  if (user.password) {
+    requestValues.push(user.password);
+  }
+  requestValues.push(parseInt(userId));
+
+  console.log('requestValues :', requestValues)
+
+  sql.query(sqlQuery, requestValues, (err, res) => {
+    if (err) {
+      console.log('error: ', err);
+      result(null, err);
+      return;
+    }
+
+    if (res.affectedRows == 0) {
+      // not found Customer with the id
+      result({ kind: 'not_found' }, null);
+      return;
+    }
+
+    console.log('updated user: ', { id: userId, ...user });
+    result(null, { id: userId, ...user });
+  });
 };
 
 User.remove = (id, result) => {

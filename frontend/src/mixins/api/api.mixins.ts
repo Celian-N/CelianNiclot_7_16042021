@@ -1,4 +1,4 @@
-import { ICreateUser } from '../../interface/user/user';
+import { ICreateUser, IUser } from '../../interface/user/user';
 import { ICreatePublication } from '../../interface/publications/publication';
 import Cookies from 'js-cookie';
 import axios from 'axios';
@@ -21,9 +21,12 @@ export const useApi = () => {
         return result.json();
       })
       .then((res) => {
+        console.log(res);
         return res;
       })
-      .catch((error) => console.warn('Erreur :' + error));
+      .catch((error) => {
+        console.warn('Erreur :' + error);
+      });
   };
   const signupCall = async (user: ICreateUser) => {
     const request = {
@@ -39,6 +42,27 @@ export const useApi = () => {
       })
       .then((res) => {
         return res;
+      })
+      .catch((error) => console.warn('Erreur :' + error));
+  };
+
+  const editUser = async (userId: number, user: Omit<ICreateUser, 'password'>, newPassword?: string, image?: File) => {
+    const formData = new FormData();
+    formData.append('user', JSON.stringify(user));
+    if (newPassword) {
+      formData.append('password', newPassword);
+    }
+    if (image) {
+      formData.append('image', image);
+    }
+    return axios
+      .put(`http://localhost:3000/users/${userId}`, formData, {
+        headers: {
+          Authorization: 'Bearer ' + Cookies.get('groupomania_token'),
+        },
+      })
+      .then((res) => {
+        return res.data;
       })
       .catch((error) => console.warn('Erreur :' + error));
   };
@@ -65,7 +89,7 @@ export const useApi = () => {
       });
   };
 
-  const getArticleCall = async (link : string) => {
+  const getArticleCall = async (link: string) => {
     return await fetch(`http://localhost:3000/article/?article=${link}`, {
       method: 'GET',
       headers: {
@@ -158,14 +182,14 @@ export const useApi = () => {
       .catch((error) => console.warn('Erreur :' + error));
   };
 
-  const likePublicationCall = async (publicationId: number, userId:number) => {
+  const likePublicationCall = async (publicationId: number, userId: number) => {
     return await fetch(`http://localhost:3000/publications/${publicationId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + Cookies.get('groupomania_token'),
       },
-      body: JSON.stringify({userId:userId})
+      body: JSON.stringify({ userId: userId }),
     })
       .then((result) => {
         return result.json();
@@ -178,6 +202,24 @@ export const useApi = () => {
       });
   };
 
+   const fetchAuthorInfos = async (authorId : number)=>{
+    return await fetch(`http://localhost:3000/users/${authorId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + Cookies.get('groupomania_token'),
+      },
+    })
+      .then((result) => {
+        return result.json();
+      })
+      .then((res) => {
+        return res;
+      })
+      .catch((error) => {
+        console.warn('Erreur :' + error);
+      });
+   }
   //USERS
 
   const getAllUsers = async () => {
@@ -209,7 +251,7 @@ export const useApi = () => {
   };
 
   //COMMENTS
-  const getCommentsLengthCall = async (publicationId :number)=> {
+  const getCommentsLengthCall = async (publicationId: number) => {
     const request = {
       method: 'GET',
       headers: {
@@ -226,7 +268,7 @@ export const useApi = () => {
         return res;
       })
       .catch((error) => console.warn('Erreur :' + error));
-  }
+  };
 
   const getCommentsCall = async (publicationId: number, page?: number) => {
     const request = {
@@ -303,14 +345,14 @@ export const useApi = () => {
       });
   };
 
-  const likeCommentCall = async (commentId: number, userId:number) => {
+  const likeCommentCall = async (commentId: number, userId: number) => {
     return await fetch(`http://localhost:3000/comments`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + Cookies.get('groupomania_token'),
       },
-      body: JSON.stringify({commentId : commentId, userId:userId})
+      body: JSON.stringify({ commentId: commentId, userId: userId }),
     })
       .then((result) => {
         return result.json();
@@ -340,6 +382,8 @@ export const useApi = () => {
     likePublicationCall,
     likeCommentCall,
     getCommentsLengthCall,
-    getArticleCall
+    getArticleCall,
+    editUser,
+    fetchAuthorInfos
   };
 };
