@@ -1,4 +1,5 @@
 const fs = require('fs');
+const Meta = require('html-metadata-parser');
 
 const Publication = require('../models/publications.js');
 
@@ -14,37 +15,72 @@ exports.create = (req, res) => {
     authorId: req.userId,
     userLiked: JSON.stringify([]),
     imageUrl: req.file
-      ? `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+      ? `${req.protocol}://${req.get('host')}/${req.imagePath}/${req.file.filename}`
       : null,
     creationDate: new Date(),
   });
 
   // Save Publication in the database
-  Publication.create(publication, (err, publication) => {
+  Publication.create(publication, async (err, publication) => {
     if (err)
       return res.status(500).json({
         message:
           err.message || 'Some error occurred while creating the publication.',
       });
-    return res.status(201).json(publication);
+
+    if (publication.link) {
+      const linkData = await Meta.parser(
+        publication.link,
+        function (err, result) {
+          return result;
+        }
+      );
+      return res.status(201).json({
+        ...publication,
+        link: linkData,
+      });
+    }
+    return res.status(201).json({ ...publication });
   });
 };
 
 // Retrieve all Publications from the database.
 exports.findAll = (req, res) => {
   const selectedPage = req.query.page;
-  Publication.getAll(selectedPage, (err, publications) => {
+  Publication.getAll(selectedPage, async (err, publications) => {
     if (err)
       return res.status(500).json({
         message:
           err.message || 'Some error occurred while retrieving publications.',
       });
 
-    res.status(200).json(
-      publications.map((publication) => {
-        return { ...publication, userLiked: JSON.parse(publication.userLiked) };
+    const returnedPublications = await Promise.all(
+      publications.map(async (publication) => {
+        if (publication.link) {
+          const linkData = await Meta.parser(
+            publication.link,
+            function (err, result) {
+              if (err) return null;
+              return result;
+            }
+          );
+          return {
+            ...publication,
+            link: linkData,
+            userLiked: JSON.parse(publication.userLiked),
+          };
+        }
+
+        return {
+          ...publication,
+          userLiked: JSON.parse(publication.userLiked),
+        };
       })
     );
+
+    console.log('returnedPublication :', returnedPublications);
+
+    res.status(200).json(returnedPublications);
   });
 };
 
@@ -53,7 +89,7 @@ exports.findOne = (req, res) => {
   Publication.findById(
     req.params.publicationId,
     req.userId,
-    (err, publication) => {
+    async (err, publication) => {
       if (err) {
         if (err.kind === 'not_found') {
           res.status(404).json({
@@ -70,7 +106,21 @@ exports.findOne = (req, res) => {
               req.params.publicationId,
           });
         }
-      } else res.status(200).json(publication);
+      } else {
+        if (publication.link) {
+          const linkData = await Meta.parser(
+            publication.link,
+            function (err, result) {
+              return result;
+            }
+          );
+          return res.status(200).json({
+            ...publication,
+            link: linkData,
+          });
+        }
+        return res.status(200).json({ ...publication });
+      }
     }
   );
 };
@@ -85,7 +135,7 @@ exports.update = (req, res) => {
   const publicationRequest = req.file
     ? {
         ...JSON.parse(req.body.publication),
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${
+        imageUrl: `${req.protocol}://${req.get('host')}/${req.imagePath}/${
           req.file.filename
         }`,
       }
@@ -95,7 +145,7 @@ exports.update = (req, res) => {
     req.params.publicationId,
     req.userId,
     { ...publicationRequest },
-    (err, publication) => {
+    async (err, publication) => {
       if (err) {
         if (err.kind === 'not_found') {
           return res.status(404).json({
@@ -108,7 +158,19 @@ exports.update = (req, res) => {
           });
         }
       }
-      return res.status(200).json(publication);
+      if (publication.link) {
+        const linkData = await Meta.parser(
+          publication.link,
+          function (err, result) {
+            return result;
+          }
+        );
+        return res.status(200).json({
+          ...publication,
+          link: linkData,
+        });
+      }
+      return res.status(200).json({ ...publication });
     }
   );
 };
@@ -196,16 +258,16 @@ exports.like = (req, res) => {
           });
         }
       } else {
-        console.log('BODY IN LIKE :', req.body)
+        console.log('BODY IN LIKE :', req.body);
         const publicationLikes = JSON.parse(publication.userLiked);
         const userIndex = publicationLikes.indexOf(req.body.userId);
-   
+
         if (userIndex >= 0) {
           publicationLikes.splice(userIndex, 1);
         } else {
           publicationLikes.push(req.body.userId);
         }
-        console.log(publicationLikes)
+        console.log(publicationLikes);
         Publication.handleLike(
           req.params.publicationId,
           JSON.stringify(publicationLikes),

@@ -1,13 +1,13 @@
 <template>
-  <div class="column bg-tertiary pa-sm main-container overflow-hidden">
+  <div class="column bg-tertiary main-container overflow-hidden">
     <HeaderCard class="header-container" />
     <div class="row">
       <div class="column side-panels mr-sm">
         <div
           class="row items-center side-panels__panel mt-sm br-md bg-white main-shadow pa-sm justify-between profile-card"
         >
-          <Avatar size="60px" class="mr-sm" />
-          <div class="column items-start">
+          <Avatar size="60px" :userPic="user.userPic" class="mr-sm" />
+          <div class="column items-start" style="flex: 1">
             <span class="text-main text-bold">{{ user.firstname }} {{ user.lastname }}</span>
             <span class="text-caption font-12">Membre depuis le {{ userInscription }}</span>
           </div>
@@ -26,15 +26,12 @@
       <div class="center-panel mt-sm">
         <router-view />
       </div>
-
-      <div></div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, onBeforeUnmount, onMounted, ref, computed } from 'vue';
-import { usePublications } from '../store/publications/publications.store';
 import { useUser } from '../store/user/user.store';
 import { useApi } from '../mixins/api/api.mixins';
 import { navigationTabs } from '../mixins/navigation/navigation.mixins';
@@ -50,37 +47,17 @@ export default defineComponent({
     Avatar,
   },
   setup() {
-    const { fetchPublications, getAllPublications } = usePublications();
     const { setUser, getUser } = useUser();
     const { getCurrentUser } = useApi();
 
-    const publications = getAllPublications.value;
-    const currentPage = ref(0);
-
     const user = computed(() => getUser.value);
-    // const userInscription = moment(user.value.creationDate).fromNow();
+
     const userInscription = moment(user.value.creationDate).locale('fr').format('DD MMM YYYY');
 
-    const handleScroll = async () => {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-        currentPage.value++;
-        const result = await fetchPublications(currentPage.value);
-        if (!result.length) {
-          showErrorBanner('Impossible de récupérer les publications');
-          window.removeEventListener('scroll', handleScroll);
-        }
-      }
-    };
-
     onMounted(async () => {
-      if (!publications.length) await handleScroll();
-
       const currentUser = await getCurrentUser();
-      window.addEventListener('scroll', handleScroll);
+
       return setUser(currentUser);
-    });
-    onBeforeUnmount(() => {
-      window.removeEventListener('scroll', handleScroll);
     });
 
     return { navigationTabs, user, userInscription };
@@ -89,12 +66,11 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.header-container {
-  height: 10vh;
-}
 .main-container {
   max-width: 100vw;
-  height: 98vh;
+  height: 100vh;
+  box-sizing: border-box;
+  padding: 12px 12px 0 12px;
   &::-webkit-scrollbar {
     display: none;
   }
@@ -115,7 +91,7 @@ export default defineComponent({
 }
 .center-panel {
   height: 85vh;
-  width: 50%;
+  flex: 1;
   overflow: hidden;
   margin-right: -150px;
   padding-right: 150px;

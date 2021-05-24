@@ -68,7 +68,7 @@ export default defineComponent({
   color: #42b983;
 }
 
-.modal-enter {
+.modal-enter-from {
   opacity: 0;
 }
 

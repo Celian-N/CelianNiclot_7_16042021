@@ -19,7 +19,11 @@
       >
         <div class="column items-end" :class="`${commentEditingMode[comment.id] && 'full-width'}`">
           <div class="row items-start" :class="`${commentEditingMode[comment.id] && 'full-width'}`">
-            <Avatar size="35px" class="mr-xs" />
+            <Avatar
+              size="35px"
+              :userPic="authorInfos[comment.id] ? authorInfos[comment.id].userPic : null"
+              class="mr-xs"
+            />
             <div v-if="commentEditingMode[comment.id]" class="column items-end full-width">
               <InputField
                 autogrow
@@ -43,7 +47,9 @@
 
             <div v-else class="column bg-tertiary br-sm pa-xs">
               <div class="row items-center justify-between">
-                <span class="text-main text-bold mr-md font-12">Prénom Nom</span>
+                <span class="text-main text-bold mr-md font-12">{{
+                  authorInfos[comment.id] && authorInfos[comment.id].firstname + ' ' + authorInfos[comment.id].lastname
+                }}</span>
                 <div class="text-caption font-10 row items-center no-wrap position-relative">
                   <span class="mr-xs">{{ moment(comment.creationDate).locale('fr').fromNow() }}</span>
                   <IconButton
@@ -53,7 +59,10 @@
                     class="self-center"
                   />
                   <transition name="fade">
-                    <div v-if="showMenu[comment.id]" class="comment-menu column bg-white br-sm input-shadow overflow-hidden">
+                    <div
+                      v-if="showMenu[comment.id]"
+                      class="comment-menu column bg-white br-sm input-shadow overflow-hidden"
+                    >
                       <button
                         v-if="comment.authorId == user.id"
                         @click="onEditComment(comment.id, comment.text)"
@@ -108,6 +117,8 @@ import Avatar from '../Avatar/Avatar.vue';
 import moment from 'moment';
 import IconButton from '../IconButton/IconButton.vue';
 import InputField from '../InputField/InputField.vue';
+import { IPublicationAuthor } from '../../interface/publications/publication';
+import { useApi } from '../../mixins/api/api.mixins';
 
 export default defineComponent({
   name: 'Comments',
@@ -125,31 +136,41 @@ export default defineComponent({
     const commentEditingMode = ref<Record<number, boolean>>({});
     const editedComment = ref('');
     const showMenu = ref<Record<number, boolean>>({});
+    const authorInfos = ref<Record<number, IPublicationAuthor>>({});
+    const { fetchAuthorInfos } = useApi();
 
+    const getAuthorInfos = async (comments: IComment[]) => {
+      for (const comment of comments) {
+        const newAuthor = await fetchAuthorInfos(comment.authorId);
+
+        authorInfos.value = { ...authorInfos.value, [comment.id]: newAuthor };
+      }
+    };
 
     watch(
       () => props.comments,
       (comments) => {
         if (!comments) return;
-        resetMenus(comments)
+        resetMenus(comments);
+        getAuthorInfos(comments)
       }
     );
 
-   const resetMenus = (comments : IComment[])=>{
+    const resetMenus = (comments: IComment[]) => {
       comments.forEach((comment) => {
-          commentEditingMode.value = { ...commentEditingMode.value, [comment.id]: false };
-          showMenu.value = { ...showMenu.value, [comment.id]: false };
-        });
-    }
+        commentEditingMode.value = { ...commentEditingMode.value, [comment.id]: false };
+        showMenu.value = { ...showMenu.value, [comment.id]: false };
+      });
+    };
 
-    const onOpenMenu = (commentId : number)=>{
-      if(showMenu.value[commentId] == true){
-        return showMenu.value = { ...showMenu.value, [commentId] : false };
+    const onOpenMenu = (commentId: number) => {
+      if (showMenu.value[commentId] == true) {
+        return (showMenu.value = { ...showMenu.value, [commentId]: false });
       }
-      if(!props.comments) return;
-      resetMenus(props.comments)
-      showMenu.value = { ...showMenu.value, [commentId] : true };
-    }
+      if (!props.comments) return;
+      resetMenus(props.comments);
+      showMenu.value = { ...showMenu.value, [commentId]: true };
+    };
 
     const onEditComment = (commentId: number, initialComment: string) => {
       editedComment.value = initialComment;
@@ -161,7 +182,17 @@ export default defineComponent({
       showMenu.value[commentId] = false;
     };
 
-    return { showLoadMoreButton, commentEditingMode, editedComment, onEditComment, closeEditingMode, moment, showMenu, onOpenMenu };
+    return {
+      showLoadMoreButton,
+      commentEditingMode,
+      editedComment,
+      onEditComment,
+      closeEditingMode,
+      moment,
+      showMenu,
+      onOpenMenu,
+      authorInfos,
+    };
   },
 });
 </script>

@@ -1,4 +1,4 @@
-import { ICreateUser } from '@/interface/user/user';
+import { ICreateUser, IUser } from '@/interface/user/user';
 import { inject, provide } from 'vue';
 import { userStore } from './state';
 import { useApi } from '../../mixins/api/api.mixins';
@@ -12,7 +12,7 @@ export const userStoreProvider = () => {
 export function useUser() {
   const { setUser, getUser, updateUser, clearUser, ...rest } = inject('userStore') as typeof userStore;
 
-  const { loginCall, signupCall } = useApi();
+  const { loginCall, signupCall, editUser } = useApi();
   const router = useRouter();
 
   const login = async (email: string, password: string) => {
@@ -21,6 +21,7 @@ export function useUser() {
 
     router.push({ name: 'Home' });
     Cookies.set('groupomania_token', user.token, { expires: 7 });
+    return user
   };
 
   const signup = async (user: ICreateUser) => {
@@ -35,5 +36,26 @@ export function useUser() {
     router.push({ name: 'Login' });
   };
 
-  return { setUser, getUser, updateUser, login, signup, logout, ...rest };
+  const saveEditedUser = async (userId : number, user : Omit<ICreateUser, 'password'>, newPassword?:string)=>{
+
+    if (user.userPic) {
+      const editedUser = await editUser(userId,
+        { ...user } , newPassword, user.userPic
+      );
+      if (!editedUser) return;
+
+      updateUser(editedUser)
+
+      return editedUser;
+    } else {
+      const editedUser = await editUser(userId, { ...user }, newPassword);
+      if (!editedUser) return;
+
+      updateUser(editedUser)
+    
+      return editedUser;
+    }
+  }
+
+  return { setUser, getUser, updateUser, login, signup, logout,saveEditedUser, ...rest };
 }

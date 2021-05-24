@@ -139,7 +139,8 @@ export default defineComponent({
 
     const onLogin = async () => {
       if (userMail.value.match(emailRegExp)) {
-        await login(userMail.value, userPassword.value);
+        const user = await login(userMail.value, userPassword.value);
+        if(!user || !user.token) return showErrorBanner('Email ou mot de passe incorrect');
         return;
       }
       showErrorBanner('Impossible de se connecter, veuillez rentrer un mail valide');

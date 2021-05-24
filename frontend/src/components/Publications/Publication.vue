@@ -2,9 +2,9 @@
   <div class="my-sm column bg-white pa-md br-md full-width main-shadow" style="box-sizing: border-box">
     <div class="row items-start justify-between mb-md">
       <div class="row items-center">
-        <Avatar size="50px" class="mr-sm" />
+        <Avatar size="50px" :userPic="authorInfos.userPic" class="mr-sm" />
         <div class="column items-start">
-          <span class="text-main text-bold">{{ user.firstname }} {{ user.lastname }}</span>
+          <span class="text-main text-bold">{{ authorInfos.firstname }} {{ authorInfos.lastname }}</span>
           <span class="text-caption font-12">{{ publicationMoment }}</span>
         </div>
       </div>
@@ -32,26 +32,27 @@
         </transition>
       </div>
     </div>
-    <div class="mb-md">{{ publication.text }}</div>
+    <div v-if="publication.text" class="mb-md">{{ publication.text }}</div>
 
-    <div v-if="publication.imageUrl || publication.videoUrl || publication.gifUrl" class="column items-center mb-md">
+    <div
+      v-if="publication.imageUrl || publication.videoUrl || publication.gifUrl || publication.link"
+      class="column items-center mb-md"
+    >
       <img class="full-width br-sm" v-if="publication.imageUrl" :src="publication.imageUrl" />
+
+      <Article v-if="publicationArticle" :article="publicationArticle" />
 
       <img class="full-width br-sm" v-if="publication.gifUrl" :src="publication.gifUrl" />
       <div v-if="publication.videoUrl && publication.videoUrl.match(embedRegex)" class="full-width">
         <iframe
           width="100%"
-          height="250"
+          height="300"
           :src="`${publication.videoUrl}?fs=0&modestbranding=1&iv_load_policy=3`"
           title="YouTube video player"
           frameborder="0"
           allowfullscreen
           class="br-sm"
         ></iframe>
-      </div>
-      <div v-if="publication.link" class="row">
-        <span> LIEN : </span>
-        <a :href="publication.link">{{ publication.link }}</a>
       </div>
     </div>
 
@@ -87,7 +88,7 @@
       @onLikeComment="onLikeComment"
     />
     <div class="row items-center my-sm">
-      <Avatar size="35px" class="mr-sm" />
+      <Avatar size="35px" :userPic="user.userPic" class="mr-sm" />
       <InputField
         autogrow
         @onInput="(val) => (newComment = val)"
@@ -110,7 +111,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType, onMounted, ref, computed } from 'vue';
-import { IPublication } from '../../interface/publications/publication';
+import { IPublication, IPublicationAuthor } from '../../interface/publications/publication';
 import { IUser } from '../../interface/user/user';
 import { useRouter } from 'vue-router';
 import { useComments } from '../../store/comments/comments.store';
@@ -120,6 +121,9 @@ import moment from 'moment';
 import InputField from '../InputField/InputField.vue';
 import IconButton from '../IconButton/IconButton.vue';
 import { showErrorBanner, showSuccessBanner } from '../../mixins/banners/banners.mixins';
+import Article from '../Article/Article.vue';
+import { useMetaLinks } from '../../store/metadata/state';
+import { useApi } from '../../mixins/api/api.mixins';
 
 export interface CommentsRef {
   showLoadMoreButton: boolean;
@@ -137,11 +141,17 @@ export default defineComponent({
     Avatar,
     InputField,
     IconButton,
+    Article,
   },
   setup(props) {
     const showMenu = ref(false);
     const router = useRouter();
-    //TODO : DELETE ALL ROWS WITH OLD VIDEO LINK
+
+    const authorInfos = ref<IPublicationAuthor>({
+      firstname: '',
+      lastname: '',
+    });
+
     const embedRegex = /^(https|http):\/\/(?:www\.)?youtube-nocookie.com\/embed\/[A-z0-9]+/;
 
     const publicationMoment = moment(props.publication.creationDate).locale('fr').fromNow();
@@ -159,8 +169,11 @@ export default defineComponent({
       likeComment,
       fetchCommentsLength,
     } = useComments();
+    const { fetchAuthorInfos } = useApi();
+    const { getDataById } = useMetaLinks();
 
     const publicationComments = computed(() => getCommentsByPublication(props.publication.id));
+    const publicationArticle = computed(() => getDataById(props.publication.id));
     const currentCommentsPage = ref(0);
     const newComment = ref('');
     const commentsLength = ref(0);
@@ -203,6 +216,7 @@ export default defineComponent({
     onMounted(async () => {
       await fetchFirstComment(props.publication.id);
       commentsLength.value = await fetchCommentsLength(props.publication.id);
+      authorInfos.value = await fetchAuthorInfos(props.publication.authorId);
     });
 
     return {
@@ -219,6 +233,8 @@ export default defineComponent({
       publicationMoment,
       showMenu,
       commentsLength,
+      publicationArticle,
+      authorInfos
     };
   },
 });

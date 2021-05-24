@@ -3,7 +3,7 @@
     class="row"
     :class="`${dense ? 'px-xs' : 'pa-xs'} ${autogrow ? 'items-end' : 'items-center'} ${
       withBackground ? 'bg-tertiary input-shadow' : ''
-    }`"
+    } ${disabled ?  'disabled-container' : ''}`"
     :style="`border-radius :${borderRadius};`"
   >
     <input
@@ -17,13 +17,15 @@
       :maxlength="maxLength"
       :required="required"
       :autofocus="autofocus"
+      :disabled="disabled"
       :style="`font-size : ${fontSize}`"
+      :class="disabled ? 'disabled-input' : '' "
     />
 
     <textarea
       v-else
       ref="input"
-      style="flex: 1; height:30px;"
+      style="flex: 1"
       :value="value"
       :placeholder="placeholder"
       :minlength="minLength"
@@ -59,9 +61,10 @@ export default defineComponent({
     autogrow: { type: Boolean, default: false },
     customTextareaClass: { type: String },
     withBackground: { type: Boolean, default: true },
-    required : {type : Boolean, default : true},
-    autofocus : {type : Boolean, default : true},
-    fontSize : {type : String, default : '14px'}
+    required: { type: Boolean, default: true },
+    autofocus: { type: Boolean, default: true },
+    fontSize: { type: String, default: '14px' },
+    disabled: { type: Boolean, default: false },
   },
   setup(props, context) {
     function onInput(event: any) {
@@ -99,4 +102,13 @@ textarea {
     outline: none;
   }
 }
+.disabled-container {
+  background: rgba(grey, 0.2);
+  cursor: not-allowed;
+}
+.disabled-input {
+  color: rgba(grey, 0.3); ;
+  cursor: not-allowed;
+}
+
 </style>

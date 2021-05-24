@@ -16,7 +16,7 @@ const setters = {
     delete copy[publicationId];
     publicationsState.value = { ...copy };
   },
-  updatePublication: (publicationId: number, updatedProperties: Partial<PublicationStateInterface>) => {
+  updatePublication: (publicationId: number, updatedProperties: Partial<IPublication>) => {
     publicationsState.value = {
       ...publicationsState.value,
       [publicationId]: { ...publicationsState.value[publicationId], ...updatedProperties },

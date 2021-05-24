@@ -1,7 +1,7 @@
 <template>
   <div class="column bg-white main-shadow pa-sm br-md">
     <div class="row items-start">
-      <Avatar size="50px" />
+      <Avatar size="50px" :userPic="user.userPic" />
       <InputField
         autogrow
         @onInput="(val) => (editedPost.text = val)"
@@ -67,17 +67,23 @@
     <InputField
       v-if="showAddLink"
       type="url"
-      @onInput="(val) => (editedPost.link = val)"
-      :value="editedPost.link"
+      @onInput="(val) => (writeArticleLink = val)"
+      :value="writeArticleLink"
       placeholder="Lien de l'article"
       borderRadius="8px"
       class="my-md"
+      @onClick="onSetArticle"
+      :button="{
+        icon: 'search',
+        color: 'secondary',
+        size: '30px',
+      }"
     />
     <div
-      v-if="editedPost.videoUrl || editedPost.gifUrl || editedPost.imageUrl"
-      class="row justify-center my-md overflow-hidden"
+      v-if="editedPost.videoUrl || editedPost.gifUrl || editedPost.imageUrl || editedPost.link"
+      class="row justify-center my-md overflow-hidden full-width"
     >
-      <div class="position-relative">
+      <div class="position-relative full-width">
         <button
           @click="removeFiles(editedPost)"
           class="position-absolute close-button row items-center justify-center"
@@ -88,25 +94,29 @@
 
         <div v-if="previewImage">
           <div
-            class="imagePreviewWrapper br-sm"
+            class="image-preview-wrapper br-sm"
             :style="{ 'background-image': `url(${previewImage})` }"
             @click="selectImage"
           ></div>
         </div>
-        <div v-if="editedPost.videoUrl" class="br-sm">
+        <div v-if="editedPost.link">
+          <Article v-if="articleData.og" :article="articleData" :editingMode="true" />
+        </div>
+        <div v-if="editedPost.videoUrl" class="full-width">
           <iframe
-            width="560"
+            width="100%"
             height="315"
             :src="editedPost.videoUrl"
             title="YouTube video player"
             frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowfullscreen
+            class="br-sm"
           ></iframe>
         </div>
 
         <div v-if="editedPost.gifUrl">
-          <img :src="editedPost.gifUrl" class="br-sm" />
+          <img :src="editedPost.gifUrl" class="br-sm" style="max-width: 100%" />
         </div>
       </div>
     </div>
@@ -119,7 +129,7 @@
     <Dialog :showModal="showModal" @close="showModal = false">
       <template v-slot:header>
         <div class="column justify-center">
-          <button @click="showModal = false" class="close-button self-end row items-center justify-center">
+          <button @click="showModal = false" class="close-button-modal self-end row items-center justify-center">
             <span class="material-icons-round text-primary">close</span>
           </button>
           <InputField
@@ -162,6 +172,7 @@ import Avatar from '../components/Avatar/Avatar.vue';
 import InputField from '../components/InputField/InputField.vue';
 import Dialog from '../components/Dialog/Dialog.vue';
 import { showSuccessBanner, showErrorBanner } from '../mixins/banners/banners.mixins';
+import Article from '../components/Article/Article.vue';
 
 export default defineComponent({
   name: 'EditPublicationPage',
@@ -169,6 +180,7 @@ export default defineComponent({
     Avatar,
     InputField,
     Dialog,
+    Article,
   },
   setup(props, context: SetupContext) {
     const { getCurrentUser } = useApi();
@@ -178,6 +190,7 @@ export default defineComponent({
 
     const { editPublication, getPublicationById, fetchPublicationById } = usePublications();
     const { getUser } = useUser();
+    const user = computed(() => getUser.value);
 
     const route = useRouter();
 
@@ -209,6 +222,12 @@ export default defineComponent({
       showModal.value = false;
     };
 
+    const onSetArticle = async () => {
+      const articleUrl = await useEditPost.setArticle();
+      if (!articleUrl) return;
+      editedPost.value.link = articleUrl;
+    };
+
     const closeEditingMode = () => {
       router.push({ name: 'Home' });
     };
@@ -222,12 +241,13 @@ export default defineComponent({
 
     onMounted(async () => {
       if (!allEditedPost.value) {
-        const currentUserId = ref(getUser.value.id);
+        const currentUserId = ref(user.value.id);
         if (currentUserId.value == 0) {
           const currentUser = await getCurrentUser();
           currentUserId.value = currentUser.id;
         }
         const publication = await fetchPublicationById(parseInt(editedPostId.value));
+        if (!publication) return router.push({ name: 'Home' });
 
         if (publication.authorId !== currentUserId.value) {
           console.warn('Vous ne pouvez pas modifier cette publication');
@@ -239,9 +259,13 @@ export default defineComponent({
         editedPost.value.text = publication.text || undefined;
         editedPost.value.link = publication.link || undefined;
         useEditPost.showAddLink.value = editedPost.value.link ? true : false;
+        if (editedPost.value.link) {
+          useEditPost.writeArticleLink.value = editedPost.value.link;
+          await useEditPost.setArticle();
+        }
         return;
       }
-      if (allEditedPost.value.authorId !== getUser.value.id) {
+      if (allEditedPost.value.authorId !== user.value.id) {
         console.warn('Vous ne pouvez pas modifier cette publication');
         return router.push({ name: 'Home' });
       }
@@ -252,6 +276,10 @@ export default defineComponent({
       editedPost.value.text = allEditedPost.value.text || undefined;
       editedPost.value.link = allEditedPost.value.link || undefined;
       useEditPost.showAddLink.value = editedPost.value.link ? true : false;
+      if (editedPost.value.link) {
+        useEditPost.writeArticleLink.value = editedPost.value.link;
+        await useEditPost.setArticle();
+      }
       return;
     });
 
@@ -262,6 +290,8 @@ export default defineComponent({
       ...useEditPost,
       onSelectGif,
       showModal,
+      onSetArticle,
+      user,
     };
   },
 });
@@ -307,12 +337,11 @@ textarea {
     background: rgba(#50505096, 0.15);
   }
 }
-.imagePreviewWrapper {
+.image-preview-wrapper {
   width: 250px;
   height: 250px;
   display: block;
   cursor: pointer;
-  margin: 0 auto 30px;
   background-size: cover;
   background-position: center center;
 }
@@ -351,15 +380,30 @@ textarea {
   }
 }
 .close-button {
-  background: transparent;
+  border-radius: 0 12px 0 12px;
+  transition: background 300ms;
+  border: none;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  background: rgba(#50505096, 0.8);
+  & span {
+    color: white !important;
+  }
+  &:hover {
+    background: #e22a7f !important;
+  }
+}
+.close-button-modal {
   border-radius: 30px;
   transition: background 300ms;
   border: none;
   width: 30px;
   height: 30px;
   cursor: pointer;
+  background: transparent;
   &:hover {
-    background: rgba(#50505096, 0.05);
+    background: rgba(#50505096, 0.05) !important;
   }
 }
 </style>

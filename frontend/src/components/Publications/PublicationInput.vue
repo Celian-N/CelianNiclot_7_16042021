@@ -1,7 +1,7 @@
 <template>
   <div class="column bg-white main-shadow pa-sm br-md">
     <div class="row items-start">
-      <Avatar size="50px" />
+      <Avatar size="50px" :userPic="profilPic" />
       <InputField
         autogrow
         @onInput="(val) => (text = val)"
@@ -67,14 +67,20 @@
     <InputField
       v-if="showAddLink"
       type="url"
-      @onInput="(val) => (link = val)"
-      :value="link"
+      @onInput="(val) => (writeArticleLink = val)"
+      :value="writeArticleLink"
       placeholder="Lien de l'article"
       borderRadius="8px"
       class="my-md"
+      @onClick="onSetArticle"
+      :button="{
+        icon: 'search',
+        color: 'secondary',
+        size: '30px',
+      }"
     />
-    <div v-if="videoUrl || gifUrl || imageUrl" class="row justify-center my-md overflow-hidden">
-      <div class="position-relative">
+    <div v-if="videoUrl || gifUrl || imageUrl || link" class="row justify-center my-md overflow-hidden">
+      <div class="position-relative full-width">
         <button
           @click="onRemoveFiles"
           class="position-absolute close-button row items-center justify-center"
@@ -85,15 +91,19 @@
 
         <div v-if="previewImage">
           <div
-            class="imagePreviewWrapper br-sm"
+            class="image-preview-wrapper br-sm"
             :style="{ 'background-image': `url(${previewImage})` }"
             @click="selectImage"
           ></div>
         </div>
+        <div v-if="link">
+          <Article :article="articleData" :editingMode="true" />
+        </div>
         <div v-if="videoUrl" class="br-sm">
           <iframe
-            width="560"
+            width="100%"
             height="315"
+            class="br-sm"
             :src="videoUrl"
             title="YouTube video player"
             frameborder="0"
@@ -103,7 +113,7 @@
         </div>
 
         <div v-if="gifUrl">
-          <img :src="gifUrl" class="br-sm" />
+          <img :src="gifUrl" class="br-sm" style="max-width: 100%" />
         </div>
       </div>
     </div>
@@ -113,7 +123,7 @@
     <Dialog :showModal="showModal" @close="showModal = false">
       <template v-slot:header>
         <div class="column justify-center">
-          <button @click="showModal = false" class="close-button self-end row items-center justify-center">
+          <button @click="showModal = false" class="close-button-modal self-end row items-center justify-center">
             <span class="material-icons-round text-primary">close</span>
           </button>
           <InputField
@@ -152,6 +162,7 @@ import { useEditPublications } from '../../mixins/publications/edit-publications
 import Avatar from '../Avatar/Avatar.vue';
 import InputField from '../InputField/InputField.vue';
 import Dialog from '../Dialog/Dialog.vue';
+import Article from '../Article/Article.vue';
 import { showErrorBanner, showSuccessBanner } from '../../mixins/banners/banners.mixins';
 
 //https://www.youtube.com/embed/Zwlaey0gu4c
@@ -162,9 +173,11 @@ export default defineComponent({
     Avatar,
     InputField,
     Dialog,
+    Article,
   },
   props: {
     username: { type: String, required: true },
+    profilPic: { type: String },
   },
   setup(props, context: SetupContext) {
     const useEditPost = useEditPublications(context);
@@ -209,6 +222,11 @@ export default defineComponent({
     const onSetVideo = () => {
       useEditPost.setVideo(createdPost);
     };
+    const onSetArticle = async () => {
+      const articleUrl = await useEditPost.setArticle();
+      if (!articleUrl) return showErrorBanner('Impossible de récupérer ce lien');
+      createdPost.link = articleUrl;
+    };
 
     return {
       ...toRefs(createdPost),
@@ -219,6 +237,7 @@ export default defineComponent({
       onPickFile,
       onSetVideo,
       showModal,
+      onSetArticle,
     };
   },
 });
@@ -275,23 +294,12 @@ textarea {
     background: rgba(#50505096, 0.15);
   }
 }
-.imagePreviewWrapper {
-  width: 250px;
+.image-preview-wrapper {
   height: 250px;
   display: block;
   cursor: pointer;
-  margin: 0 auto 30px;
   background-size: cover;
   background-position: center center;
-}
-
-.label-file {
-  cursor: pointer;
-  color: #00b1ca;
-  font-weight: bold;
-}
-.label-file:hover {
-  color: #25a5c4;
 }
 
 .input-file {
@@ -308,15 +316,30 @@ textarea {
   height: 100px;
 }
 .close-button {
-  background: transparent;
+  border-radius: 0 12px 0 12px;
+  transition: background 300ms;
+  border: none;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  background: rgba(#50505096, 0.8);
+  & span {
+    color: white !important;
+  }
+  &:hover {
+    background: #e22a7f !important;
+  }
+}
+.close-button-modal {
   border-radius: 30px;
   transition: background 300ms;
   border: none;
   width: 30px;
   height: 30px;
   cursor: pointer;
+  background: transparent;
   &:hover {
-    background: rgba(#50505096, 0.05);
+    background: rgba(#50505096, 0.05) !important;
   }
 }
 </style>

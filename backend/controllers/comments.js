@@ -42,7 +42,7 @@ exports.getLengthFromPublicationId = (req, res) => {
 // Retrieve Comments for publication from the database.
 exports.findForPublication = (req, res) => {
   const publicationId = parseInt(req.params.publicationId);
-
+  if(!publicationId) return res.status(500).json({message : 'Id de publication manquant'})
   Comment.getAll(publicationId, req.query.page, (err, comments) => {
     if (err)
       return res.status(500).json({
