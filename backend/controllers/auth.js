@@ -40,27 +40,30 @@ exports.login = (req, res, next) => {
         res.status(404).json({
           message: `Not found User with email ${req.body.email}.`,
         });
+      } else if (err.kind === 'banish') {
+        return res.status(403).json({
+          message: `You have been banish by administrator.`,
+        });
       } else {
         res.status(500).json({
           message: 'Error retrieving User with email ' + req.body.email,
         });
       }
-    } 
-    else {
+    } else {
       bcrypt
-      .compare(req.body.password, user.password)
-      .then((valid) => {
-        if (!valid) {
-          return res.status(401).json({ error: 'Mot de passe incorrect' });
-        }
-        return res.status(200).json({
-          userId: user.id,
-          token: jwt.sign({ userId: user.id }, 'RANDOM_TOKEN_SECRET', {
-            expiresIn: '24h',
-          }),
-        });
-      })
-      .catch((error) => res.status(500).json({ error }));
+        .compare(req.body.password, user.password)
+        .then((valid) => {
+          if (!valid) {
+            return res.status(401).json({ error: 'Mot de passe incorrect' });
+          }
+          return res.status(200).json({
+            userId: user.id,
+            token: jwt.sign({ userId: user.id }, 'RANDOM_TOKEN_SECRET', {
+              expiresIn: '24h',
+            }),
+          });
+        })
+        .catch((error) => res.status(500).json({ error }));
     }
   });
 };

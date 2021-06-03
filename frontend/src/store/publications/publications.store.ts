@@ -26,6 +26,7 @@ export function usePublications() {
     editPublicationCall,
     getPostByIdCall,
     likePublicationCall,
+    signalPublication
   } = useApi();
 
   const fetchPublications = async (page?: number) => {
@@ -120,6 +121,12 @@ export function usePublications() {
     return likedPublication;
   };
 
+  const signalUserPublication = async(publicationId : number)=>{
+    const signaledPublication = await signalPublication(publicationId)
+    if(!signaledPublication) return;
+    return signaledPublication
+  }
+
   return {
     fetchPublications,
     fetchPublicationById,
@@ -128,6 +135,7 @@ export function usePublications() {
     editPublication,
     getAllPublications,
     likePublication,
+    signalUserPublication,
     ...rest,
   };
 }

@@ -9,6 +9,7 @@ const userState = ref<UserStateInterface>({
   firstname: '',
   lastname: '',
   active: true,
+  adminRole : false
 });
 
 const setters = {
@@ -19,7 +20,7 @@ const setters = {
     userState.value = { ...userState.value, ...updatedProperties };
   },
   clearUser: () => {
-    userState.value = { id: 0, email: '', firstname: '', lastname: '', active: true };
+    userState.value = { id: 0, email: '', firstname: '', lastname: '', active: true, adminRole : false };
   },
 };
 

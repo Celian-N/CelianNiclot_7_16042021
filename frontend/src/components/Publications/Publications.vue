@@ -8,6 +8,9 @@
           :user="user"
           @onDeletePublication="(val) => $emit('deletePublication', val)"
           @onLikePublication="(val) => $emit('likePublication', val)"
+          @onDeleteAdminPublication="(val) => $emit('deleteAdminPublication', val)"
+          @onBanUserAdmin="(val) => $emit('banUserAdmin', val)"
+          @onSignalPublication="val => $emit('signalPublication', val)"
         />
       </div>
     </div>

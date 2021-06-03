@@ -30,6 +30,12 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('../pages/Settings.vue'),
         meta: { requiresAuth: true },
       },
+      {
+        path: '/admin',
+        name: 'Admin',
+        component: () => import('../pages/Admin.vue'),
+        meta: { requiresAuth: true },
+      },
     ],
   },
   {

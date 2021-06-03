@@ -23,6 +23,7 @@ export const navigationTabs = {
   admin : {
     to : '/admin',
     label : 'Modération',
-    icon : 'admin_panel_settings'
+    icon : 'admin_panel_settings',
+    for : 'admin'
   }
 }

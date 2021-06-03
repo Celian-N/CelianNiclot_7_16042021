@@ -18,6 +18,7 @@ exports.create = (req, res) => {
       ? `${req.protocol}://${req.get('host')}/${req.imagePath}/${req.file.filename}`
       : null,
     creationDate: new Date(),
+    signaled : 0
   });
 
   // Save Publication in the database
@@ -77,8 +78,6 @@ exports.findAll = (req, res) => {
         };
       })
     );
-
-    console.log('returnedPublication :', returnedPublications);
 
     res.status(200).json(returnedPublications);
   });
@@ -240,7 +239,6 @@ exports.like = (req, res) => {
   if (!req.body) {
     res.status(400).json({ message: 'Content can not be empty!' });
   }
-  console.log('BODY :', req.body);
   Publication.findById(
     req.params.publicationId,
     req.userId,
@@ -258,7 +256,6 @@ exports.like = (req, res) => {
           });
         }
       } else {
-        console.log('BODY IN LIKE :', req.body);
         const publicationLikes = JSON.parse(publication.userLiked);
         const userIndex = publicationLikes.indexOf(req.body.userId);
 
@@ -267,7 +264,6 @@ exports.like = (req, res) => {
         } else {
           publicationLikes.push(req.body.userId);
         }
-        console.log(publicationLikes);
         Publication.handleLike(
           req.params.publicationId,
           JSON.stringify(publicationLikes),
@@ -295,4 +291,18 @@ exports.like = (req, res) => {
       }
     }
   );
+};
+
+// Signal publication
+exports.signal = (req, res) => {
+  const publicationId = req.params.publicationId;
+  Publication.signal(publicationId, (err, publicationId) => {
+    if (err)
+      return res.status(500).json({
+        message:
+          err.message || 'Some error occurred while signaling publication.',
+      });
+
+    res.status(200).json(publicationId);
+  });
 };

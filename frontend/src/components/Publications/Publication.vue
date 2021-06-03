@@ -8,7 +8,7 @@
           <span class="text-caption font-12">{{ publicationMoment }}</span>
         </div>
       </div>
-      <div v-if="publication.authorId == user.id" class="position-relative">
+      <div class="position-relative">
         <IconButton :button="{ size: '30px', icon: 'more_horiz', color: 'primary' }" @onClick="showMenu = !showMenu" />
         <transition name="fade">
           <div v-if="showMenu" class="publication-menu column bg-white br-sm input-shadow overflow-hidden">
@@ -27,6 +27,30 @@
             >
               <span class="material-icons-round mr-xs font-20">delete</span>
               Supprimer
+            </button>
+            <button
+              v-if="publication.authorId !== user.id && !user.adminRole"
+              class="pa-sm full-width row justify-start items-center font-12"
+              @click="$emit('onSignalPublication', publication.id)"
+            >
+              <span class="material-icons-round mr-xs font-20">report</span>
+              Signaler
+            </button>
+            <button
+              v-if="publication.authorId !== user.id && user.adminRole"
+              class="pa-sm full-width row justify-start items-center font-12"
+              @click="$emit('onDeleteAdminPublication', publication.id)"
+            >
+              <span class="material-icons-round mr-xs font-20">delete</span>
+              Supprimer
+            </button>
+            <button
+              v-if="publication.authorId !== user.id && user.adminRole"
+              class="pa-sm full-width row justify-start items-center font-12"
+              @click="$emit('onBanUserAdmin', publication.authorId)"
+            >
+              <span class="material-icons-round mr-xs font-20">person_remove</span>
+              Bannir
             </button>
           </div>
         </transition>
@@ -86,8 +110,11 @@
       @onDeleteComment="onDeleteComment"
       @onSaveComment="saveComment"
       @onLikeComment="onLikeComment"
+      @deleteAdminComment="deleteAdminComment"
+      @signalComment="signalComment"
+      @banUserAdmin="banUserAdmin"
     />
-    <div class="row items-center my-sm">
+    <div v-if="!admin" class="row items-center my-sm">
       <Avatar size="35px" :userPic="user.userPic" class="mr-sm" />
       <InputField
         autogrow
@@ -124,6 +151,7 @@ import { showErrorBanner, showSuccessBanner } from '../../mixins/banners/banners
 import Article from '../Article/Article.vue';
 import { useMetaLinks } from '../../store/metadata/state';
 import { useApi } from '../../mixins/api/api.mixins';
+import { useAdmin } from '../../store/admin/admin.store';
 
 export interface CommentsRef {
   showLoadMoreButton: boolean;
@@ -135,6 +163,7 @@ export default defineComponent({
   props: {
     publication: { type: Object as PropType<IPublication>, required: true },
     user: { type: Object as PropType<IUser>, required: true },
+    admin: { type: Boolean, default: false },
   },
   components: {
     Comments,
@@ -168,9 +197,11 @@ export default defineComponent({
       editComment,
       likeComment,
       fetchCommentsLength,
+      signalUserComment
     } = useComments();
     const { fetchAuthorInfos } = useApi();
     const { getDataById } = useMetaLinks();
+    const { deletePost, banUser } = useAdmin();
 
     const publicationComments = computed(() => getCommentsByPublication(props.publication.id));
     const publicationArticle = computed(() => getDataById(props.publication.id));
@@ -213,6 +244,23 @@ export default defineComponent({
       if (!likedComment) return;
     };
 
+    const deleteAdminComment = async (commentId: number) => {
+      const deletedPost = await deletePost('comment', commentId);
+      if (!deletedPost) return showErrorBanner('Impossible de supprimer le commentaire');
+      showSuccessBanner('Commentaire supprimé avec succès !');
+    };
+    const banUserAdmin = async (userId: number) => {
+      const bannedUser = await banUser(userId);
+      if (!bannedUser) return showErrorBanner("Impossible de bannir l'utilisateur");
+      showSuccessBanner('Utilisateur banni succès !');
+    };
+
+    const signalComment = async(commentId : number)=>{
+      const signaledComment = await signalUserComment(commentId)
+      if (!signaledComment) return showErrorBanner("Impossible de signaler le commentaire");
+      showSuccessBanner('Commentaire signalé avec succès');
+    }
+
     onMounted(async () => {
       await fetchFirstComment(props.publication.id);
       commentsLength.value = await fetchCommentsLength(props.publication.id);
@@ -234,7 +282,10 @@ export default defineComponent({
       showMenu,
       commentsLength,
       publicationArticle,
-      authorInfos
+      authorInfos,
+      deleteAdminComment,
+      banUserAdmin,
+      signalComment
     };
   },
 });

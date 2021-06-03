@@ -8,10 +8,12 @@
         <div
           class="login-carousel__selectors--selector"
           :class="loginOrSignupStep == 'login' ? 'bg-white' : 'bg-transparent'"
+          @click="goToLogin"
         ></div>
         <div
           class="login-carousel__selectors--selector"
           :class="loginOrSignupStep == 'signup' ? 'bg-white' : 'bg-transparent'"
+           @click="goToSignup"
         ></div>
       </div>
 
@@ -213,6 +215,7 @@ export default defineComponent({
   &__selectors {
     width: 100px;
     &--selector {
+      cursor:pointer;
       border: 2px solid white;
       border-radius: 30px;
       width: 20px;
