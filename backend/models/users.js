@@ -35,7 +35,7 @@ User.create = (newUser, result) => {
 
 User.findById = (userId, result) => {
   sql.query(
-    `SELECT id, email, firstname, lastname, job, creation_date as creationDate , user_pic as userPic FROM Users WHERE id = ${userId}`,
+    `SELECT id, email, firstname, lastname, job, creation_date as creationDate , user_pic as userPic, admin_role as adminRole FROM Users WHERE id = ${userId}`,
     (err, res) => {
       if (err) {
         console.log('error: ', err);
@@ -44,7 +44,6 @@ User.findById = (userId, result) => {
       }
 
       if (res.length) {
-        console.log('found user: ', res[0]);
         result(null, res[0]);
         return;
       }
@@ -62,9 +61,11 @@ User.findByEmail = (userEmail, result) => {
       result(err, null);
       return;
     }
+    else if(res.length && res[0].active == 0){
+      return result({ kind: 'banish' }, null);
+    }
 
     if (res.length) {
-      console.log('found user: ', res[0]);
       result(null, res[0]);
       return;
     }
@@ -97,7 +98,6 @@ User.updateById = (userId, user, result) => {
   }${
     user.password ? ', password = ?' : ''
   }  WHERE id = ?`;
-  console.log('sqlQuery :', sqlQuery)
   const requestValues = [user.email, user.firstname, user.lastname, user.job];
   if (user.userPic) {
     requestValues.push(user.userPic);
@@ -107,7 +107,6 @@ User.updateById = (userId, user, result) => {
   }
   requestValues.push(parseInt(userId));
 
-  console.log('requestValues :', requestValues)
 
   sql.query(sqlQuery, requestValues, (err, res) => {
     if (err) {

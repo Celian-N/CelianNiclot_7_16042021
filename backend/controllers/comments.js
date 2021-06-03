@@ -199,3 +199,16 @@ exports.like = (req, res) => {
   );
 };
 
+// Signal comment
+exports.signal = (req, res) => {
+  const commentId = req.params.commentId;
+  Comment.signal(commentId, (err, commentId) => {
+    if (err)
+      return res.status(500).json({
+        message:
+          err.message || 'Some error occurred while signaling comment.',
+      });
+
+    res.status(200).json(commentId);
+  });
+};

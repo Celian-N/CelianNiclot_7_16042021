@@ -9,6 +9,7 @@ const Publication = function (publication) {
   this.text = publication.text;
   this.link = publication.link;
   this.creation_date = publication.creationDate;
+  this.signaled = publication.signaled
 };
 
 Publication.create = (newPublication, result) => {
@@ -33,6 +34,7 @@ Publication.create = (newPublication, result) => {
       videoUrl: newPublication.video_url,
       creationDate: newPublication.creation_date,
       userLiked: JSON.parse(newPublication.user_liked),
+      signaled : newPublication.signaled
     });
   });
 };
@@ -73,8 +75,7 @@ Publication.getAll = (selectedPage, result) => {
     `SELECT id, author_id as authorId, user_liked as userLiked, image_url as imageUrl, gif_url as gifUrl, video_url as videoUrl, text, link, creation_date as creationDate FROM Publications ORDER BY creationDate DESC LIMIT ${offset}, ${limit}`,
     (err, res) => {
       if (err) {
-        console.log('error: ', err);
-        result(null, err);
+        result(err, null);
         return;
       }
       result(null, res);
@@ -108,13 +109,11 @@ Publication.updateById = (publicationId, userId, publication, result) => {
 
   sql.query(sqlQuery, requestValues, (err, res) => {
     if (err) {
-      console.log('error: ', err);
-      result(null, err);
+      result(err, null);
       return;
     }
 
     if (res.affectedRows == 0) {
-      // not found Customer with the id
       result({ kind: 'not_found' }, null);
       return;
     }
@@ -133,14 +132,11 @@ Publication.remove = (publicationId, userId, result) => {
     [publicationId, userId],
     (err, res) => {
       if (err) {
-        console.log('error: ', err);
-        result(null, err);
+        result(err, null);
         return;
       }
 
       if (res.affectedRows == 0) {
-        console.log('res :', res);
-        // not found Customer with the id
         result({ kind: 'not_found' }, null);
         return;
       }
@@ -157,8 +153,7 @@ Publication.handleLike = (publicationId, publicationLikes, result) => {
     [publicationLikes, publicationId],
     (err, res) => {
       if (err) {
-        console.log('error: ', err);
-        result(null, err);
+        result(err, null);
         return;
       }
 
@@ -171,6 +166,28 @@ Publication.handleLike = (publicationId, publicationLikes, result) => {
 
       console.log('Liked publication with id: ', publicationId);
       result(null, publicationLikes);
+    }
+  );
+};
+
+Publication.signal = (publicationId, result) => {
+  sql.query(
+    `UPDATE Publications SET signaled = ? WHERE id = ?`,
+    [1, publicationId],
+    (err, res) => {
+      if (err) {
+
+        result(err, null);
+        return;
+      }
+
+      if (res.affectedRows == 0) {
+        result({ kind: 'not_found' }, null);
+        return;
+      }
+
+      console.log('Publication with id signaled: ', publicationId);
+      result(null, publicationId);
     }
   );
 };

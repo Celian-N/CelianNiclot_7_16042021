@@ -60,8 +60,7 @@ Comment.findById = (commentId, userId, result) => {
 Comment.getLength = (publicationId, result)=>{
   sql.query('SELECT COUNT(*) as commentsLength FROM Comments WHERE publication_id = ?', publicationId, (err, res) => {
     if (err) {
-      console.log('error: ', err);
-      result(null, err);
+      result(err, null);
       return;
     }
 
@@ -81,8 +80,7 @@ Comment.getAll = (publicationId, selectedPage, result) => {
 
   sql.query(sqlQuery, publicationId, (err, res) => {
     if (err) {
-      console.log('error: ', err);
-      result(null, err);
+      result(err, null);
       return;
     }
 
@@ -97,13 +95,11 @@ Comment.updateById = (commentId, userId, newCommentText, result) => {
     [newCommentText, commentId, userId],
     (err, res) => {
       if (err) {
-        console.log('error: ', err);
-        result(null, err);
+        result(err, null);
         return;
       }
 
       if (res.affectedRows == 0) {
-        // not found Customer with the id
         result({ kind: 'not_found' }, null);
         return;
       }
@@ -124,13 +120,11 @@ Comment.remove = (commentId, userId, result) => {
     (err, res) => {
       if (err) {
         console.log('error: ', err);
-        result(null, err);
+        result(err, null);
         return;
       }
 
       if (res.affectedRows == 0) {
-        console.log('res :', res);
-        // not found Customer with the id
         result({ kind: 'not_found' }, null);
         return;
       }
@@ -149,13 +143,11 @@ Comment.handleLike = (commentId, commentLikes, result) => {
     (err, res) => {
       if (err) {
         console.log('error: ', err);
-        result(null, err);
+        result(err, null);
         return;
       }
 
       if (res.affectedRows == 0) {
-        console.log('res :', res);
-        // not found Customer with the id
         result({ kind: 'not_found' }, null);
         return;
       }
@@ -166,5 +158,25 @@ Comment.handleLike = (commentId, commentLikes, result) => {
   );
 };
 
+Comment.signal = (commentId, result) => {
+  sql.query(
+    `UPDATE Comments SET signaled = ? WHERE id = ?`,
+    [1, commentId],
+    (err, res) => {
+      if (err) {
+        result(err, null);
+        return;
+      }
+
+      if (res.affectedRows == 0) {
+        result({ kind: 'not_found' }, null);
+        return;
+      }
+
+      console.log('Comment with id signaled: ', commentId);
+      result(null, commentId);
+    }
+  );
+};
 
 module.exports = Comment;

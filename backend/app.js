@@ -8,8 +8,7 @@ const authRoutes = require('./routes/auth');
 const publicationsRoutes = require('./routes/publications');
 const commentsRoutes = require('./routes/comments');
 const articleRoutes = require('./routes/article');
-
-
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 
@@ -39,7 +38,6 @@ app.use('/auth', authRoutes);
 app.use('/publications', publicationsRoutes);
 app.use('/comments', commentsRoutes);
 app.use('/article', articleRoutes);
-
-
+app.use('/admin', adminRoutes);
 
 module.exports = app;
