@@ -18,7 +18,7 @@ export function useComments() {
     ...rest
   } = inject('commentsStore') as typeof commentsStore;
 
-  const { getCommentsCall, createCommentCall, deleteCommentCall, editCommentCall, likeCommentCall, getCommentsLengthCall } = useApi();
+  const { getCommentsCall, createCommentCall, deleteCommentCall, editCommentCall, likeCommentCall, getCommentsLengthCall, signalComment } = useApi();
 
   const fetchFirstComment = async (publicationId: number) => {
     const comment = await getCommentsCall(publicationId);
@@ -76,6 +76,12 @@ export function useComments() {
     return likedComment;
   };
 
+  const signalUserComment = async(commentId : number)=>{
+    const signaledComment = await signalComment(commentId)
+    if(!signaledComment) return;
+    return signaledComment
+  }
+
   return {
     fetchFirstComment,
     fetchMorePublicationComments,
@@ -84,6 +90,7 @@ export function useComments() {
     editComment,
     likeComment,
     fetchCommentsLength,
+    signalUserComment,
     ...rest,
   };
 }
