@@ -53,7 +53,6 @@
                 <div class="text-caption font-10 row items-center no-wrap position-relative">
                   <span class="mr-xs">{{ moment(comment.creationDate).locale('fr').fromNow() }}</span>
                   <IconButton
-                    v-if="comment.authorId == user.id"
                     :button="{ size: '20px', icon: 'more_horiz', color: 'primary' }"
                     @onClick="onOpenMenu(comment.id)"
                     class="self-center"
@@ -78,6 +77,30 @@
                       >
                         <span class="material-icons-round mr-xs font-20">delete</span>
                         Supprimer
+                      </button>
+                      <button
+                        v-if="comment.authorId !== user.id && !user.adminRole"
+                        class="pa-sm full-width row justify-start items-center font-12"
+                        @click="$emit('signalComment', comment.id)"
+                      >
+                        <span class="material-icons-round mr-xs font-20">report</span>
+                        Signaler
+                      </button>
+                      <button
+                        v-if="comment.authorId !== user.id && user.adminRole"
+                        class="pa-sm full-width row justify-start items-center font-12"
+                        @click="$emit('deleteAdminComment', comment.id)"
+                      >
+                        <span class="material-icons-round mr-xs font-20">delete</span>
+                        Supprimer
+                      </button>
+                      <button
+                        v-if="comment.authorId !== user.id && user.adminRole"
+                        class="pa-sm full-width row justify-start items-center font-12"
+                        @click="$emit('banUserAdmin', comment.authorId)"
+                      >
+                        <span class="material-icons-round mr-xs font-20">person_remove</span>
+                        Bannir
                       </button>
                     </div>
                   </transition>
@@ -152,7 +175,7 @@ export default defineComponent({
       (comments) => {
         if (!comments) return;
         resetMenus(comments);
-        getAuthorInfos(comments)
+        getAuthorInfos(comments);
       }
     );
 

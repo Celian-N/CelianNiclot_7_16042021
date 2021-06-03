@@ -8,6 +8,9 @@
       @deletePublication="(val) => deleteSelectedPublication(val)"
       @likePublication="(val) => onLikePublication(val)"
       @loadMoreResources="getPublications"
+      @banUserAdmin="banUserAdmin"
+      @deleteAdminPublication="deleteAdminPublication"
+      @signalPublication="signalPublication"
     />
     <div style="width: 33%" class="ml-md"></div>
   </div>
@@ -19,6 +22,7 @@ import { useUser } from '../store/user/user.store';
 import { usePublications } from '../store/publications/publications.store';
 import Publications from '../components/Publications/Publications.vue';
 import { showSuccessBanner, showErrorBanner } from '../mixins/banners/banners.mixins';
+import { useAdmin } from '../store/admin/admin.store';
 
 interface IPublicationComponent {
   removeEventListener: () => void;
@@ -30,7 +34,8 @@ export default defineComponent({
   },
   setup(props, context: SetupContext) {
     const { logout, getUser } = useUser();
-    const { fetchPublications, deletePublication, getAllPublications, likePublication } = usePublications();
+    const { fetchPublications, deletePublication, getAllPublications, likePublication, signalUserPublication } = usePublications();
+    const { deletePost, banUser } = useAdmin();
 
     const currentPage = ref(0);
     const publicationsComponent = ref<IPublicationComponent | null>(null);
@@ -51,7 +56,21 @@ export default defineComponent({
       if (!likedPublication) return;
     };
 
-    const test = () => console.log('EVENT detected');
+    const deleteAdminPublication = async (publicationId: number) => {
+      const deletedPost = await deletePost('publication', publicationId);
+      if (!deletedPost) return showErrorBanner('Impossible de supprimer la publication');
+      showSuccessBanner('Publication supprimée avec succès !');
+    };
+    const banUserAdmin = async (userId: number) => {
+      const bannedUser = await banUser(userId);
+      if (!bannedUser) return showErrorBanner("Impossible de bannir l'utilisateur");
+      showSuccessBanner('Utilisateur banni succès !');
+    };
+    const signalPublication = async(publicationId : number)=>{
+      const signaledPublication = await signalUserPublication(publicationId)
+      if (!signaledPublication) return showErrorBanner("Impossible de signaler la publication");
+      showSuccessBanner('Publications signalée avec succès');
+    }
 
     const getPublications = async () => {
       currentPage.value++;
@@ -77,7 +96,9 @@ export default defineComponent({
       showErrorBanner,
       getPublications,
       publicationsComponent,
-      test,
+      deleteAdminPublication,
+      banUserAdmin,
+      signalPublication
     };
   },
 });

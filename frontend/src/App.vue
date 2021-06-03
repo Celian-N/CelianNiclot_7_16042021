@@ -12,8 +12,7 @@ import { userStoreProvider } from './store/user/user.store';
 import { publicationsStoreProvider } from './store/publications/publications.store';
 import { commentsStoreProvider } from './store/comments/comments.store';
 import { metaLinksStoreProvider } from './store/metadata/state';
-
-
+import { adminStoreProvider } from './store/admin/admin.store';
 
 export default defineComponent({
   name: 'App',
@@ -21,7 +20,8 @@ export default defineComponent({
     userStoreProvider();
     publicationsStoreProvider();
     commentsStoreProvider();
-    metaLinksStoreProvider()
+    metaLinksStoreProvider();
+    adminStoreProvider();
     
     const router = useRouter();
 

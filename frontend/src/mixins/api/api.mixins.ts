@@ -202,7 +202,7 @@ export const useApi = () => {
       });
   };
 
-   const fetchAuthorInfos = async (authorId : number)=>{
+  const fetchAuthorInfos = async (authorId: number) => {
     return await fetch(`http://localhost:3000/users/${authorId}`, {
       method: 'GET',
       headers: {
@@ -219,7 +219,7 @@ export const useApi = () => {
       .catch((error) => {
         console.warn('Erreur :' + error);
       });
-   }
+  };
   //USERS
 
   const getAllUsers = async () => {
@@ -365,6 +365,122 @@ export const useApi = () => {
       });
   };
 
+  //---ADMIN---
+  
+  const getSignaledPosts = async () => {
+    return await fetch(`http://localhost:3000/admin`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + Cookies.get('groupomania_token'),
+      },
+    })
+      .then((result) => {
+        return result.json();
+      })
+      .then((res) => {
+        return res;
+      })
+      .catch((error) => {
+        console.warn('Erreur :' + error);
+      });
+  };
+
+  const deletePostAdmin = async (type: string, postId: number) => {
+    return await fetch(`http://localhost:3000/admin/${type}/${postId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + Cookies.get('groupomania_token'),
+      },
+    })
+      .then((result) => {
+        return result.json();
+      })
+      .then((res) => {
+        return res;
+      })
+      .catch((error) => {
+        console.warn('Erreur :' + error);
+      });
+  };
+  const ignorePostAdmin = async (type: string, postId: number) => {
+    console.log('postId : ', postId)
+    return await fetch(`http://localhost:3000/admin/${type}/${postId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + Cookies.get('groupomania_token'),
+      },
+    })
+      .then((result) => {
+        return result.json();
+      })
+      .then((res) => {
+        return res;
+      })
+      .catch((error) => {
+        console.warn('Erreur :' + error);
+      });
+  };
+
+  const banUserAdmin = async (userId : number) => {
+    return await fetch(`http://localhost:3000/admin/ban/${userId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + Cookies.get('groupomania_token'),
+      },
+    })
+      .then((result) => {
+        return result.json();
+      })
+      .then((res) => {
+        return res;
+      })
+      .catch((error) => {
+        console.warn('Erreur :' + error);
+      });
+  };
+
+  const signalComment = async (commentId : number) => {
+    return await fetch(`http://localhost:3000/comments/signaled/${commentId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + Cookies.get('groupomania_token'),
+      },
+    })
+      .then((result) => {
+        return result.json();
+      })
+      .then((res) => {
+        return res;
+      })
+      .catch((error) => {
+        console.warn('Erreur :' + error);
+      });
+  };
+
+  const signalPublication = async (publicationId : number) => {
+    return await fetch(`http://localhost:3000/publications/signaled/${publicationId}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + Cookies.get('groupomania_token'),
+      },
+    })
+      .then((result) => {
+        return result.json();
+      })
+      .then((res) => {
+        return res;
+      })
+      .catch((error) => {
+        console.warn('Erreur :' + error);
+      });
+  };
+
   return {
     loginCall,
     getAllUsers,
@@ -384,6 +500,12 @@ export const useApi = () => {
     getCommentsLengthCall,
     getArticleCall,
     editUser,
-    fetchAuthorInfos
+    fetchAuthorInfos,
+    getSignaledPosts,
+    deletePostAdmin,
+    ignorePostAdmin,
+    banUserAdmin,
+    signalComment,
+    signalPublication
   };
 };

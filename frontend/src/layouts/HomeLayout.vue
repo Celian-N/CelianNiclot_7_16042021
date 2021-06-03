@@ -15,7 +15,16 @@
         <nav class="column side-panels__panel mt-sm br-md bg-white main-shadow pa-sm">
           <ul>
             <li v-for="tab in Object.values(navigationTabs)" :key="tab.to">
-              <router-link :to="{ path: `${tab.to}` }" replace class="row items-center pa-sm br-sm my-xs">
+              <router-link v-if="!tab.for" :to="{ path: `${tab.to}` }" replace class="row items-center pa-sm br-sm my-xs">
+                <span class="material-icons-round pr-md">{{ tab.icon }}</span>
+                <span>{{ tab.label }}</span>
+              </router-link>
+              <router-link
+                v-else-if="tab.for && user.adminRole"
+                :to="{ path: `${tab.to}` }"
+                replace
+                class="row items-center pa-sm br-sm my-xs"
+              >
                 <span class="material-icons-round pr-md">{{ tab.icon }}</span>
                 <span>{{ tab.label }}</span>
               </router-link>
