@@ -62,6 +62,9 @@ const getters = {
   getEditedImageById: (id: string) => {
     return publicationsState.value[id] ? publicationsState.value[id].imageUrl : null;
   },
+  getPublicationsByUserId : (userId : number)=>{
+    return Object.values(publicationsState.value).filter(publication => publication.authorId == userId)
+  }
 };
 
 export const publicationsStore = {

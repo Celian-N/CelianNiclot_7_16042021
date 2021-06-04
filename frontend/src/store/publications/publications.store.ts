@@ -26,7 +26,8 @@ export function usePublications() {
     editPublicationCall,
     getPostByIdCall,
     likePublicationCall,
-    signalPublication
+    signalPublication,
+    getPostsByUserIdCall
   } = useApi();
 
   const fetchPublications = async (page?: number) => {
@@ -53,6 +54,22 @@ export function usePublications() {
       metaLinksStore.setData(publication.id, [publication.link]);
     }
     return { ...publication, link: publication.link?.og.url };
+  };
+
+  const fetchPublicationsByUserId = async (userId: number) => {
+    const publications = (await getPostsByUserIdCall(userId)) as IApiPublication[];
+    if (!publications) return;
+
+    publications.forEach((publication) => {
+      setPublications([{ ...publication, link: publication.link?.og.url }]);
+      if (publication.link) {
+        metaLinksStore.setData(publication.id, [publication.link]);
+      }
+    });
+    const returnedPublications = publications.map((publication) => {
+      return { ...publication, link: publication.link ? publication.link?.og.url : null };
+    });
+    return returnedPublications;
   };
 
   const createPublication = async (createdPost: ICreatePublication) => {
@@ -136,6 +153,7 @@ export function usePublications() {
     getAllPublications,
     likePublication,
     signalUserPublication,
+    fetchPublicationsByUserId,
     ...rest,
   };
 }

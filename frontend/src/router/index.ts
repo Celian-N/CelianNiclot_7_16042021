@@ -31,6 +31,12 @@ const routes: Array<RouteRecordRaw> = [
         meta: { requiresAuth: true },
       },
       {
+        path: '/publications/:userPublicationId',
+        name: 'UserPublications',
+        component: () => import('../pages/UserPublications.vue'),
+        meta: { requiresAuth: true },
+      },
+      {
         path: '/admin',
         name: 'Admin',
         component: () => import('../pages/Admin.vue'),

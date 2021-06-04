@@ -144,6 +144,24 @@ export const useApi = () => {
         console.warn('Erreur :' + error);
       });
   };
+  const getPostsByUserIdCall = async (userId: number) => {
+    return await fetch(`http://localhost:3000/publications/user/${userId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + Cookies.get('groupomania_token'),
+      },
+    })
+      .then((result) => {
+        return result.json();
+      })
+      .then((res) => {
+        return res;
+      })
+      .catch((error) => {
+        console.warn('Erreur :' + error);
+      });
+  };
   const deletePublicationCall = async (publicationId: number) => {
     return await fetch(`http://localhost:3000/publications/${publicationId}`, {
       method: 'DELETE',
@@ -506,6 +524,7 @@ export const useApi = () => {
     ignorePostAdmin,
     banUserAdmin,
     signalComment,
-    signalPublication
+    signalPublication,
+    getPostsByUserIdCall
   };
 };
