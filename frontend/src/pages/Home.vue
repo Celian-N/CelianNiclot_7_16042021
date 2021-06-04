@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, SetupContext, computed, onMounted, ref, watch} from 'vue';
+import { defineComponent, SetupContext, computed, onMounted, ref, watch } from 'vue';
 import { useUser } from '../store/user/user.store';
 import { usePublications } from '../store/publications/publications.store';
 import Publications from '../components/Publications/Publications.vue';
@@ -35,7 +35,13 @@ export default defineComponent({
   },
   setup(props, context: SetupContext) {
     const { logout, getUser } = useUser();
-    const { fetchPublications, deletePublication, getAllPublications, likePublication, signalUserPublication } = usePublications();
+    const {
+      fetchPublications,
+      deletePublication,
+      getAllPublications,
+      likePublication,
+      signalUserPublication,
+    } = usePublications();
     const { deletePost, banUser } = useAdmin();
 
     const currentPage = ref(0);
@@ -43,7 +49,7 @@ export default defineComponent({
 
     const publications = computed(() => getAllPublications.value);
 
-   const sortedPublications = ref<IPublication[]>([]);
+    const sortedPublications = ref<IPublication[]>([]);
 
     watch(
       () => publications.value,
@@ -79,11 +85,11 @@ export default defineComponent({
       if (!bannedUser) return showErrorBanner("Impossible de bannir l'utilisateur");
       showSuccessBanner('Utilisateur banni succès !');
     };
-    const signalPublication = async(publicationId : number)=>{
-      const signaledPublication = await signalUserPublication(publicationId)
-      if (!signaledPublication) return showErrorBanner("Impossible de signaler la publication");
+    const signalPublication = async (publicationId: number) => {
+      const signaledPublication = await signalUserPublication(publicationId);
+      if (!signaledPublication) return showErrorBanner('Impossible de signaler la publication');
       showSuccessBanner('Publications signalée avec succès');
-    }
+    };
 
     const getPublications = async () => {
       currentPage.value++;
