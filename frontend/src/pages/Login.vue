@@ -13,7 +13,7 @@
         <div
           class="login-carousel__selectors--selector"
           :class="loginOrSignupStep == 'signup' ? 'bg-white' : 'bg-transparent'"
-           @click="goToSignup"
+          @click="goToSignup"
         ></div>
       </div>
 
@@ -22,88 +22,100 @@
         :style="loginOrSignupStep == 'login' ? 'height:300px;' : 'height:500px;'"
       >
         <div id="login-form" class="column items-center full-width position-absolute">
-          <InputField
-            type="email"
-            @onInput="(val) => (userMail = val)"
-            :value="userMail"
-            placeholder="Mail"
-            borderRadius="8px"
-            :minLength="10"
-            :maxLength="100"
-            class="login-input mb-lg mt-xl"
-            fontSize="16px"
-          />
-          <InputField
-            type="password"
-            @onInput="(val) => (userPassword = val)"
-            :value="userPassword"
-            placeholder="Mot de passe"
-            borderRadius="8px"
-            :minLength="8"
-            class="login-input mb-lg"
-            fontSize="16px"
-          />
-          <button @click.stop="onLogin" class="login-button bg-secondary text-white br-sm my-md font-16">
-            Se connecter
-          </button>
+          <form class="column items-center full-width" @submit="onLogin">
+            <InputField
+              type="email"
+              @onInput="(val) => (userMail = val)"
+              :value="userMail"
+              placeholder="Mail"
+              borderRadius="8px"
+              :minLength="10"
+              :maxLength="100"
+              class="login-input mb-lg mt-xl"
+              fontSize="16px"
+            />
+            <InputField
+              type="password"
+              @onInput="(val) => (userPassword = val)"
+              :value="userPassword"
+              placeholder="Mot de passe"
+              borderRadius="8px"
+              :minLength="8"
+              :maxLength="50"
+              class="login-input mb-lg"
+              fontSize="16px"
+            />
+            <input
+              type="submit"
+              class="login-button bg-secondary text-white br-sm my-md font-16"
+              value="Se connecter"
+              :disabled="!loginFormIsFill"
+            />
+          </form>
           <button @click.stop="goToSignUp" class="text-white font-14">Créer un compte</button>
         </div>
 
         <div id="signup-form" class="column full-width items-center position-absolute">
-          <InputField
-            @onInput="(val) => (firstname = val)"
-            :value="firstname"
-            placeholder="Prénom"
-            borderRadius="8px"
-            :maxLength="40"
-            class="login-input mb-lg"
-            fontSize="16px"
-            required
-          />
-          <InputField
-            @onInput="(val) => (lastname = val)"
-            :value="lastname"
-            placeholder="Nom"
-            borderRadius="8px"
-            :maxLength="40"
-            class="login-input mb-lg"
-            fontSize="16px"
-            required
-          />
-          <InputField
-            @onInput="(val) => (job = val)"
-            :value="job"
-            placeholder="Job"
-            borderRadius="8px"
-            :maxLength="60"
-            class="login-input mb-lg"
-            fontSize="16px"
-          />
-          <InputField
-            type="email"
-            @onInput="(val) => (email = val)"
-            :value="email"
-            placeholder="Mail"
-            borderRadius="8px"
-            :maxLength="100"
-            class="login-input mb-lg"
-            fontSize="16px"
-            required
-          />
-          <InputField
-            type="password"
-            @onInput="(val) => (password = val)"
-            :value="password"
-            placeholder="Mot de passe"
-            borderRadius="8px"
-            :minLength="8"
-            class="login-input mb-lg"
-            fontSize="16px"
-            required
-          />
-          <button @click.stop="onSignup" class="login-button bg-secondary text-white br-sm my-md font-16">
-            Créer un compte
-          </button>
+          <form class="column items-center full-width" @submit="onSignup">
+            <InputField
+              @onInput="(val) => (firstname = val)"
+              :value="firstname"
+              placeholder="Prénom"
+              borderRadius="8px"
+              :maxLength="40"
+              class="login-input mb-lg"
+              fontSize="16px"
+              required
+            />
+            <InputField
+              @onInput="(val) => (lastname = val)"
+              :value="lastname"
+              placeholder="Nom"
+              borderRadius="8px"
+              :maxLength="40"
+              class="login-input mb-lg"
+              fontSize="16px"
+              required
+            />
+            <InputField
+              @onInput="(val) => (job = val)"
+              :value="job"
+              placeholder="Job"
+              borderRadius="8px"
+              :maxLength="60"
+              class="login-input mb-lg"
+              fontSize="16px"
+            />
+            <InputField
+              type="email"
+              @onInput="(val) => (email = val)"
+              :value="email"
+              placeholder="Mail"
+              borderRadius="8px"
+              :maxLength="100"
+              class="login-input mb-lg"
+              fontSize="16px"
+              required
+            />
+            <InputField
+              type="password"
+              @onInput="(val) => (password = val)"
+              :value="password"
+              placeholder="Mot de passe"
+              borderRadius="8px"
+              :minLength="8"
+              :maxLength="50"
+              class="login-input mb-lg"
+              fontSize="16px"
+              required
+            />
+            <input
+              type="submit"
+              class="login-button bg-secondary text-white br-sm my-md font-16"
+              value="Créer un compte"
+              :disabled="!signupFormIsFill"
+            />
+          </form>
           <button @click.stop="goToLogin" class="text-white font-14">Se connecter</button>
         </div>
       </div>
@@ -112,7 +124,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, toRefs } from 'vue';
+import { defineComponent, ref, reactive, toRefs, computed } from 'vue';
 import { useUser } from '../store/user/user.store';
 import InputField from '../components/InputField/InputField.vue';
 import { showErrorBanner } from '../mixins/banners/banners.mixins';
@@ -123,7 +135,7 @@ export default defineComponent({
     InputField,
   },
   setup(props, context) {
-    const emailRegExp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    const emailRegExp = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     const { login, signup } = useUser();
 
     const createUser = reactive({
@@ -139,17 +151,21 @@ export default defineComponent({
 
     const loginOrSignupStep = ref('login');
 
+    const validEmail = (email: string) => {
+      return emailRegExp.test(email);
+    };
+
     const onLogin = async () => {
-      if (userMail.value.match(emailRegExp)) {
+      if (validEmail(createUser.email)) {
         const user = await login(userMail.value, userPassword.value);
-        if(!user || !user.token) return showErrorBanner('Email ou mot de passe incorrect');
+        if (!user || !user.token) return showErrorBanner('Email ou mot de passe incorrect');
         return;
       }
       showErrorBanner('Impossible de se connecter, veuillez rentrer un mail valide');
     };
 
     const onSignup = async () => {
-      if (createUser.email.match(emailRegExp)) {
+      if (validEmail(createUser.email)) {
         await signup(createUser);
         return;
       }
@@ -173,6 +189,14 @@ export default defineComponent({
       loginContainer.classList.remove('login-hidden');
     };
 
+    const loginFormIsFill = computed(() => {
+      return (!userMail.value || !userPassword.value) ? false : true;
+    });
+    const signupFormIsFill = computed(() => {
+      const { firstname, lastname, email, password } = createUser;
+      return !firstname || !lastname || !email || !password ? false : true;
+    });
+
     return {
       userMail,
       userPassword,
@@ -182,6 +206,8 @@ export default defineComponent({
       loginOrSignupStep,
       goToSignUp,
       goToLogin,
+      loginFormIsFill,
+      signupFormIsFill,
     };
   },
 });
@@ -215,7 +241,7 @@ export default defineComponent({
   &__selectors {
     width: 100px;
     &--selector {
-      cursor:pointer;
+      cursor: pointer;
       border: 2px solid white;
       border-radius: 30px;
       width: 20px;
@@ -226,8 +252,14 @@ export default defineComponent({
 .login-button {
   padding: 10px 40px 10px 40px;
   transition: opacity 300ms;
+  cursor: pointer;
+  border: none;
   &:hover {
     opacity: 0.8;
+  }
+  &:disabled{
+    opacity: 0.3;
+    cursor: no-drop;
   }
 }
 .login-input {
