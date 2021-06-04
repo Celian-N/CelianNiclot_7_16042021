@@ -13,6 +13,9 @@ import { publicationsStoreProvider } from './store/publications/publications.sto
 import { commentsStoreProvider } from './store/comments/comments.store';
 import { metaLinksStoreProvider } from './store/metadata/state';
 import { adminStoreProvider } from './store/admin/admin.store';
+import { authorsStoreProvider } from './store/authors/authors.store';
+import { commentsLengthStoreProvider } from './store/commentsLength/state';
+
 
 export default defineComponent({
   name: 'App',
@@ -22,7 +25,9 @@ export default defineComponent({
     commentsStoreProvider();
     metaLinksStoreProvider();
     adminStoreProvider();
-    
+    authorsStoreProvider();
+    commentsLengthStoreProvider();
+
     const router = useRouter();
 
     onMounted(async function () {

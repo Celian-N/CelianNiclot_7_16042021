@@ -1,11 +1,15 @@
 <template>
   <div class="publications-container row">
     <div class="publications-container column items-center full-width">
-      <div class="row items-center bg-white main-shadow pa-sm br-md full-width" style="box-sizing: border-box;">
-        <Avatar size="70px" class="mr-md"/>
+      <div
+        v-if="authorInfos"
+        class="row items-center bg-white main-shadow pa-sm br-md full-width"
+        style="box-sizing: border-box"
+      >
+        <Avatar size="70px" class="mr-md" :userPic="authorInfos.userPic" />
         <div class="column items-start">
-          <span class="text-main text-bold">Prénom Nom</span>
-          <span class="text-caption">Job</span>
+          <span class="text-main text-bold">{{ authorInfos.firstname + ' ' + authorInfos.lastname }}</span>
+          <span class="text-caption">{{ authorInfos.job }}</span>
         </div>
       </div>
       <div v-for="publication in sortedPublications" :key="`publication-${publication.id}`" class="full-width">
@@ -33,39 +37,52 @@ import { showSuccessBanner, showErrorBanner } from '../mixins/banners/banners.mi
 import { useAdmin } from '../store/admin/admin.store';
 import { useRouter } from 'vue-router';
 import { IPublication } from '../interface/publications/publication';
-import Avatar from '../components/Avatar/Avatar.vue'
+import Avatar from '../components/Avatar/Avatar.vue';
+import { useAuthors } from '../store/authors/authors.store';
 
 export default defineComponent({
   name: 'Home',
   components: {
     Publication,
-    Avatar
+    Avatar,
   },
   setup(props, context: SetupContext) {
     const { logout, getUser } = useUser();
     const {
       deletePublication,
-
       likePublication,
       signalUserPublication,
       fetchPublicationsByUserId,
       getPublicationsByUserId,
     } = usePublications();
     const { deletePost, banUser } = useAdmin();
+    const { getAuthorInfosById } = useAuthors();
 
     const route = useRouter();
 
     const { userPublicationId } = route.currentRoute.value.params;
 
+    const selectedUserId = ref(parseInt(userPublicationId as string))
+
+    const authorInfos = computed(() => getAuthorInfosById(selectedUserId.value));
+
     watch(
       () => route.currentRoute.value.params.userPublicationId,
       (newValue) => {
         if (!newValue) return;
-        getPublications(parseInt(newValue as string));
+        selectedUserId.value = parseInt(newValue as string)
       }
     );
 
-    const publications = computed(() => getPublicationsByUserId(parseInt(userPublicationId as string)));
+     watch(
+      () => selectedUserId.value,
+      (newValue) => {
+        if (!newValue) return;
+        getPublications(newValue);
+      }
+    );
+
+    const publications = computed(() => getPublicationsByUserId(selectedUserId.value));
 
     const sortedPublications = ref<IPublication[]>([]);
 
@@ -118,6 +135,7 @@ export default defineComponent({
 
     onMounted(async () => {
       if (!userPublicationId) return;
+      console.log('onMounted userId :', userPublicationId)
       await getPublications(parseInt(userPublicationId as string));
     });
 
@@ -133,7 +151,8 @@ export default defineComponent({
       deleteAdminPublication,
       banUserAdmin,
       signalPublication,
-      sortedPublications
+      sortedPublications,
+      authorInfos,
     };
   },
 });
