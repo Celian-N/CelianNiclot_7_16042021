@@ -3,7 +3,7 @@
     <Publications
       ref="publicationsComponent"
       style="flex: 1"
-      :publications="publications"
+      :publications="sortedPublications"
       :user="user"
       @deletePublication="(val) => deleteSelectedPublication(val)"
       @likePublication="(val) => onLikePublication(val)"
@@ -17,12 +17,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, SetupContext, computed, onMounted, ref } from 'vue';
+import { defineComponent, SetupContext, computed, onMounted, ref, watch} from 'vue';
 import { useUser } from '../store/user/user.store';
 import { usePublications } from '../store/publications/publications.store';
 import Publications from '../components/Publications/Publications.vue';
 import { showSuccessBanner, showErrorBanner } from '../mixins/banners/banners.mixins';
 import { useAdmin } from '../store/admin/admin.store';
+import { IPublication } from '../interface/publications/publication';
 
 interface IPublicationComponent {
   removeEventListener: () => void;
@@ -41,6 +42,18 @@ export default defineComponent({
     const publicationsComponent = ref<IPublicationComponent | null>(null);
 
     const publications = computed(() => getAllPublications.value);
+
+   const sortedPublications = ref<IPublication[]>([]);
+
+    watch(
+      () => publications.value,
+      (value) => {
+        if (!value) return;
+        sortedPublications.value = value.sort((a, b) => {
+          return +new Date(b.creationDate) - +new Date(a.creationDate);
+        });
+      }
+    );
 
     const user = computed(() => getUser.value);
 
@@ -83,7 +96,7 @@ export default defineComponent({
     };
 
     onMounted(async () => {
-      if (!publications.value.length) await getPublications();
+      await getPublications();
     });
 
     return {
@@ -98,7 +111,8 @@ export default defineComponent({
       publicationsComponent,
       deleteAdminPublication,
       banUserAdmin,
-      signalPublication
+      signalPublication,
+      sortedPublications
     };
   },
 });
