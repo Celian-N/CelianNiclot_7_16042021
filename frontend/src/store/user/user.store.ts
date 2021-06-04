@@ -4,6 +4,7 @@ import { userStore } from './state';
 import { useApi } from '../../mixins/api/api.mixins';
 import Cookies from 'js-cookie';
 import { useRouter } from 'vue-router';
+import { asyncCall } from '../api/api.store';
 
 export const userStoreProvider = () => {
   provide('userStore', userStore);
@@ -16,19 +17,19 @@ export function useUser() {
   const router = useRouter();
 
   const login = async (email: string, password: string) => {
-    const user = await loginCall(email, password);
+    const user = await asyncCall('LOGIN', () => loginCall(email, password));
     if (!user.token) return;
 
     router.push({ name: 'Home' });
     Cookies.set('groupomania_token', user.token, { expires: 7 });
-    return user
+    return user;
   };
 
   const signup = async (user: ICreateUser) => {
-    const userCreated = await signupCall(user);
+    const userCreated = await asyncCall('SIGNUP', () => signupCall(user));
     if (!userCreated.email || !userCreated.active) return;
 
-    await login(userCreated.email, user.password);
+    await asyncCall('LOGIN', () => login(userCreated.email, user.password));
   };
   const logout = () => {
     Cookies.remove('groupomania_token');
@@ -36,26 +37,23 @@ export function useUser() {
     router.push({ name: 'Login' });
   };
 
-  const saveEditedUser = async (userId : number, user : Omit<ICreateUser, 'password'>, newPassword?:string)=>{
-
+  const saveEditedUser = async (userId: number, user: Omit<ICreateUser, 'password'>, newPassword?: string) => {
     if (user.userPic) {
-      const editedUser = await editUser(userId,
-        { ...user } , newPassword, user.userPic
-      );
+      const editedUser = await asyncCall('EDIT_USER', () => editUser(userId, { ...user }, newPassword, user.userPic));
       if (!editedUser) return;
 
-      updateUser(editedUser)
+      updateUser(editedUser);
 
       return editedUser;
     } else {
-      const editedUser = await editUser(userId, { ...user }, newPassword);
+      const editedUser = await asyncCall('EDIT_USER', () => editUser(userId, { ...user }, newPassword));
       if (!editedUser) return;
 
-      updateUser(editedUser)
-    
+      updateUser(editedUser);
+
       return editedUser;
     }
-  }
+  };
 
-  return { setUser, getUser, updateUser, login, signup, logout,saveEditedUser, ...rest };
+  return { setUser, getUser, updateUser, login, signup, logout, saveEditedUser, ...rest };
 }

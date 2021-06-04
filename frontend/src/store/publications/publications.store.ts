@@ -1,8 +1,9 @@
 import { inject, provide } from 'vue';
 import { publicationsStore } from './state';
 import { useApi } from '../../mixins/api/api.mixins';
-import { ICreatePublication, IApiPublication } from '@/interface/publications/publication';
+import { ICreatePublication, IApiPublication, IPublication } from '@/interface/publications/publication';
 import { metaLinksStore } from '../metadata/state';
+import { asyncCall } from '../api/api.store';
 
 export const publicationsStoreProvider = () => {
   provide('publicationsStore', publicationsStore);
@@ -27,11 +28,11 @@ export function usePublications() {
     getPostByIdCall,
     likePublicationCall,
     signalPublication,
-    getPostsByUserIdCall
+    getPostsByUserIdCall,
   } = useApi();
 
   const fetchPublications = async (page?: number) => {
-    const publications = (await getAllPostsCall(page)) as IApiPublication[];
+    const publications = await asyncCall('GET_PUBLICATIONS', () => getAllPostsCall(page)) ;
     if (!publications) return;
 
     publications.forEach((publication) => {
@@ -46,7 +47,7 @@ export function usePublications() {
     return returnedPublications;
   };
   const fetchPublicationById = async (publicationId: number) => {
-    const publication = (await getPostByIdCall(publicationId)) as IApiPublication;
+    const publication = await asyncCall('GET_PUBLICATION_BY_ID', ()=> getPostByIdCall(publicationId));
     if (!publication) return;
 
     setPublications([{ ...publication, link: publication.link?.og.url }]);
@@ -57,7 +58,7 @@ export function usePublications() {
   };
 
   const fetchPublicationsByUserId = async (userId: number) => {
-    const publications = (await getPostsByUserIdCall(userId)) as IApiPublication[];
+    const publications = await asyncCall('GET_PUBLICATION_BY_USER_ID', () => getPostsByUserIdCall(userId));
     if (!publications) return;
 
     publications.forEach((publication) => {
@@ -74,16 +75,16 @@ export function usePublications() {
 
   const createPublication = async (createdPost: ICreatePublication) => {
     if (createdPost.imageUrl) {
-      const createdPublication = (await createPublicationCall(
+      const createdPublication = await asyncCall('CREATE_PUBLICATION', () => createPublicationCall(
         { ...createdPost },
         createdPost.imageUrl
-      )) as IApiPublication;
+      ));
       if (!createdPublication) return;
 
       setPublications([{ ...createdPublication, link: createdPublication.link?.og.url }]);
       return createdPublication;
     } else {
-      const createdPublication = (await createPublicationCall({ ...createdPost })) as IApiPublication;
+      const createdPublication = await asyncCall('CREATE_PUBLICATION', () => createPublicationCall({ ...createdPost }));
 
       if (!createdPublication) return;
 
@@ -97,7 +98,7 @@ export function usePublications() {
   };
 
   const deletePublication = async (publicationId: number) => {
-    const deletedPublication = await deletePublicationCall(publicationId);
+    const deletedPublication = await asyncCall('DELETE_PUBLICATION', ()=> deletePublicationCall(publicationId));
 
     if (!deletedPublication.id) return;
 
@@ -108,20 +109,20 @@ export function usePublications() {
 
   const editPublication = async (publicationId: number, editedPublication: ICreatePublication) => {
     if (editedPublication.imageUrl) {
-      const resultEdition = (await editPublicationCall(
+      const resultEdition = await asyncCall('UPDATE_PUBLICATION', () => editPublicationCall(
         publicationId,
         { ...editedPublication },
         editedPublication.imageUrl
-      )) as IApiPublication;
+      ));
       if (!resultEdition) return;
 
       updatePublication(publicationId, { ...resultEdition, link: resultEdition.link?.og.url });
       return resultEdition;
     } else {
-      const resultEdition = await editPublicationCall(publicationId, { ...editedPublication });
+      const resultEdition = await asyncCall('UPDATE_PUBLICATION', () => editPublicationCall(publicationId, { ...editedPublication }));
       if (!resultEdition) return;
 
-      updatePublication(publicationId, resultEdition);
+      updatePublication(publicationId, resultEdition as Partial<IPublication>);
       if (resultEdition.link) {
         metaLinksStore.updateData(publicationId, resultEdition.link);
       }
@@ -130,7 +131,7 @@ export function usePublications() {
     }
   };
   const likePublication = async (publicationId: number, userId: number) => {
-    const likedPublication = await likePublicationCall(publicationId, userId);
+    const likedPublication = await asyncCall('LIKE_PUBLICATION', ()=> likePublicationCall(publicationId, userId));
 
     if (!likedPublication) return;
 
@@ -138,11 +139,11 @@ export function usePublications() {
     return likedPublication;
   };
 
-  const signalUserPublication = async(publicationId : number)=>{
-    const signaledPublication = await signalPublication(publicationId)
-    if(!signaledPublication) return;
-    return signaledPublication
-  }
+  const signalUserPublication = async (publicationId: number) => {
+    const signaledPublication = await asyncCall('SIGNAL_PUBLICATION', ()=> signalPublication(publicationId));
+    if (!signaledPublication) return;
+    return signaledPublication;
+  };
 
   return {
     fetchPublications,

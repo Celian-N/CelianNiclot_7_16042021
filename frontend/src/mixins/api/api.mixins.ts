@@ -1,7 +1,8 @@
 import { ICreateUser, IUser } from '../../interface/user/user';
-import { ICreatePublication } from '../../interface/publications/publication';
+import { IApiPublication, ICreatePublication, IPublicationAuthor } from '../../interface/publications/publication';
 import Cookies from 'js-cookie';
 import axios from 'axios';
+import { IComment } from '@/interface/comments/comments';
 
 export const useApi = () => {
   //LOGIN AND SIGNUP
@@ -46,7 +47,7 @@ export const useApi = () => {
       .catch((error) => console.warn('Erreur :' + error));
   };
 
-  const editUser = async (userId: number, user: Omit<ICreateUser, 'password'>, newPassword?: string, image?: File) => {
+  const editUser = async (userId: number, user: Omit<ICreateUser, 'password'>, newPassword?: string, image?: File | null) => {
     const formData = new FormData();
     formData.append('user', JSON.stringify(user));
     if (newPassword) {
@@ -69,7 +70,7 @@ export const useApi = () => {
 
   //PUBLICATIONS
 
-  const createPublicationCall = async (publication: ICreatePublication, image?: File) => {
+  const createPublicationCall = async (publication: ICreatePublication, image?: File | null) => {
     const formData = new FormData();
     formData.append('publication', JSON.stringify(publication));
     if (image) {
@@ -86,7 +87,7 @@ export const useApi = () => {
       })
       .catch((error) => {
         console.warn('Erreur :' + error);
-      });
+      }) as Promise<IApiPublication>;
   };
 
   const getArticleCall = async (link: string) => {
@@ -109,7 +110,7 @@ export const useApi = () => {
   };
 
   const getAllPostsCall = async (page?: number) => {
-    return await fetch(`http://localhost:3000/publications/?page=${page}`, {
+    return (await fetch(`http://localhost:3000/publications/?page=${page}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -124,10 +125,10 @@ export const useApi = () => {
       })
       .catch((error) => {
         console.warn('Erreur :' + error);
-      });
+      })) as Promise<IApiPublication[]>;
   };
   const getPostByIdCall = async (publicationId: number) => {
-    return await fetch(`http://localhost:3000/publications/${publicationId}`, {
+    return (await fetch(`http://localhost:3000/publications/${publicationId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -142,10 +143,10 @@ export const useApi = () => {
       })
       .catch((error) => {
         console.warn('Erreur :' + error);
-      });
+      })) as Promise<IApiPublication>;
   };
   const getPostsByUserIdCall = async (userId: number) => {
-    return await fetch(`http://localhost:3000/publications/user/${userId}`, {
+    return (await fetch(`http://localhost:3000/publications/user/${userId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -160,7 +161,7 @@ export const useApi = () => {
       })
       .catch((error) => {
         console.warn('Erreur :' + error);
-      });
+      })) as Promise<IApiPublication[]>;
   };
   const deletePublicationCall = async (publicationId: number) => {
     return await fetch(`http://localhost:3000/publications/${publicationId}`, {
@@ -181,7 +182,11 @@ export const useApi = () => {
       });
   };
 
-  const editPublicationCall = async (publicationId: number, editedPublication: ICreatePublication, image?: File) => {
+  const editPublicationCall = async (
+    publicationId: number,
+    editedPublication: ICreatePublication,
+    image?: File | null
+  ) => {
     const formData = new FormData();
     formData.append('publicationId', JSON.stringify(publicationId));
     formData.append('publication', JSON.stringify(editedPublication));
@@ -197,7 +202,7 @@ export const useApi = () => {
       .then((res) => {
         return res.data;
       })
-      .catch((error) => console.warn('Erreur :' + error));
+      .catch((error) => console.warn('Erreur :' + error)) as Promise<IApiPublication>;
   };
 
   const likePublicationCall = async (publicationId: number, userId: number) => {
@@ -221,7 +226,7 @@ export const useApi = () => {
   };
 
   const fetchAuthorInfosCall = async (authorId: number) => {
-    return await fetch(`http://localhost:3000/users/${authorId}`, {
+    return (await fetch(`http://localhost:3000/users/${authorId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -236,7 +241,7 @@ export const useApi = () => {
       })
       .catch((error) => {
         console.warn('Erreur :' + error);
-      });
+      })) as Promise<IPublicationAuthor>;
   };
   //USERS
 
@@ -278,14 +283,14 @@ export const useApi = () => {
       },
     };
     const queryPublication = `?publicationId=${publicationId}`;
-    return await fetch(`http://localhost:3000/comments${queryPublication}`, request)
+    return (await fetch(`http://localhost:3000/comments${queryPublication}`, request)
       .then((result) => {
         return result.json();
       })
       .then((res) => {
         return res;
       })
-      .catch((error) => console.warn('Erreur :' + error));
+      .catch((error) => console.warn('Erreur :' + error))) as Promise<number>;
   };
 
   const getCommentsCall = async (publicationId: number, page?: number) => {
@@ -297,14 +302,14 @@ export const useApi = () => {
       },
     };
     const queryPage = page ? `?page=${page}` : '';
-    return await fetch(`http://localhost:3000/comments/${publicationId}${queryPage}`, request)
+    return (await fetch(`http://localhost:3000/comments/${publicationId}${queryPage}`, request)
       .then((result) => {
         return result.json();
       })
       .then((res) => {
         return res;
       })
-      .catch((error) => console.warn('Erreur :' + error));
+      .catch((error) => console.warn('Erreur :' + error))) as Promise<IComment[]>;
   };
 
   const createCommentCall = async (publicationId: number, newComment: string) => {
@@ -316,17 +321,17 @@ export const useApi = () => {
       },
       body: JSON.stringify({ comment: newComment }),
     };
-    return await fetch(`http://localhost:3000/comments/${publicationId}`, request)
+    return (await fetch(`http://localhost:3000/comments/${publicationId}`, request)
       .then((result) => {
         return result.json();
       })
       .then((res) => {
         return res;
       })
-      .catch((error) => console.warn('Erreur :' + error));
+      .catch((error) => console.warn('Erreur :' + error))) as Promise<IComment>;
   };
   const deleteCommentCall = async (commentId: number) => {
-    return await fetch(`http://localhost:3000/comments/${commentId}`, {
+    return (await fetch(`http://localhost:3000/comments/${commentId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -341,10 +346,10 @@ export const useApi = () => {
       })
       .catch((error) => {
         console.warn('Erreur :' + error);
-      });
+      })) as Promise<IComment>;
   };
   const editCommentCall = async (commentId: number, newComment: string) => {
-    return await fetch(`http://localhost:3000/comments/${commentId}`, {
+    return (await fetch(`http://localhost:3000/comments/${commentId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -360,7 +365,7 @@ export const useApi = () => {
       })
       .catch((error) => {
         console.warn('Erreur :' + error);
-      });
+      })) as Promise<IComment>;
   };
 
   const likeCommentCall = async (commentId: number, userId: number) => {
@@ -384,9 +389,9 @@ export const useApi = () => {
   };
 
   //---ADMIN---
-  
+
   const getSignaledPosts = async () => {
-    return await fetch(`http://localhost:3000/admin`, {
+    return (await fetch(`http://localhost:3000/admin`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -401,7 +406,7 @@ export const useApi = () => {
       })
       .catch((error) => {
         console.warn('Erreur :' + error);
-      });
+      })) as Promise<(IComment | IApiPublication)[]>;
   };
 
   const deletePostAdmin = async (type: string, postId: number) => {
@@ -423,7 +428,7 @@ export const useApi = () => {
       });
   };
   const ignorePostAdmin = async (type: string, postId: number) => {
-    console.log('postId : ', postId)
+    console.log('postId : ', postId);
     return await fetch(`http://localhost:3000/admin/${type}/${postId}`, {
       method: 'POST',
       headers: {
@@ -442,7 +447,7 @@ export const useApi = () => {
       });
   };
 
-  const banUserAdmin = async (userId : number) => {
+  const banUserAdmin = async (userId: number) => {
     return await fetch(`http://localhost:3000/admin/ban/${userId}`, {
       method: 'POST',
       headers: {
@@ -461,7 +466,7 @@ export const useApi = () => {
       });
   };
 
-  const signalComment = async (commentId : number) => {
+  const signalComment = async (commentId: number) => {
     return await fetch(`http://localhost:3000/comments/signaled/${commentId}`, {
       method: 'POST',
       headers: {
@@ -480,7 +485,7 @@ export const useApi = () => {
       });
   };
 
-  const signalPublication = async (publicationId : number) => {
+  const signalPublication = async (publicationId: number) => {
     return await fetch(`http://localhost:3000/publications/signaled/${publicationId}`, {
       method: 'POST',
       headers: {
@@ -525,6 +530,6 @@ export const useApi = () => {
     banUserAdmin,
     signalComment,
     signalPublication,
-    getPostsByUserIdCall
+    getPostsByUserIdCall,
   };
 };
