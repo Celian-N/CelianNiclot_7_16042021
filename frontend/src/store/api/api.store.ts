@@ -3,18 +3,31 @@ import { provide, ref, readonly, inject, computed } from 'vue';
 export type RequestKeys =
   | 'LOGIN'
   | 'SIGNUP'
+  | 'EDIT_USER'
+  | 'SIGNUP'
+  | 'GET_ARTICLE'
   | 'CREATE_PUBLICATION'
   | 'GET_PUBLICATIONS'
   | 'GET_PUBLICATION_BY_ID'
+  | 'GET_PUBLICATION_BY_USER_ID'
   | 'UPDATE_PUBLICATION'
   | 'DELETE_PUBLICATIONS'
   | 'LIKE_PUBLICATION'
+  | 'GET_AUTHOR_INFOS'
+  | 'GET_AUTHOR_INFOS'
   | 'GET_CURRENT_USER'
   | 'GET_COMMENTS'
+  | 'GET_COMMENTS_LENGTH'
   | 'CREATE_COMMENT'
   | 'DELETE_COMMENT'
   | 'UPDATE_COMMENT'
-  | 'LIKE_COMMENT';
+  | 'LIKE_COMMENT'
+  | 'GET_SIGNALED_POSTS'
+  | 'DELETE_POST_ADMIN'
+  | 'IGNORE_POST_ADMIN'
+  | 'BAN_USER_ADMIN'
+  | 'SIGNAL_COMMENT'
+  | 'SIGNAL_PUBLICATION';
 
 type AsyncStatusState = Record<RequestKeys, { isLoading: boolean }>;
 
