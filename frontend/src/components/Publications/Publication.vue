@@ -1,7 +1,7 @@
 <template>
   <div class="my-sm column bg-white pa-md br-md full-width main-shadow" style="box-sizing: border-box">
     <div class="row items-start justify-between mb-md">
-      <div class="row items-center">
+      <div class="row items-center cursor-pointer" @click="goToUserProfile">
         <Avatar size="50px" :userPic="authorInfos.userPic" class="mr-sm" />
         <div class="column items-start">
           <span class="text-main text-bold">{{ authorInfos.firstname }} {{ authorInfos.lastname }}</span>
@@ -197,7 +197,7 @@ export default defineComponent({
       editComment,
       likeComment,
       fetchCommentsLength,
-      signalUserComment
+      signalUserComment,
     } = useComments();
     const { fetchAuthorInfos } = useApi();
     const { getDataById } = useMetaLinks();
@@ -255,11 +255,15 @@ export default defineComponent({
       showSuccessBanner('Utilisateur banni succès !');
     };
 
-    const signalComment = async(commentId : number)=>{
-      const signaledComment = await signalUserComment(commentId)
-      if (!signaledComment) return showErrorBanner("Impossible de signaler le commentaire");
+    const signalComment = async (commentId: number) => {
+      const signaledComment = await signalUserComment(commentId);
+      if (!signaledComment) return showErrorBanner('Impossible de signaler le commentaire');
       showSuccessBanner('Commentaire signalé avec succès');
-    }
+    };
+
+    const goToUserProfile = () => {
+      router.push({ name: 'UserPublications', params: { userPublicationId: props.publication.authorId } });
+    };
 
     onMounted(async () => {
       await fetchFirstComment(props.publication.id);
@@ -285,7 +289,8 @@ export default defineComponent({
       authorInfos,
       deleteAdminComment,
       banUserAdmin,
-      signalComment
+      signalComment,
+      goToUserProfile,
     };
   },
 });

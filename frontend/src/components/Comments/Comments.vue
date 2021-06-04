@@ -22,7 +22,8 @@
             <Avatar
               size="35px"
               :userPic="authorInfos[comment.id] ? authorInfos[comment.id].userPic : null"
-              class="mr-xs"
+              class="mr-xs cursor-pointer"
+              @click="goToUserProfile(comment.authorId)"
             />
             <div v-if="commentEditingMode[comment.id]" class="column items-end full-width">
               <InputField
@@ -142,6 +143,7 @@ import IconButton from '../IconButton/IconButton.vue';
 import InputField from '../InputField/InputField.vue';
 import { IPublicationAuthor } from '../../interface/publications/publication';
 import { useApi } from '../../mixins/api/api.mixins';
+import {useRouter} from 'vue-router'
 
 export default defineComponent({
   name: 'Comments',
@@ -161,6 +163,7 @@ export default defineComponent({
     const showMenu = ref<Record<number, boolean>>({});
     const authorInfos = ref<Record<number, IPublicationAuthor>>({});
     const { fetchAuthorInfos } = useApi();
+    const router = useRouter()
 
     const getAuthorInfos = async (comments: IComment[]) => {
       for (const comment of comments) {
@@ -205,6 +208,11 @@ export default defineComponent({
       showMenu.value[commentId] = false;
     };
 
+    const goToUserProfile = (userId : number) => {
+      router.push({ name: 'UserPublications', params: { userPublicationId: userId } });
+    };
+    
+
     return {
       showLoadMoreButton,
       commentEditingMode,
@@ -215,6 +223,7 @@ export default defineComponent({
       showMenu,
       onOpenMenu,
       authorInfos,
+      goToUserProfile
     };
   },
 });

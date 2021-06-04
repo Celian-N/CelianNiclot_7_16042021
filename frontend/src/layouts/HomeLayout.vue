@@ -5,6 +5,7 @@
       <div class="column side-panels mr-sm">
         <div
           class="row items-center side-panels__panel mt-sm br-md bg-white main-shadow pa-sm justify-between profile-card"
+          @click="goToMyProfile"
         >
           <Avatar size="60px" :userPic="user.userPic" class="mr-sm" />
           <div class="column items-start" style="flex: 1">
@@ -15,7 +16,12 @@
         <nav class="column side-panels__panel mt-sm br-md bg-white main-shadow pa-sm">
           <ul>
             <li v-for="tab in Object.values(navigationTabs)" :key="tab.to">
-              <router-link v-if="!tab.for" :to="{ path: `${tab.to}` }" replace class="row items-center pa-sm br-sm my-xs">
+              <router-link
+                v-if="!tab.for"
+                :to="{ path: `${tab.to}` }"
+                replace
+                class="row items-center pa-sm br-sm my-xs"
+              >
                 <span class="material-icons-round pr-md">{{ tab.icon }}</span>
                 <span>{{ tab.label }}</span>
               </router-link>
@@ -48,6 +54,7 @@ import HeaderCard from '../components/Header/HeaderCard.vue';
 import Avatar from '../components/Avatar/Avatar.vue';
 import moment from 'moment';
 import { showErrorBanner } from '../mixins/banners/banners.mixins';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
   name: 'HomeLayout',
@@ -58,10 +65,14 @@ export default defineComponent({
   setup() {
     const { setUser, getUser } = useUser();
     const { getCurrentUser } = useApi();
+    const router = useRouter();
 
     const user = computed(() => getUser.value);
 
     const userInscription = moment(user.value.creationDate).locale('fr').format('DD MMM YYYY');
+    const goToMyProfile = () => {
+      router.push({ name: 'UserPublications', params: { userPublicationId: user.value.id } });
+    };
 
     onMounted(async () => {
       const currentUser = await getCurrentUser();
@@ -69,7 +80,7 @@ export default defineComponent({
       return setUser(currentUser);
     });
 
-    return { navigationTabs, user, userInscription };
+    return { navigationTabs, user, userInscription, goToMyProfile };
   },
 });
 </script>
