@@ -31,6 +31,7 @@ exports.findOne = (req, res) => {
         firstname: user.firstname,
         lastname: user.lastname,
         userPic: user.userPic,
+        job : user.job
       });
   });
 };

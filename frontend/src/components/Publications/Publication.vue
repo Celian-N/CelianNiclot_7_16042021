@@ -1,7 +1,7 @@
 <template>
   <div class="my-sm column bg-white pa-md br-md full-width main-shadow" style="box-sizing: border-box">
     <div class="row items-start justify-between mb-md">
-      <div class="row items-center">
+      <div v-if="authorInfos" class="row items-center cursor-pointer" @click="goToUserProfile">
         <Avatar size="50px" :userPic="authorInfos.userPic" class="mr-sm" />
         <div class="column items-start">
           <span class="text-main text-bold">{{ authorInfos.firstname }} {{ authorInfos.lastname }}</span>
@@ -150,8 +150,9 @@ import IconButton from '../IconButton/IconButton.vue';
 import { showErrorBanner, showSuccessBanner } from '../../mixins/banners/banners.mixins';
 import Article from '../Article/Article.vue';
 import { useMetaLinks } from '../../store/metadata/state';
-import { useApi } from '../../mixins/api/api.mixins';
+import { useAuthors } from '../../store/authors/authors.store';
 import { useAdmin } from '../../store/admin/admin.store';
+import { useCommentsLength } from '../../store/commentsLength/state';
 
 export interface CommentsRef {
   showLoadMoreButton: boolean;
@@ -176,11 +177,6 @@ export default defineComponent({
     const showMenu = ref(false);
     const router = useRouter();
 
-    const authorInfos = ref<IPublicationAuthor>({
-      firstname: '',
-      lastname: '',
-    });
-
     const embedRegex = /^(https|http):\/\/(?:www\.)?youtube-nocookie.com\/embed\/[A-z0-9]+/;
 
     const publicationMoment = moment(props.publication.creationDate).locale('fr').fromNow();
@@ -197,9 +193,10 @@ export default defineComponent({
       editComment,
       likeComment,
       fetchCommentsLength,
-      signalUserComment
+      signalUserComment,
     } = useComments();
-    const { fetchAuthorInfos } = useApi();
+    const { getCommentLengthById } = useCommentsLength();
+    const { fetchAuthorInfos, getAuthorInfosById } = useAuthors();
     const { getDataById } = useMetaLinks();
     const { deletePost, banUser } = useAdmin();
 
@@ -207,7 +204,9 @@ export default defineComponent({
     const publicationArticle = computed(() => getDataById(props.publication.id));
     const currentCommentsPage = ref(0);
     const newComment = ref('');
-    const commentsLength = ref(0);
+    const commentsLength = computed(() => getCommentLengthById(props.publication.id));
+
+    const authorInfos = computed(() => getAuthorInfosById(props.publication.authorId));
 
     const loadMoreComments = async () => {
       currentCommentsPage.value++;
@@ -223,7 +222,7 @@ export default defineComponent({
     };
 
     const onDeleteComment = async (commentId: number) => {
-      const deletedCommentId = await deleteComment(commentId);
+      const deletedCommentId = await deleteComment(commentId, props.publication.id);
       if (!deletedCommentId) return showErrorBanner('Impossible de supprimer le commentaire');
       showSuccessBanner('Commentaire supprimé avec succès !');
       if (!publicationComments.value.length) return await fetchFirstComment(props.publication.id);
@@ -255,16 +254,25 @@ export default defineComponent({
       showSuccessBanner('Utilisateur banni succès !');
     };
 
-    const signalComment = async(commentId : number)=>{
-      const signaledComment = await signalUserComment(commentId)
-      if (!signaledComment) return showErrorBanner("Impossible de signaler le commentaire");
+    const signalComment = async (commentId: number) => {
+      const signaledComment = await signalUserComment(commentId);
+      if (!signaledComment) return showErrorBanner('Impossible de signaler le commentaire');
       showSuccessBanner('Commentaire signalé avec succès');
-    }
+    };
+
+    const goToUserProfile = () => {
+      router.push({ name: 'UserPublications', params: { userPublicationId: props.publication.authorId } });
+    };
 
     onMounted(async () => {
       await fetchFirstComment(props.publication.id);
-      commentsLength.value = await fetchCommentsLength(props.publication.id);
-      authorInfos.value = await fetchAuthorInfos(props.publication.authorId);
+      if (commentsLength.value == undefined) {
+        await fetchCommentsLength(props.publication.id);
+      }
+
+      if (!authorInfos.value) {
+        await fetchAuthorInfos(props.publication.authorId);
+      }
     });
 
     return {
@@ -285,7 +293,8 @@ export default defineComponent({
       authorInfos,
       deleteAdminComment,
       banUserAdmin,
-      signalComment
+      signalComment,
+      goToUserProfile,
     };
   },
 });

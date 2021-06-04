@@ -36,7 +36,7 @@
 import { defineComponent, onMounted, ref, computed, watch } from 'vue';
 import { IComment } from '../interface/comments/comments';
 import { IApiPublication, IPublication, IPublicationAuthor } from '../interface/publications/publication';
-import { useApi } from '../mixins/api/api.mixins';
+import { useAuthors } from '../store/authors/authors.store';
 import { useUser } from '../store/user/user.store';
 import { useAdmin } from '../store/admin/admin.store';
 import Avatar from '../components/Avatar/Avatar.vue';
@@ -54,7 +54,7 @@ export default defineComponent({
   setup() {
     const { getUser } = useUser();
     const { fetchSignaledPosts, getAllSignaled, deletePost, ignorePost, banUser } = useAdmin();
-    const { fetchAuthorInfos } = useApi();
+    const { fetchAuthorInfos, getAuthorInfosById } = useAuthors();
     const router = useRouter();
 
     const signaledPosts = computed(() => getAllSignaled.value);
@@ -92,9 +92,14 @@ export default defineComponent({
 
     const getAuthorInfos = async (posts: (IComment | IPublication)[]) => {
       for (const post of posts) {
+      const authorInfo = getAuthorInfosById(post.authorId);
         if (authorsInfos.value[post.authorId]) return;
+        if (authorInfo) {
+          return (authorsInfos.value = { ...authorsInfos.value, [post.authorId]: authorInfo });
+        }
         const newAuthor = await fetchAuthorInfos(post.authorId);
-        authorsInfos.value = { ...authorsInfos.value, [post.authorId]: newAuthor };
+
+        return (authorsInfos.value = { ...authorsInfos.value, [post.authorId]: newAuthor });
       }
     };
 
@@ -103,7 +108,7 @@ export default defineComponent({
       await fetchSignaledPosts();
     });
 
-    return { signaledPosts, user, authorsInfos, deletePostAdmin, ignorePostAdmin, banUser };
+    return { signaledPosts, user, authorsInfos, deletePostAdmin, ignorePostAdmin, banUserAdmin };
   },
 });
 </script>

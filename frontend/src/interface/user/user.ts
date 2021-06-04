@@ -16,5 +16,5 @@ export interface IUser {
   job?: string;
   active: boolean;
   creationDate?: Date;
-  adminRole : boolean;
+  adminRole: boolean;
 }

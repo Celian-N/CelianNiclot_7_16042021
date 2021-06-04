@@ -15,10 +15,12 @@ exports.create = (req, res) => {
     authorId: req.userId,
     userLiked: JSON.stringify([]),
     imageUrl: req.file
-      ? `${req.protocol}://${req.get('host')}/${req.imagePath}/${req.file.filename}`
+      ? `${req.protocol}://${req.get('host')}/${req.imagePath}/${
+          req.file.filename
+        }`
       : null,
     creationDate: new Date(),
-    signaled : 0
+    signaled: 0,
   });
 
   // Save Publication in the database
@@ -70,6 +72,43 @@ exports.findAll = (req, res) => {
             link: linkData,
             userLiked: JSON.parse(publication.userLiked),
           };
+        }
+
+        return {
+          ...publication,
+          userLiked: JSON.parse(publication.userLiked),
+        };
+      })
+    );
+
+    res.status(200).json(returnedPublications);
+  });
+};
+exports.findPostByUserId = (req, res) => {
+  const userId = parseInt(req.params.userId);
+
+  Publication.getPostByUserId(userId, async (err, publications) => {
+    if (err)
+      return res.status(500).json({
+        message:
+          err.message ||
+          'Some error occurred while retrieving your publications.',
+      });
+
+    const returnedPublications = await Promise.all(
+      publications.map(async (publication) => {
+        if (publication.link) {
+          return await Meta.parser(publication.link)
+            .then((result) => {
+              return {
+                ...publication,
+                link: result,
+                userLiked: JSON.parse(publication.userLiked),
+              };
+            })
+            .catch((error) => {
+              return null;
+            });
         }
 
         return {

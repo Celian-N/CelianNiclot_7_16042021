@@ -83,6 +83,20 @@ Publication.getAll = (selectedPage, result) => {
   );
 };
 
+Publication.getPostByUserId = (userId, result) => {
+
+  sql.query(
+    `SELECT id, author_id as authorId, user_liked as userLiked, image_url as imageUrl, gif_url as gifUrl, video_url as videoUrl, text, link, creation_date as creationDate FROM Publications WHERE author_id = ? ORDER BY creationDate ASC`, userId,
+    (err, res) => {
+      if (err) {
+        result(err, null);
+        return;
+      }
+      result(null, res);
+    }
+  );
+};
+
 Publication.updateById = (publicationId, userId, publication, result) => {
   const sqlOptions = `${
     publication.imageUrl || publication.imageUrl === null

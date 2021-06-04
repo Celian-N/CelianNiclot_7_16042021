@@ -9,6 +9,8 @@ const checkFileSize = require('../middleware/checkFileSize');
 
 router.get('/', auth, publications.findAll);
 
+router.get('/user/:userId', auth, publications.findPostByUserId);
+
 router.get('/:publicationId', auth, publications.findOne);
 
 router.post('/', auth, multer, checkFileSize, publications.create);

@@ -21,8 +21,9 @@
           <div class="row items-start" :class="`${commentEditingMode[comment.id] && 'full-width'}`">
             <Avatar
               size="35px"
-              :userPic="authorInfos[comment.id] ? authorInfos[comment.id].userPic : null"
-              class="mr-xs"
+              :userPic="authorInfos[comment.authorId] ? authorInfos[comment.authorId].userPic : null"
+              class="mr-xs cursor-pointer"
+              @click="goToUserProfile(comment.authorId)"
             />
             <div v-if="commentEditingMode[comment.id]" class="column items-end full-width">
               <InputField
@@ -48,7 +49,8 @@
             <div v-else class="column bg-tertiary br-sm pa-xs">
               <div class="row items-center justify-between">
                 <span class="text-main text-bold mr-md font-12">{{
-                  authorInfos[comment.id] && authorInfos[comment.id].firstname + ' ' + authorInfos[comment.id].lastname
+                  authorInfos[comment.authorId] &&
+                  authorInfos[comment.authorId].firstname + ' ' + authorInfos[comment.authorId].lastname
                 }}</span>
                 <div class="text-caption font-10 row items-center no-wrap position-relative">
                   <span class="mr-xs">{{ moment(comment.creationDate).locale('fr').fromNow() }}</span>
@@ -133,7 +135,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref, watch } from 'vue';
+import { computed, defineComponent, PropType, ref, watch } from 'vue';
 import { IUser } from '../../interface/user/user';
 import { IComment } from '../../interface/comments/comments';
 import Avatar from '../Avatar/Avatar.vue';
@@ -141,7 +143,8 @@ import moment from 'moment';
 import IconButton from '../IconButton/IconButton.vue';
 import InputField from '../InputField/InputField.vue';
 import { IPublicationAuthor } from '../../interface/publications/publication';
-import { useApi } from '../../mixins/api/api.mixins';
+import { useAuthors } from '../../store/authors/authors.store';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
   name: 'Comments',
@@ -159,22 +162,28 @@ export default defineComponent({
     const commentEditingMode = ref<Record<number, boolean>>({});
     const editedComment = ref('');
     const showMenu = ref<Record<number, boolean>>({});
-    const authorInfos = ref<Record<number, IPublicationAuthor>>({});
-    const { fetchAuthorInfos } = useApi();
+
+    const { fetchAuthorInfos, getAllAuthorsInfos } = useAuthors();
+    const router = useRouter();
+
+    const authorInfos = computed(() => {
+      return { ...getAllAuthorsInfos.value };
+    });
 
     const getAuthorInfos = async (comments: IComment[]) => {
+      if (authorInfos.value[comments[0].authorId]) return;
       for (const comment of comments) {
+        if (authorInfos.value[comment.authorId]) return;
         const newAuthor = await fetchAuthorInfos(comment.authorId);
-
-        authorInfos.value = { ...authorInfos.value, [comment.id]: newAuthor };
       }
     };
 
     watch(
       () => props.comments,
       (comments) => {
-        if (!comments) return;
+        if (!comments || !comments.length) return;
         resetMenus(comments);
+        if (authorInfos.value[comments[0].authorId]) return;
         getAuthorInfos(comments);
       }
     );
@@ -205,6 +214,10 @@ export default defineComponent({
       showMenu.value[commentId] = false;
     };
 
+    const goToUserProfile = (userId: number) => {
+      router.push({ name: 'UserPublications', params: { userPublicationId: userId } });
+    };
+
     return {
       showLoadMoreButton,
       commentEditingMode,
@@ -215,6 +228,7 @@ export default defineComponent({
       showMenu,
       onOpenMenu,
       authorInfos,
+      goToUserProfile,
     };
   },
 });
