@@ -15,7 +15,7 @@ import { metaLinksStoreProvider } from './store/metadata/state';
 import { adminStoreProvider } from './store/admin/admin.store';
 import { authorsStoreProvider } from './store/authors/authors.store';
 import { commentsLengthStoreProvider } from './store/commentsLength/state';
-
+import { apiStoreProvider } from './store/api/api.store';
 
 export default defineComponent({
   name: 'App',
@@ -27,6 +27,7 @@ export default defineComponent({
     adminStoreProvider();
     authorsStoreProvider();
     commentsLengthStoreProvider();
+    apiStoreProvider();
 
     const router = useRouter();
 
