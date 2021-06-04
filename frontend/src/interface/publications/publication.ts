@@ -48,4 +48,5 @@ export interface IPublicationAuthor {
   firstname : string,
   lastname : string,
   userPic?: string,
+  job?: string;
 }

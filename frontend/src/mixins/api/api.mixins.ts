@@ -220,7 +220,7 @@ export const useApi = () => {
       });
   };
 
-  const fetchAuthorInfos = async (authorId: number) => {
+  const fetchAuthorInfosCall = async (authorId: number) => {
     return await fetch(`http://localhost:3000/users/${authorId}`, {
       method: 'GET',
       headers: {
@@ -518,7 +518,7 @@ export const useApi = () => {
     getCommentsLengthCall,
     getArticleCall,
     editUser,
-    fetchAuthorInfos,
+    fetchAuthorInfosCall,
     getSignaledPosts,
     deletePostAdmin,
     ignorePostAdmin,
