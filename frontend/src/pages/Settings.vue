@@ -20,79 +20,84 @@
           </div>
 
           <div v-if="editedUser" class="column items-center edit-form">
-            <InputField
-              @onInput="(val) => (editedUser.firstname = val)"
-              :value="editedUser.firstname"
-              placeholder="Prénom"
-              borderRadius="8px"
-              :maxLength="40"
-              class="edit-input mb-lg"
-              fontSize="16px"
-              required
-            />
-            <InputField
-              @onInput="(val) => (editedUser.lastname = val)"
-              :value="editedUser.lastname"
-              placeholder="Nom"
-              borderRadius="8px"
-              :maxLength="40"
-              class="edit-input mb-lg"
-              fontSize="16px"
-              required
-            />
-            <InputField
-              @onInput="(val) => (editedUser.job = val)"
-              :value="editedUser.job"
-              placeholder="Job"
-              borderRadius="8px"
-              :maxLength="60"
-              class="edit-input mb-lg"
-              fontSize="16px"
-            />
-            <InputField
-              type="email"
-              @onInput="(val) => (editedUser.email = val)"
-              :value="editedUser.email"
-              placeholder="Mail"
-              borderRadius="8px"
-              :maxLength="100"
-              class="edit-input mb-lg"
-              fontSize="16px"
-              required
-              disabled
-            />
-            <InputField
-              v-if="editPassword"
-              type="password"
-              @onInput="(val) => (editedPassword = val)"
-              :value="editedPassword"
-              placeholder="Nouveau mot de passe"
-              borderRadius="8px"
-              :minLength="8"
-              :maxLength="50"
-              class="edit-input mb-lg"
-              fontSize="16px"
-              required
-            />
-            <InputField
-              v-if="editPassword"
-              type="password"
-              @onInput="(val) => (editedPasswordCopy = val)"
-              :value="editedPasswordCopy"
-              placeholder="Répetez le nouveau mot de passe"
-              borderRadius="8px"
-              :minLength="8"
-              :maxLength="50"
-              class="edit-input mb-lg"
-              fontSize="16px"
-              required
-            />
-            <button class="change-password br-xs text-caption self-end font-12" @click="onEditPassword">
-              {{ editPassword ? 'Ne pas modifier mon mot de passe' : 'Modifier mon mot de passe' }}
-            </button>
-            <button @click.stop="onSaveProfile" class="save-button bg-secondary text-white br-sm my-md font-16">
-              Sauvegarder
-            </button>
+            <form class="column items-center full-width" @submit="onSaveProfile">
+              <InputField
+                @onInput="(val) => (editedUser.firstname = val)"
+                :value="editedUser.firstname"
+                placeholder="Prénom"
+                borderRadius="8px"
+                :maxLength="40"
+                class="edit-input mb-lg"
+                fontSize="16px"
+                required
+              />
+              <InputField
+                @onInput="(val) => (editedUser.lastname = val)"
+                :value="editedUser.lastname"
+                placeholder="Nom"
+                borderRadius="8px"
+                :maxLength="40"
+                class="edit-input mb-lg"
+                fontSize="16px"
+                required
+              />
+              <InputField
+                @onInput="(val) => (editedUser.job = val)"
+                :value="editedUser.job"
+                placeholder="Job"
+                borderRadius="8px"
+                :maxLength="60"
+                class="edit-input mb-lg"
+                fontSize="16px"
+              />
+              <InputField
+                type="email"
+                @onInput="(val) => (editedUser.email = val)"
+                :value="editedUser.email"
+                placeholder="Mail"
+                borderRadius="8px"
+                :maxLength="100"
+                class="edit-input mb-lg"
+                fontSize="16px"
+                required
+                disabled
+              />
+              <InputField
+                v-if="editPassword"
+                type="password"
+                @onInput="(val) => (editedPassword = val)"
+                :value="editedPassword"
+                placeholder="Nouveau mot de passe"
+                borderRadius="8px"
+                :minLength="8"
+                :maxLength="50"
+                class="edit-input mb-lg"
+                fontSize="16px"
+                required
+              />
+              <InputField
+                v-if="editPassword"
+                type="password"
+                @onInput="(val) => (editedPasswordCopy = val)"
+                :value="editedPasswordCopy"
+                placeholder="Répetez le nouveau mot de passe"
+                borderRadius="8px"
+                :minLength="8"
+                :maxLength="50"
+                class="edit-input mb-lg"
+                fontSize="16px"
+                required
+              />
+              <div class="change-password br-xs text-caption self-end font-12" @click="onEditPassword">
+                {{ editPassword ? 'Ne pas modifier mon mot de passe' : 'Modifier mon mot de passe' }}
+              </div>
+              <input
+                type="submit"
+                value="Sauvegarder"
+                class="save-button bg-secondary text-white br-sm my-md font-16"
+                :disabled="!editUserIsFill"
+              />
+            </form>
           </div>
         </div>
       </div>
@@ -145,20 +150,25 @@ export default defineComponent({
     const onSaveProfile = async () => {
       if (!editedUser.value) return;
       if (user.value == editedUser.value && !editedPassword.value) return;
-      console.log('editPassword ', editPassword.value);
       if (editPassword.value) {
         if (!editedPassword.value || editedPassword.value.trim() !== editedPasswordCopy.value.trim()) {
           return showErrorBanner('Les deux champs mot de passe ne sont pas identiques');
         } else {
-          console.log('editedPassword ', editedPassword.value);
+          console.log('editedUser : ', editedUser.value);
           const result = await saveEditedUser(user.value.id, editedUser.value, editedPassword.value);
           if (!result) return showErrorBanner("Les changements n'ont pas pu être sauvegardés");
-          console.log('result : ', result);
+          editPassword.value = false;
+          editedPassword.value = '';
+          editedPasswordCopy.value = '';
           return showSuccessBanner('Changements sauvegardés avec succès !');
         }
       }
+      console.log('editedUser : ', editedUser.value);
       const result = await saveEditedUser(user.value.id, editedUser.value);
       if (!result) return showErrorBanner("Les changements n'ont pas pu être sauvegardés");
+      editPassword.value = false;
+      editedPassword.value = '';
+      editedPasswordCopy.value = '';
       return showSuccessBanner('Changements sauvegardés avec succès !');
     };
 
@@ -184,6 +194,11 @@ export default defineComponent({
       }
     };
 
+    const editUserIsFill = computed(() => {
+      const { firstname, lastname, email } = editedUser.value;
+      return !firstname || !lastname || !email ? false : true;
+    });
+
     onMounted(async () => {
       if (!user.value.email) {
         const currentUser = await getCurrentUser();
@@ -205,6 +220,7 @@ export default defineComponent({
       profilPicInput,
       pickFile,
       previewImage,
+      editUserIsFill,
     };
   },
 });
@@ -231,8 +247,14 @@ export default defineComponent({
 .save-button {
   padding: 10px 40px 10px 40px;
   transition: opacity 300ms;
+  border: none;
+  cursor: pointer;
   &:hover {
     opacity: 0.8;
+  }
+  &:disabled {
+    opacity: 0.3;
+    cursor: no-drop;
   }
 }
 .input-file {
@@ -245,6 +267,7 @@ label {
   background: transparent;
   transition: all 300ms;
   padding: 5px 10px;
+  cursor: pointer;
   &:hover {
     background: rgba(grey, 0.1);
     color: black !important;

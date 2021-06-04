@@ -3,13 +3,13 @@
     <div class="publications-container column items-center full-width">
       <div
         v-if="authorInfos"
-        class="row items-center bg-white main-shadow pa-sm br-md full-width"
+        class="row items-center bg-primary main-shadow pa-sm br-md full-width"
         style="box-sizing: border-box"
       >
-        <Avatar size="70px" class="mr-md" :userPic="authorInfos.userPic" />
+        <Avatar size="80px" class="mr-md" :userPic="authorInfos.userPic" />
         <div class="column items-start">
-          <span class="text-main text-bold">{{ authorInfos.firstname + ' ' + authorInfos.lastname }}</span>
-          <span class="text-caption">{{ authorInfos.job }}</span>
+          <span class="text-white font-20 text-bold">{{ authorInfos.firstname + ' ' + authorInfos.lastname }}</span>
+          <span class="font-16 text-secondary">{{ authorInfos.job }}</span>
         </div>
       </div>
       <div v-for="publication in sortedPublications" :key="`publication-${publication.id}`" class="full-width">
