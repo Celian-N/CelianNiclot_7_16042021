@@ -98,7 +98,7 @@ export default defineComponent({
           return (authorsInfos.value = { ...authorsInfos.value, [post.authorId]: authorInfo });
         }
         const newAuthor = await fetchAuthorInfos(post.authorId);
-
+        if(!newAuthor) return;
         return (authorsInfos.value = { ...authorsInfos.value, [post.authorId]: newAuthor });
       }
     };

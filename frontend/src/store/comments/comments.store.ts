@@ -1,8 +1,8 @@
 import { inject, provide } from 'vue';
 import { commentsStore } from './state';
 import { useApi } from '../../mixins/api/api.mixins';
-import { IComment } from '@/interface/comments/comments';
 import { commentsLengthStore } from '../commentsLength/state';
+import {asyncCall} from '../api/api.store'
 
 export const commentsStoreProvider = () => {
   provide('commentsStore', commentsStore);
@@ -30,14 +30,14 @@ export function useComments() {
   } = useApi();
 
   const fetchFirstComment = async (publicationId: number) => {
-    const comment = await getCommentsCall(publicationId);
+    const comment = await asyncCall('GET_COMMENTS', ()=> getCommentsCall(publicationId));
     if (!comment) return;
 
     setComments(comment);
     return comment;
   };
   const fetchMorePublicationComments = async (publicationId: number, page: number) => {
-    const comments = await getCommentsCall(publicationId, page);
+    const comments = await asyncCall('GET_COMMENTS', ()=> getCommentsCall(publicationId, page));
     if (!comments) return;
 
     setComments(comments);
@@ -45,14 +45,14 @@ export function useComments() {
   };
 
   const fetchCommentsLength = async (publicationId: number) => {
-    const commentLength = await getCommentsLengthCall(publicationId);
+    const commentLength = await asyncCall('GET_COMMENTS_LENGTH', ()=> getCommentsLengthCall(publicationId));
     if (!commentLength) return commentsLengthStore.setComment(publicationId, 0);
     commentsLengthStore.setComment(publicationId, commentLength);
     return commentLength;
   };
 
   const createComment = async (publicationId: number, newComment: string) => {
-    const createdComment = (await createCommentCall(publicationId, newComment)) as IComment;
+    const createdComment = await asyncCall('CREATE_COMMENT', ()=> createCommentCall(publicationId, newComment));
     if (!createdComment) return;
 
     setComments([createdComment]);
@@ -60,7 +60,7 @@ export function useComments() {
     return createdComment;
   };
   const deleteComment = async (commentId: number, publicationId : number) => {
-    const deletedComment = await deleteCommentCall(commentId);
+    const deletedComment = await asyncCall('DELETE_COMMENT', ()=> deleteCommentCall(commentId));
 
     if (!deletedComment.id) return;
 
@@ -70,7 +70,7 @@ export function useComments() {
   };
 
   const editComment = async (commentId: number, newComment: string) => {
-    const editedComment = (await editCommentCall(commentId, newComment)) as IComment;
+    const editedComment = await asyncCall('UPDATE_COMMENT', ()=> editCommentCall(commentId, newComment));
 
     if (!editedComment) return;
 
@@ -79,7 +79,7 @@ export function useComments() {
   };
 
   const likeComment = async (commentId: number, userId: number) => {
-    const likedComment = await likeCommentCall(commentId, userId);
+    const likedComment = await asyncCall('LIKE_COMMENT', ()=> likeCommentCall(commentId, userId));
 
     if (!likedComment) return;
 
@@ -88,7 +88,7 @@ export function useComments() {
   };
 
   const signalUserComment = async (commentId: number) => {
-    const signaledComment = await signalComment(commentId);
+    const signaledComment = await asyncCall('SIGNAL_COMMENT', ()=> signalComment(commentId));
     if (!signaledComment) return;
     return signaledComment;
   };

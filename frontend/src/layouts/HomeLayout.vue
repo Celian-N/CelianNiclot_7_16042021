@@ -42,6 +42,7 @@
         <router-view />
       </div>
     </div>
+    <async-loader :isLoading="actionsAreLoading" :mode="'FULLSCREEN'" />
   </div>
 </template>
 
@@ -55,12 +56,15 @@ import Avatar from '../components/Avatar/Avatar.vue';
 import moment from 'moment';
 import { showErrorBanner } from '../mixins/banners/banners.mixins';
 import { useRouter } from 'vue-router';
+import { useApiStore } from '../store/api/api.store';
+import AsyncLoader from '../components/AsyncLoader/AsyncLoader.vue';
 
 export default defineComponent({
   name: 'HomeLayout',
   components: {
     HeaderCard,
     Avatar,
+    AsyncLoader,
   },
   setup() {
     const { setUser, getUser } = useUser();
@@ -74,13 +78,47 @@ export default defineComponent({
       router.push({ name: 'UserPublications', params: { userPublicationId: user.value.id } });
     };
 
+    const { isLoading } = useApiStore();
+
+    const actionsAreLoading = computed(
+      () =>
+        isLoading([
+          'LOGIN',
+          'SIGNUP',
+          'EDIT_USER',
+          'SIGNUP',
+          'GET_ARTICLE',
+          'CREATE_PUBLICATION',
+          'GET_PUBLICATIONS',
+          'GET_PUBLICATION_BY_ID',
+          'GET_PUBLICATION_BY_USER_ID',
+          'UPDATE_PUBLICATION',
+          'DELETE_PUBLICATION',
+          'LIKE_PUBLICATION',
+          'GET_AUTHOR_INFOS',
+          'GET_CURRENT_USER',
+          'GET_COMMENTS',
+          'GET_COMMENTS_LENGTH',
+          'CREATE_COMMENT',
+          'DELETE_COMMENT',
+          'UPDATE_COMMENT',
+          'LIKE_COMMENT',
+          'GET_SIGNALED_POSTS',
+          'DELETE_POST_ADMIN',
+          'IGNORE_POST_ADMIN',
+          'BAN_USER_ADMIN',
+          'SIGNAL_COMMENT',
+          'SIGNAL_PUBLICATION',
+        ]).value
+    );
+
     onMounted(async () => {
       const currentUser = await getCurrentUser();
 
       return setUser(currentUser);
     });
 
-    return { navigationTabs, user, userInscription, goToMyProfile };
+    return { navigationTabs, user, userInscription, goToMyProfile, actionsAreLoading };
   },
 });
 </script>

@@ -1,6 +1,7 @@
 import { inject, provide } from 'vue';
 import { authorsStore } from './state';
 import { useApi } from '../../mixins/api/api.mixins';
+import {asyncCall} from '../api/api.store'
 
 export const authorsStoreProvider = () => {
   provide('authorsStore', authorsStore);
@@ -12,7 +13,7 @@ export function useAuthors() {
   const { fetchAuthorInfosCall } = useApi();
 
   const fetchAuthorInfos = async (userId: number) => {
-    const authorInfos = await fetchAuthorInfosCall(userId);
+    const authorInfos = await asyncCall('GET_AUTHOR_INFOS', () => fetchAuthorInfosCall(userId));
     if (!authorInfos) return;
     setAuthor(authorInfos, userId);
     return authorInfos;
