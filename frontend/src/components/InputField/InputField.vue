@@ -20,6 +20,7 @@
       :disabled="disabled"
       :style="`font-size : ${fontSize}`"
       :class="disabled ? 'disabled-input' : '' "
+      :autocomplete="type =='password' ? 'off' : ''"
     />
 
     <textarea
@@ -61,7 +62,7 @@ export default defineComponent({
     autogrow: { type: Boolean, default: false },
     customTextareaClass: { type: String },
     withBackground: { type: Boolean, default: true },
-    required: { type: Boolean, default: true },
+    required: { type: Boolean, default: false },
     autofocus: { type: Boolean, default: true },
     fontSize: { type: String, default: '14px' },
     disabled: { type: Boolean, default: false },
