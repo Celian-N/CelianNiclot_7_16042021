@@ -211,6 +211,14 @@ export default defineComponent({
     const allEditedPost = computed(() => getPublicationById(editedPostId.value) as IPublication);
 
     const onSaveEditedPost = async () => {
+      if (
+        !editedPost.value.text &&
+        !editedPost.value.imageUrl &&
+        !editedPost.value.gifUrl &&
+        !editedPost.value.videoUrl &&
+        !editedPost.value.link
+      )
+        return showErrorBanner('Impossible de modifier une publication vide');
       const result = await editPublication(parseInt(editedPostId.value), editedPost.value);
       if (!result) return showErrorBanner('Impossible de modifier la publication');
       showSuccessBanner('Publication modifiée avec succès !');

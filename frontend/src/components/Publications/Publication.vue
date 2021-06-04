@@ -216,6 +216,7 @@ export default defineComponent({
         return (commentsRef.value.showLoadMoreButton = false);
     };
     const addComment = async () => {
+      if(!newComment.value) return;
       const result = await createComment(props.publication.id, newComment.value);
       if (!result) return showErrorBanner('Impossible de poster le commentaire');
       newComment.value = '';
@@ -229,6 +230,7 @@ export default defineComponent({
     };
 
     const saveComment = async (options: { commentId: number; newComment: string }) => {
+      if(!options.newComment) return;
       const editedComment = await editComment(options.commentId, options.newComment);
 
       if (!editedComment || !editedComment.id || !commentsRef.value)
