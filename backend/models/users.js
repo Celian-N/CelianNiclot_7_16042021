@@ -8,7 +8,7 @@ const User = function (user) {
   this.job = user.job;
   this.creation_date = user.creationDate;
   this.active = user.active;
-  this.user_pic = user.userPic
+  this.user_pic = user.userPic;
 };
 
 User.create = (newUser, result) => {
@@ -28,7 +28,7 @@ User.create = (newUser, result) => {
       job: newUser.job,
       creationDate: newUser.creation_date,
       active: newUser.active,
-      userPic : newUser.user_pic
+      userPic: newUser.user_pic,
     });
   });
 };
@@ -60,8 +60,7 @@ User.findByEmail = (userEmail, result) => {
       console.log('error: ', err);
       result(err, null);
       return;
-    }
-    else if(res.length && res[0].active == 0){
+    } else if (res.length && res[0].active == 0) {
       return result({ kind: 'banish' }, null);
     }
 
@@ -75,9 +74,9 @@ User.findByEmail = (userEmail, result) => {
   });
 };
 
-User.getAll = (result) => {
+User.getAll = (search, result) => {
   sql.query(
-    'SELECT email, firstname, lastname, job, creation_date as creationDate, user_pic as userPic FROM Users',
+    `SELECT id, email, firstname, lastname, job, creation_date as creationDate, user_pic as userPic FROM Users WHERE firstname LIKE "${search}%" OR lastname LIKE "${search}%"`,
     (err, res) => {
       if (err) {
         console.log('error: ', err);
@@ -92,12 +91,8 @@ User.getAll = (result) => {
 
 User.updateById = (userId, user, result) => {
   const sqlQuery = `UPDATE Users SET email = ?, firstname = ?, lastname = ?, job = ?${
-    user.userPic || user.userPic === null
-      ? ', user_pic = ?'
-      : ''
-  }${
-    user.password ? ', password = ?' : ''
-  }  WHERE id = ?`;
+    user.userPic || user.userPic === null ? ', user_pic = ?' : ''
+  }${user.password ? ', password = ?' : ''}  WHERE id = ?`;
   const requestValues = [user.email, user.firstname, user.lastname, user.job];
   if (user.userPic) {
     requestValues.push(user.userPic);
@@ -106,7 +101,6 @@ User.updateById = (userId, user, result) => {
     requestValues.push(user.password);
   }
   requestValues.push(parseInt(userId));
-
 
   sql.query(sqlQuery, requestValues, (err, res) => {
     if (err) {
