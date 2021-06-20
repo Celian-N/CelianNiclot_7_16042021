@@ -1,5 +1,5 @@
 import { ICreateUser, IUser } from '../../interface/user/user';
-import { IApiPublication, ICreatePublication, IPublicationAuthor } from '../../interface/publications/publication';
+import { IApiPublication, ICreatePublication, IPublication, IPublicationAuthor } from '../../interface/publications/publication';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 import { IComment } from '@/interface/comments/comments';
@@ -127,6 +127,26 @@ export const useApi = () => {
         console.warn('Erreur :' + error);
       })) as Promise<IApiPublication[]>;
   };
+
+  const getMostLikedPublicationCall = async () => {
+    return (await fetch(`http://localhost:3000/publications/more-liked`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + Cookies.get('groupomania_token'),
+      },
+    })
+      .then((result) => {
+        return result.json();
+      })
+      .then((res) => {
+        return res;
+      })
+      .catch((error) => {
+        console.warn('Erreur :' + error);
+      })) as Promise<IPublication[]>;
+  };
+
   const getPostByIdCall = async (publicationId: number) => {
     return (await fetch(`http://localhost:3000/publications/${publicationId}`, {
       method: 'GET',
@@ -532,5 +552,6 @@ export const useApi = () => {
     signalComment,
     signalPublication,
     getPostsByUserIdCall,
+    getMostLikedPublicationCall
   };
 };

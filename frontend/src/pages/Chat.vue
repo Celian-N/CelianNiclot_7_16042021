@@ -174,12 +174,12 @@ export default defineComponent({
 
     onMounted(async () => {
       if (userChatId) {
-        const userInfos = getAuthorInfosById(userChatId);
+        const userInfos = getAuthorInfosById(parseInt(userChatId as string));
         if (!userInfos) {
-          const result = await fetchAuthorInfos(userChatId);
-          return (selectedUser.value = { ...result, id: userChatId });
+          const result = await fetchAuthorInfos(parseInt(userChatId as string));
+          return (selectedUser.value = { ...result, id: parseInt(userChatId as string) });
         }
-        selectedUser.value = { ...userInfos, id: userChatId };
+        selectedUser.value = { ...userInfos, id: parseInt(userChatId as string) };
       }
       socket.on('session', ({ sessionId, userId }: { sessionId: string; userId: number }) => {
         socket.auth = { sessionId };

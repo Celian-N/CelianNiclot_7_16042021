@@ -13,13 +13,44 @@
       @signalPublication="signalPublication"
     />
     <div style="width: 33%" class="ml-sm right-panel column">
-      <div style="height: 45%" class="bg-white br-md main-shadow mb-sm"></div>
+      <span class="text-caption font-12 mb-xs">Les plus likés</span>
+      <div class="bg-white br-md main-shadow mb-sm more-liked">
+        <div
+          class="column items-start full-width pa-sm"
+          style="box-sizing: border-box"
+          v-for="publication in moreLikedPublications"
+          :key="publication.id"
+        >
+          <div v-if="authorsInfos[publication.authorId]"  class="row items-center full-width">
+            <Avatar size="35px" :userPic="authorsInfos[publication.authorId].userPic" class="mr-sm" />
+            <div class="row items-start justify-between" style="flex: 1">
+              <span class="text-main font-12"
+                >{{ authorsInfos[publication.authorId].firstname }}
+                {{ authorsInfos[publication.authorId].lastname }}</span
+              >
+              <div class="row items-center">
+                <span
+                  class="font-10 mr-xs"
+                  :class="publication.userLiked.includes(user.id) ? 'text-secondary' : 'text-caption'"
+                  >{{ publication.userLiked.length }}</span
+                ><span
+                  class="material-icons-round font-10"
+                  :class="publication.userLiked.includes(user.id) ? 'text-secondary' : 'text-caption'"
+                  >favorite</span
+                >
+              </div>
+            </div>
+          </div>
+          <div class="mt-xs more-liked__text">{{ publication.text }}</div>
+        </div>
+      </div>
+      <span class="text-caption font-12 mb-xs">Dernières conversations</span>
       <div class="bg-white br-md main-shadow users-session">
         <div
           class="row items-center justify-between position-relative user-session"
           v-for="sessionUser in oldSessionsUsers"
           :key="sessionUser.id"
-          @click="()=> goToChat(sessionUser.id)"
+          @click="() => goToChat(sessionUser.id)"
         >
           <Avatar size="35px" :userPic="sessionUser.userPic" class="mr-sm" />
           <div
@@ -42,12 +73,13 @@ import { usePublications } from '../store/publications/publications.store';
 import Publications from '../components/Publications/Publications.vue';
 import { showSuccessBanner, showErrorBanner } from '../mixins/banners/banners.mixins';
 import { useAdmin } from '../store/admin/admin.store';
-import { IPublication } from '../interface/publications/publication';
+import { IPublication, IPublicationAuthor } from '../interface/publications/publication';
 import Avatar from '../components/Avatar/Avatar.vue';
 import { IUser } from '../interface/user/user';
 import { useAuthors } from '../store/authors/authors.store';
 import socket from '../socket';
 import { useRouter } from 'vue-router';
+import { useApi } from '../mixins/api/api.mixins';
 
 interface IPublicationComponent {
   removeEventListener: () => void;
@@ -62,7 +94,7 @@ export default defineComponent({
     Avatar,
   },
   setup(props, context: SetupContext) {
-        const router = useRouter();
+    const router = useRouter();
     const { logout, getUser } = useUser();
     const {
       fetchPublications,
@@ -73,7 +105,9 @@ export default defineComponent({
     } = usePublications();
     const { deletePost, banUser } = useAdmin();
     const { getAuthorInfosById, fetchAuthorInfos, getAuthorIdByValue } = useAuthors();
+    const { getMostLikedPublicationCall } = useApi();
     const usersConnected = ref<number[]>([]);
+    const authorsInfos = ref<Record<number, IPublicationAuthor>>({});
 
     const currentPage = ref(0);
     const publicationsComponent = ref<IPublicationComponent | null>(null);
@@ -82,6 +116,7 @@ export default defineComponent({
 
     const sortedPublications = ref<IPublication[]>([]);
     const oldSessionsUsers = ref<IAuthor[]>([]);
+    const moreLikedPublications = ref<IPublication[]>([]);
 
     watch(
       () => publications.value,
@@ -157,11 +192,26 @@ export default defineComponent({
         }
       }
     };
-    const goToChat = (selectedUserId : number) =>{
+    const goToChat = (selectedUserId: number) => {
       router.push({ name: 'Messages', query: { userChatId: selectedUserId } });
-    }
+    };
     onMounted(async () => {
       await getPublications();
+      const result = await getMostLikedPublicationCall();
+      if (result) {
+        moreLikedPublications.value = result;
+        const auhthors = await Promise.all(
+          moreLikedPublications.value.map(async (publication) => {
+            const userInfos = getAuthorInfosById(publication.authorId);
+            if (!userInfos) {
+              const infos = await fetchAuthorInfos(publication.authorId);
+              if (!infos) return;
+              return (authorsInfos.value = { ...authorsInfos.value, [publication.authorId]: infos });
+            }
+            authorsInfos.value = { ...authorsInfos.value, [publication.authorId]: userInfos };
+          })
+        );
+      }
 
       if (user.value) {
         socket.emit('getOldSessions', user.value.id);
@@ -191,7 +241,9 @@ export default defineComponent({
       sortedPublications,
       oldSessionsUsers,
       usersConnected,
-      goToChat
+      goToChat,
+      moreLikedPublications,
+      authorsInfos,
     };
   },
 });
@@ -219,7 +271,7 @@ export default defineComponent({
 }
 .users-session {
   overflow: scroll;
-  max-height: 45%;
+  max-height: 35vh;
   &::-webkit-scrollbar {
     display: none;
   }
@@ -230,6 +282,20 @@ export default defineComponent({
     &:hover {
       background: rgba(grey, 0.2);
     }
+  }
+}
+.more-liked {
+  overflow: scroll;
+  max-height: 35vh;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  &__text {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }
 </style>

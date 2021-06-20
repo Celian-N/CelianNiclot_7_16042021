@@ -83,6 +83,20 @@ Publication.getAll = (selectedPage, result) => {
   );
 };
 
+Publication.getMostLiked = (result) => {
+  
+  sql.query(
+    `SELECT id, author_id as authorId, user_liked as userLiked, image_url as imageUrl, gif_url as gifUrl, video_url as videoUrl, text, link, creation_date as creationDate FROM Publications ORDER BY CHAR_LENGTH(userLiked) DESC LIMIT 5`,
+    (err, res) => {
+      if (err) {
+        result(err, null);
+        return;
+      }
+      result(null, res);
+    }
+  );
+};
+
 Publication.getPostByUserId = (userId, result) => {
 
   sql.query(

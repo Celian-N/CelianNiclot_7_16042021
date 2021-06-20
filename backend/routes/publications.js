@@ -9,6 +9,8 @@ const checkFileSize = require('../middleware/checkFileSize');
 
 router.get('/', auth, publications.findAll);
 
+router.get('/more-liked', auth, publications.findMostLiked)
+
 router.get('/user/:userId', auth, publications.findPostByUserId);
 
 router.get('/:publicationId', auth, publications.findOne);
