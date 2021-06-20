@@ -16,6 +16,7 @@ import { adminStoreProvider } from './store/admin/admin.store';
 import { authorsStoreProvider } from './store/authors/authors.store';
 import { commentsLengthStoreProvider } from './store/commentsLength/state';
 import { apiStoreProvider } from './store/api/api.store';
+import { socketStoreProvider } from './store/socket/socket.store';
 
 export default defineComponent({
   name: 'App',
@@ -28,6 +29,7 @@ export default defineComponent({
     authorsStoreProvider();
     commentsLengthStoreProvider();
     apiStoreProvider();
+    socketStoreProvider();
 
     const router = useRouter();
 
