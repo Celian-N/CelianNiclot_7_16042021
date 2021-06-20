@@ -12,6 +12,7 @@
       :type="type"
       :value="value"
       @input="onInput($event)"
+      @change="onChange($event)"
       :placeholder="placeholder"
       :minlength="minLength"
       :maxlength="maxLength"
@@ -32,6 +33,7 @@
       :minlength="minLength"
       :maxlength="maxLength"
       @input="onInput($event)"
+      @change="onChange($event)"
       :class="customTextareaClass"
       :required="required"
       :autofocus="autofocus"
@@ -75,12 +77,16 @@ export default defineComponent({
       }
     }
 
+    function onChange(event : any){
+      context.emit('onChange', event.target.value);
+    }
+
     const resize = (e: any) => {
       e.target.style.height = 'auto';
       e.target.style.height = `${e.target.scrollHeight}px`;
     };
 
-    return { onInput };
+    return { onInput, onChange };
   },
 });
 </script>

@@ -20,10 +20,16 @@
                 v-if="!tab.for"
                 :to="{ path: `${tab.to}` }"
                 replace
-                class="row items-center pa-sm br-sm my-xs"
+                class="row items-center pa-sm br-sm my-xs position-relative"
               >
                 <span class="material-icons-round pr-md">{{ tab.icon }}</span>
                 <span>{{ tab.label }}</span>
+                <div
+                  v-if="tab.to == '/messages' && unreadMessagesLength > 0"
+                  class="notifications bg-secondary text-white row items-center justify-center font-12"
+                >
+                  {{ unreadMessagesLength }}
+                </div>
               </router-link>
               <router-link
                 v-else-if="tab.for && user.adminRole"
@@ -47,6 +53,7 @@
 </template>
 
 <script lang="ts">
+import socket from '../socket';
 import { defineComponent, onBeforeUnmount, onMounted, ref, computed } from 'vue';
 import { useUser } from '../store/user/user.store';
 import { useApi } from '../mixins/api/api.mixins';
@@ -58,6 +65,7 @@ import { showErrorBanner } from '../mixins/banners/banners.mixins';
 import { useRouter } from 'vue-router';
 import { useApiStore } from '../store/api/api.store';
 import AsyncLoader from '../components/AsyncLoader/AsyncLoader.vue';
+import { useSocket } from '../store/socket/socket.store';
 
 export default defineComponent({
   name: 'HomeLayout',
@@ -79,6 +87,8 @@ export default defineComponent({
     };
 
     const { isLoading } = useApiStore();
+    const { setSocketUser, getUnreadMessagesLength } = useSocket();
+    const unreadMessagesLength = computed(() => getUnreadMessagesLength.value);
 
     const actionsAreLoading = computed(
       () =>
@@ -115,10 +125,41 @@ export default defineComponent({
     onMounted(async () => {
       const currentUser = await getCurrentUser();
 
-      return setUser(currentUser);
+      setUser(currentUser);
+
+      if (currentUser && currentUser.id !== 0) {
+        socket.auth = { userId: currentUser.id };
+        socket.connect();
+        socket.emit('getUnreadMessages', currentUser.id);
+      }
+
+      socket.on(
+        'getUnreadMessages',
+        (unreadMessages: { message: string; user_id: string; session_id: string; is_read: number }[]) => {
+          if (!unreadMessages) return;
+          unreadMessages.forEach((unreadMessage) => {
+            setSocketUser({ id: unreadMessage.user_id, newMessage: true });
+          });
+        }
+      );
+      socket.on('private message', ({ content, from, to }: { content: string; from: number; to: number }) => {
+        setSocketUser({ id: from.toString(), newMessage: true });
+      });
     });
 
-    return { navigationTabs, user, userInscription, goToMyProfile, actionsAreLoading };
+    onBeforeUnmount(() => {
+      socket.disconnect();
+      socket.off('connect');
+      socket.off('disconnect');
+      socket.off('users');
+      socket.off('user connected');
+      socket.off('user disconnected');
+      socket.off('private message');
+      socket.off('messages');
+      socket.off('typing');
+    });
+
+    return { navigationTabs, user, userInscription, goToMyProfile, actionsAreLoading, unreadMessagesLength };
   },
 });
 </script>
@@ -197,5 +238,13 @@ nav a {
 }
 nav {
   height: fit-content;
+}
+.notifications {
+  position: absolute;
+  right: 20px;
+  width: 20px;
+  height: 20px;
+  border-radius: 7px;
+  font-weight: 600;
 }
 </style>

@@ -26,7 +26,8 @@ export type RequestKeys =
   | 'IGNORE_POST_ADMIN'
   | 'BAN_USER_ADMIN'
   | 'SIGNAL_COMMENT'
-  | 'SIGNAL_PUBLICATION';
+  | 'SIGNAL_PUBLICATION'
+  | 'CHANGE_CONV';
 
 type AsyncStatusState = Record<RequestKeys, { isLoading: boolean }>;
 
@@ -80,7 +81,7 @@ export const apiStoreProvider = () => {
 };
 
 export const useApiStore = () => {
-  const { isLoading } = inject('apiStore') as typeof apiStore;
+  const { isLoading,...rest } = inject('apiStore') as typeof apiStore;
 
-  return { isLoading };
+  return { isLoading, ...rest };
 };
