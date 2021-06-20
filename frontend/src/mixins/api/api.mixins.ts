@@ -245,8 +245,9 @@ export const useApi = () => {
   };
   //USERS
 
-  const getAllUsers = async () => {
-    return await fetch('http://localhost:3000/users', { method: 'GET' })
+  const getAllUsers = async (searchedUser :string) => {
+    const queryUser = `?search=${searchedUser}`;
+    return await fetch(`http://localhost:3000/users${queryUser}`, { method: 'GET' })
       .then((result) => {
         return result.json();
       })
