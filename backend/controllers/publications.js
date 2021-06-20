@@ -84,6 +84,26 @@ exports.findAll = (req, res) => {
     res.status(200).json(returnedPublications);
   });
 };
+// Retrieve all Publications from the database.
+exports.findMostLiked = (req, res) => {
+  Publication.getMostLiked((err, publications) => {
+    if (err)
+      return res.status(500).json({
+        message:
+          err.message || 'Some error occurred while retrieving publications.',
+      });
+
+    const returnedPublications = publications.map((publication) => {
+      return {
+        ...publication,
+        userLiked: JSON.parse(publication.userLiked),
+      };
+    });
+
+    res.status(200).json(returnedPublications);
+  });
+};
+
 exports.findPostByUserId = (req, res) => {
   const userId = parseInt(req.params.userId);
 
