@@ -14,7 +14,7 @@
           class="self-stretch"
         />
       </div>
-      <div v-if="users && users.length && showMenu" class="users-container bg-white br-md" ref="userList">
+      <div v-if="users && users.length && showMenu" class="users-container bg-white br-md main-shadow" ref="userList">
         <div
           v-for="user in users"
           :key="`user-${user.id}`"
