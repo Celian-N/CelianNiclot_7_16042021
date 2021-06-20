@@ -1,6 +1,6 @@
 <template>
-  <div>
-    NOTIFICATIONS
+  <div class="full-width row justify-center items-center" style="min-height:100px;">
+    Aucune notification...
   </div>
 </template>
 
