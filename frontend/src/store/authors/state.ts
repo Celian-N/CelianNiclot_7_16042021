@@ -22,7 +22,18 @@ const getters = {
     return authorsState.value;
   }),
   getAuthorInfosById: (authorId: number) => {
-    return authorsState.value[authorId];
+    return authorsState.value[authorId] as IPublicationAuthor;
+  },
+  getAuthorIdByValue: (authorInfos: IPublicationAuthor) => {
+    const index = Object.values(authorsState.value).findIndex(
+      (author) =>
+        !!(
+          author.firstname == authorInfos.firstname &&
+          author.lastname == authorInfos.lastname &&
+          author.job == authorInfos.job
+        )
+    );
+    return Object.keys(authorsState.value)[index];
   },
 };
 
@@ -31,3 +42,8 @@ export const authorsStore = {
   ...setters,
   ...getters,
 };
+
+// console.log('author :', author)
+// console.log('firstname :', author.firstname == authorInfos.firstname)
+// console.log('lastname :', author.lastname == authorInfos.lastname)
+// console.log('job :', author.job == authorInfos.job)
