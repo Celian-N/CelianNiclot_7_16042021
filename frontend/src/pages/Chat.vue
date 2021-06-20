@@ -50,6 +50,7 @@ import { useAuthors } from '../store/authors/authors.store';
 import { IPublicationAuthor } from '../interface/publications/publication';
 import { useApiStore } from '../store/api/api.store';
 import { useSocket } from '../store/socket/socket.store';
+import { useRouter } from 'vue-router';
 
 export interface IAuthor extends Partial<IUser> {
   sessionId: string;
@@ -63,6 +64,8 @@ export default defineComponent({
     Avatar,
   },
   setup() {
+    const route = useRouter();
+    const { userChatId } = route.currentRoute.value.query;
     const { startLoading } = useApiStore();
     const { getAllUsers } = useApi();
     const { getUser } = useUser();
@@ -146,7 +149,6 @@ export default defineComponent({
 
     const setOldSessions = async (allSessions: { session_id: string; user_id_1: number; user_id_2: number }[]) => {
       for (let index = 0; index < allSessions.length; index++) {
-        // let otherUserId : number;
         const otherUserId = ref<number | undefined>(undefined);
         if (allSessions[index].user_id_1 == me.value.id) {
           otherUserId.value = allSessions[index].user_id_2;
@@ -170,7 +172,15 @@ export default defineComponent({
       }
     };
 
-    onMounted(() => {
+    onMounted(async () => {
+      if (userChatId) {
+        const userInfos = getAuthorInfosById(userChatId);
+        if (!userInfos) {
+          const result = await fetchAuthorInfos(userChatId);
+          return (selectedUser.value = { ...result, id: userChatId });
+        }
+        selectedUser.value = { ...userInfos, id: userChatId };
+      }
       socket.on('session', ({ sessionId, userId }: { sessionId: string; userId: number }) => {
         socket.auth = { sessionId };
         socket.userId = userId;

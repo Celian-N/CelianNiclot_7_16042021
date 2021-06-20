@@ -9,7 +9,6 @@ const socketState = ref<Record<number, SocketStateInterface>>({});
 
 const setters = {
   setSocketUser: (user: SocketStateInterface) => {
-    console.log('setSocket :', user)
     socketState.value = { ...socketState.value, [user.id] : user};
   },
   updateSocketUser: (updatedProperties: Partial<SocketStateInterface>) => {

@@ -12,7 +12,26 @@
       @deleteAdminPublication="deleteAdminPublication"
       @signalPublication="signalPublication"
     />
-    <div style="width: 33%" class="ml-md"></div>
+    <div style="width: 33%" class="ml-sm right-panel column">
+      <div style="height: 45%" class="bg-white br-md main-shadow mb-sm"></div>
+      <div class="bg-white br-md main-shadow users-session">
+        <div
+          class="row items-center justify-between position-relative user-session"
+          v-for="sessionUser in oldSessionsUsers"
+          :key="sessionUser.id"
+          @click="()=> goToChat(sessionUser.id)"
+        >
+          <Avatar size="35px" :userPic="sessionUser.userPic" class="mr-sm" />
+          <div
+            class="connected-status"
+            :class="`background-color : ${usersConnected.includes(user.id) ? 'bg-positive' : 'bg-secondary'}`"
+          ></div>
+          <div class="column items-start" style="flex: 1">
+            <span class="text-main font-12">{{ sessionUser.firstname }} {{ sessionUser.lastname }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -24,16 +43,26 @@ import Publications from '../components/Publications/Publications.vue';
 import { showSuccessBanner, showErrorBanner } from '../mixins/banners/banners.mixins';
 import { useAdmin } from '../store/admin/admin.store';
 import { IPublication } from '../interface/publications/publication';
+import Avatar from '../components/Avatar/Avatar.vue';
+import { IUser } from '../interface/user/user';
+import { useAuthors } from '../store/authors/authors.store';
+import socket from '../socket';
+import { useRouter } from 'vue-router';
 
 interface IPublicationComponent {
   removeEventListener: () => void;
+}
+export interface IAuthor extends Partial<IUser> {
+  sessionId: string;
 }
 export default defineComponent({
   name: 'Home',
   components: {
     Publications,
+    Avatar,
   },
   setup(props, context: SetupContext) {
+        const router = useRouter();
     const { logout, getUser } = useUser();
     const {
       fetchPublications,
@@ -43,6 +72,8 @@ export default defineComponent({
       signalUserPublication,
     } = usePublications();
     const { deletePost, banUser } = useAdmin();
+    const { getAuthorInfosById, fetchAuthorInfos, getAuthorIdByValue } = useAuthors();
+    const usersConnected = ref<number[]>([]);
 
     const currentPage = ref(0);
     const publicationsComponent = ref<IPublicationComponent | null>(null);
@@ -50,6 +81,7 @@ export default defineComponent({
     const publications = computed(() => getAllPublications.value);
 
     const sortedPublications = ref<IPublication[]>([]);
+    const oldSessionsUsers = ref<IAuthor[]>([]);
 
     watch(
       () => publications.value,
@@ -101,8 +133,46 @@ export default defineComponent({
       }
     };
 
+    const setOldSessions = async (allSessions: { session_id: string; user_id_1: number; user_id_2: number }[]) => {
+      for (let index = 0; index < allSessions.length; index++) {
+        const otherUserId = ref<number | undefined>(undefined);
+        if (allSessions[index].user_id_1 == user.value.id) {
+          otherUserId.value = allSessions[index].user_id_2;
+        } else if (allSessions[index].user_id_2 == user.value.id) {
+          otherUserId.value = allSessions[index].user_id_1;
+        }
+        if (!otherUserId.value) return;
+        const userInfos = getAuthorInfosById(otherUserId.value);
+
+        if (!userInfos) {
+          const infos = await fetchAuthorInfos(otherUserId.value);
+          if (!infos) return;
+          const userId = getAuthorIdByValue(infos);
+          if (!userId) return;
+          oldSessionsUsers.value.push({ ...infos, sessionId: allSessions[index].session_id, id: parseInt(userId) });
+        } else {
+          const userId = getAuthorIdByValue(userInfos);
+          if (!userId) return;
+          oldSessionsUsers.value.push({ ...userInfos, sessionId: allSessions[index].session_id, id: parseInt(userId) });
+        }
+      }
+    };
+    const goToChat = (selectedUserId : number) =>{
+      router.push({ name: 'Messages', query: { userChatId: selectedUserId } });
+    }
     onMounted(async () => {
       await getPublications();
+
+      if (user.value) {
+        socket.emit('getOldSessions', user.value.id);
+      }
+      socket.on('getOldSessions', (allSessions: { session_id: string; user_id_1: number; user_id_2: number }[]) => {
+        if (!allSessions) return;
+        setOldSessions(allSessions);
+      });
+      socket.on('user_connected', (connectedUsers: number[]) => {
+        usersConnected.value = connectedUsers;
+      });
     });
 
     return {
@@ -118,7 +188,10 @@ export default defineComponent({
       deleteAdminPublication,
       banUserAdmin,
       signalPublication,
-      sortedPublications
+      sortedPublications,
+      oldSessionsUsers,
+      usersConnected,
+      goToChat
     };
   },
 });
@@ -132,5 +205,31 @@ export default defineComponent({
   padding-right: 150px;
   margin-left: -150px;
   padding-left: 150px;
+}
+.right-panel {
+  height: 100%;
+}
+.connected-status {
+  width: 10px;
+  height: 10px;
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  border-radius: 30px;
+}
+.users-session {
+  overflow: scroll;
+  max-height: 45%;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  & > .user-session {
+    transition: background 200ms;
+    cursor: pointer;
+    padding: 10px 10px 10px 10px;
+    &:hover {
+      background: rgba(grey, 0.2);
+    }
+  }
 }
 </style>
