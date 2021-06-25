@@ -90,8 +90,11 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+header{
+  height : 100px;
+}
 img {
-  width: 100px;
+  width: 120px;
 }
 .input-container {
   width: 250px;
