@@ -1,15 +1,22 @@
 <template>
-  <header class="row items-center justify-between px-md bg-white br-md main-shadow">
+  <header
+    class="row items-center px-md bg-white br-md main-shadow"
+    :class="searchIsOpen ? 'justify-center' : 'justify-between'"
+  >
     <img v-if="!searchIsOpen" src="../../assets/logo_groupomania.png" alt="Logo groupomania" />
     <IconButton
-    v-if="!searchIsOpen"
+      v-if="!searchIsOpen"
       :button="{ size: '30px', icon: 'search', color: 'secondary' }"
       class="self-center search-button"
-      @onClick="()=> searchIsOpen = true"
+      @onClick="() => (searchIsOpen = true)"
     />
-    <div class="input-container position-relative" :class="[searchIsOpen && 'input-container__open']">
+    <div
+      class="input-container position-relative"
+      :class="[searchIsOpen && 'input-container__open']"
+      :style="searchIsOpen ? 'width:100%' : 'width : 250px'"
+    >
       <InputField
-        @onClick="()=> searchIsOpen = false"
+        @onClick="() => (searchIsOpen = false)"
         @onInput="(val) => (searchedUser = val)"
         :value="searchedUser"
         :button="buttonConfig"
@@ -107,14 +114,11 @@ header {
 img {
   width: 120px;
 }
-.input-container {
-  width: 250px;
-}
 .users-container {
   position: absolute;
   top: 55px;
   max-height: 300px;
-  width: 250px;
+  width: 100%;
   overflow: scroll;
   z-index: 1000;
 }
@@ -138,8 +142,5 @@ img {
   .input-container__open {
     display: block;
   }
-  // .search-input {
-  //   display: none;
-  // }
 }
 </style>
