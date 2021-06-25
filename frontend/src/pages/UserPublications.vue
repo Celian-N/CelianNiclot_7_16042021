@@ -24,7 +24,6 @@
         />
       </div>
     </div>
-    <div style="width: 33%" class="ml-md"></div>
   </div>
 </template>
 

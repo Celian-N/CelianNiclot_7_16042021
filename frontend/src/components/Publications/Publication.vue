@@ -11,7 +11,7 @@
       <div class="position-relative">
         <IconButton :button="{ size: '30px', icon: 'more_horiz', color: 'primary' }" @onClick="showMenu = !showMenu" />
         <transition name="fade">
-          <div v-if="showMenu" class="publication-menu column bg-white br-sm input-shadow overflow-hidden">
+          <div v-if="showMenu" class="publication-menu column bg-white br-sm input-shadow overflow-hidden" ref="publicationOptions">
             <button
               v-if="publication.authorId == user.id"
               class="pa-sm full-width row justify-start items-center font-12"
@@ -153,6 +153,7 @@ import { useMetaLinks } from '../../store/metadata/state';
 import { useAuthors } from '../../store/authors/authors.store';
 import { useAdmin } from '../../store/admin/admin.store';
 import { useCommentsLength } from '../../store/commentsLength/state';
+import { onClickOutside } from '@vueuse/core';
 
 export interface CommentsRef {
   showLoadMoreButton: boolean;
@@ -176,6 +177,8 @@ export default defineComponent({
   setup(props) {
     const showMenu = ref(false);
     const router = useRouter();
+    const publicationOptions = ref(null);
+    onClickOutside(publicationOptions, (event) => (showMenu.value = false));
 
     const embedRegex = /^(https|http):\/\/(?:www\.)?youtube-nocookie.com\/embed\/[A-z0-9]+/;
 
@@ -216,7 +219,7 @@ export default defineComponent({
         return (commentsRef.value.showLoadMoreButton = false);
     };
     const addComment = async () => {
-      if(!newComment.value) return;
+      if (!newComment.value) return;
       const result = await createComment(props.publication.id, newComment.value);
       if (!result) return showErrorBanner('Impossible de poster le commentaire');
       newComment.value = '';
@@ -230,7 +233,7 @@ export default defineComponent({
     };
 
     const saveComment = async (options: { commentId: number; newComment: string }) => {
-      if(!options.newComment) return;
+      if (!options.newComment) return;
       const editedComment = await editComment(options.commentId, options.newComment);
 
       if (!editedComment || !editedComment.id || !commentsRef.value)
@@ -297,6 +300,7 @@ export default defineComponent({
       banUserAdmin,
       signalComment,
       goToUserProfile,
+      publicationOptions
     };
   },
 });
@@ -326,5 +330,11 @@ export default defineComponent({
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+@media screen and (max-width: 706px) {
+  .publication-menu {
+    top: 30px;
+    left: -80px;
+  }
 }
 </style>
