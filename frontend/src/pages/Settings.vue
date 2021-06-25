@@ -1,9 +1,8 @@
 <template>
   <div class="settings">
-    <div class="bg-white main-shadow pa-sm br-md full-height edit-container column">
-      <div class="row items-center full-height">
-        <div class="row items-center justify-around full-width">
-          <div class="column items-center">
+    <div class="bg-white main-shadow pa-sm br-md full-height main-edit-container column">
+        <div class="row items-center justify-around full-width edit-container">
+          <div class="column items-center avatar-container">
             <Avatar size="200px" :userPic="previewImage" class="mb-sm" />
             <label for="profilePic" class="row items-center justify-center"
               ><span>Modifier ma photo de profil</span></label
@@ -100,7 +99,6 @@
             </form>
           </div>
         </div>
-      </div>
       <button @click="logout" class="logout-button self-center text-caption br-xs">Se deconnecter</button>
     </div>
   </div>
@@ -235,8 +233,13 @@ export default defineComponent({
   margin-left: -150px;
   padding-left: 150px;
 }
-.edit-container {
-  height: 80vh;
+.main-edit-container {
+  height: 100%;
+  overflow: scroll;
+  box-sizing: border-box;
+  &::-webkit-scrollbar{
+    display: none;
+  }
 }
 .edit-form {
   min-width: 300px;
@@ -282,4 +285,23 @@ label {
     color: black !important;
   }
 }
+.edit-container{
+  height: 100%;
+}
+@media screen and (max-width: 750px) {
+.edit-container{
+  flex-direction: column !important;
+  height: unset !important;
+  & .avatar-container{
+    margin-bottom : 20px;
+  }
+}
+}
+
+@media screen and (max-width: 500px) {
+.edit-form{
+  min-width: 250px;
+}
+}
+
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="full-width column justify-between" style="min-height: 300px; height: 90%">
+  <div class="messages-container full-width column justify-between">
     <div class="row items-center self-end users-sessions">
       <div
         v-for="user in oldSessions"
@@ -206,5 +206,9 @@ export default defineComponent({
   border-radius: 30px;
   width: 20px;
   height: 20px;
+}
+.messages-container {
+  min-height: 300px;
+  height: 90%;
 }
 </style>

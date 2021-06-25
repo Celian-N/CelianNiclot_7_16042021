@@ -1,6 +1,6 @@
 <template>
   <div class="login-container bg-primary pa-xl text-white row items-center justify-center">
-    <div class="half-width row justify-center">
+    <div class="logo-container row justify-center my-md">
       <img src="../assets/logo_groupomania_white.png" alt="Logo Groupomania" />
     </div>
     <div class="column items-center half-width login-carousel justify-center">
@@ -22,7 +22,7 @@
         :style="loginOrSignupStep == 'login' ? 'height:300px;' : 'height:500px;'"
       >
         <div id="login-form" class="column items-center full-width position-absolute">
-          <form class="column items-center full-width" @submit="onLogin">
+          <form class="column items-center full-width" @submit.prevent="onLogin">
             <InputField
               type="email"
               @onInput="(val) => (userMail = val)"
@@ -56,7 +56,7 @@
         </div>
 
         <div id="signup-form" class="column full-width items-center position-absolute">
-          <form class="column items-center full-width" @submit="onSignup">
+          <form class="column items-center full-width" @submit.prevent="onSignup">
             <InputField
               @onInput="(val) => (firstname = val)"
               :value="firstname"
@@ -190,7 +190,7 @@ export default defineComponent({
     };
 
     const loginFormIsFill = computed(() => {
-      return (!userMail.value || !userPassword.value) ? false : true;
+      return !userMail.value || !userPassword.value ? false : true;
     });
     const signupFormIsFill = computed(() => {
       const { firstname, lastname, email, password } = createUser;
@@ -257,7 +257,7 @@ export default defineComponent({
   &:hover {
     opacity: 0.8;
   }
-  &:disabled{
+  &:disabled {
     opacity: 0.3;
     cursor: no-drop;
   }
@@ -268,5 +268,19 @@ export default defineComponent({
 }
 img {
   width: 80%;
+}
+.logo-container {
+  width: 50%;
+}
+@media screen and (max-width: 706px) {
+  .logo-container {
+    width: 100%;
+  }
+  .login-carousel {
+    min-width: 300px;
+  }
+  .login-input {
+    min-width: unset;
+  }
 }
 </style>

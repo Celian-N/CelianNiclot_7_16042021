@@ -16,23 +16,24 @@
     <hr class="full-width vertical-separator mb-sm" />
     <div class="row items-center justify-around buttons-container">
       <button class="row items-center justify-center">
-        <label for="image" class="row items-center justify-center"
-          ><span class="material-icons-round text-secondary">photo_camera</span> <span>Image</span></label
-        >
+        <label for="image" class="row items-center justify-center">
+          <span class="material-icons-round text-secondary">photo_camera</span>
+          <span class="title-button">Image</span>
+        </label>
       </button>
       <button class="row items-center justify-center" @click="showVideo">
         <span class="fab fa-youtube text-secondary"></span>
-        <span>Vidéo</span>
+        <span class="title-button">Vidéo</span>
       </button>
       <button class="row items-center justify-center" @click="showModal = true">
-        <div class="bg-secondary br-xs row items-center justify-center mr-xs" style="padding: 0 2px">
+        <div class="bg-secondary br-xs row items-center justify-center mr-xs gif-span-container" style="padding: 0 2px">
           <span class="material-icons-round text-white gif-span">gif</span>
         </div>
-        <span>Gif</span>
+        <span class="title-button">Gif</span>
       </button>
       <button class="row items-center justify-center" @click="showArticle">
         <span class="material-icons-round text-secondary">link</span>
-        <span>Lien</span>
+        <span class="title-button">Lien</span>
       </button>
     </div>
 
@@ -412,6 +413,23 @@ textarea {
   background: transparent;
   &:hover {
     background: rgba(#50505096, 0.05) !important;
+  }
+}
+@media screen and (max-width: 500px) {
+  .title-button {
+    display: none;
+  }
+  .buttons-container > * {
+      width: 50px;
+    & span:nth-child(1){
+      margin:0;
+    }
+    & .gif-span-container{
+      margin:0;
+    }
+  }
+  .material-icons-round {
+    margin: 0;
   }
 }
 </style>

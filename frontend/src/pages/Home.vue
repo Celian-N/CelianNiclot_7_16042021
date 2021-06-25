@@ -298,4 +298,9 @@ export default defineComponent({
     text-overflow: ellipsis;
   }
 }
+@media screen and (max-width : 980px){
+  .right-panel{
+    display: none;
+  }
+}
 </style>

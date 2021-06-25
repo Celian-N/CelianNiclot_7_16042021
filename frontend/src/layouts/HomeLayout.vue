@@ -1,48 +1,24 @@
 <template>
   <div class="column bg-tertiary main-container overflow-hidden">
     <HeaderCard class="header-container" />
-    <div class="row">
+    <div class="row home-page-container">
       <div class="column side-panels mr-sm">
         <div
           class="row items-center side-panels__panel mt-sm br-md bg-white main-shadow pa-sm justify-between profile-card"
           @click="goToMyProfile"
         >
           <Avatar size="60px" :userPic="user.userPic" class="mr-sm" />
-          <div class="column items-start" style="flex: 1">
+          <div class="column items-start profile-card__infos" style="flex: 1">
             <span class="text-main text-bold">{{ user.firstname }} {{ user.lastname }}</span>
             <span class="text-caption font-12">Membre depuis le {{ userInscription }}</span>
           </div>
         </div>
-        <nav class="column side-panels__panel mt-sm br-md bg-white main-shadow pa-sm">
-          <ul>
-            <li v-for="tab in Object.values(navigationTabs)" :key="tab.to">
-              <router-link
-                v-if="!tab.for"
-                :to="{ path: `${tab.to}` }"
-                replace
-                class="row items-center pa-sm br-sm my-xs position-relative"
-              >
-                <span class="material-icons-round pr-md">{{ tab.icon }}</span>
-                <span>{{ tab.label }}</span>
-                <div
-                  v-if="tab.to == '/messages' && unreadMessagesLength > 0"
-                  class="notifications bg-secondary text-white row items-center justify-center font-12"
-                >
-                  {{ unreadMessagesLength }}
-                </div>
-              </router-link>
-              <router-link
-                v-else-if="tab.for && user.adminRole"
-                :to="{ path: `${tab.to}` }"
-                replace
-                class="row items-center pa-sm br-sm my-xs"
-              >
-                <span class="material-icons-round pr-md">{{ tab.icon }}</span>
-                <span>{{ tab.label }}</span>
-              </router-link>
-            </li>
-          </ul>
-        </nav>
+        <NavigationTabs
+          :unreadMessagesLength="unreadMessagesLength"
+          :userPic="user.userPic"
+          :hasAdminRole="user.adminRole"
+          @goToMyProfile="goToMyProfile"
+        />
       </div>
       <div class="center-panel mt-sm">
         <router-view />
@@ -61,11 +37,11 @@ import { navigationTabs } from '../mixins/navigation/navigation.mixins';
 import HeaderCard from '../components/Header/HeaderCard.vue';
 import Avatar from '../components/Avatar/Avatar.vue';
 import moment from 'moment';
-import { showErrorBanner } from '../mixins/banners/banners.mixins';
 import { useRouter } from 'vue-router';
 import { useApiStore } from '../store/api/api.store';
 import AsyncLoader from '../components/AsyncLoader/AsyncLoader.vue';
 import { useSocket } from '../store/socket/socket.store';
+import NavigationTabs from '../components/Navigation/NavigationTabs.vue';
 
 export default defineComponent({
   name: 'HomeLayout',
@@ -73,6 +49,7 @@ export default defineComponent({
     HeaderCard,
     Avatar,
     AsyncLoader,
+    NavigationTabs,
   },
   setup() {
     const { setUser, getUser } = useUser();
@@ -184,9 +161,6 @@ export default defineComponent({
 .side-panels {
   width: 25%;
   z-index: 2000;
-  &__panel {
-    box-sizing: border-box;
-  }
 }
 .center-panel {
   height: 85vh;
@@ -203,48 +177,31 @@ export default defineComponent({
 .material-icons-round {
   font-size: 28px;
 }
-ul {
-  list-style-type: none;
-  padding: 0 !important;
-  margin: 0 !important;
-}
 
-a {
-  background: transparent;
-  transition: all 300ms;
-  &:hover {
-    background: rgba(#50505096, 0.1);
+@media screen and (max-width: 706px) {
+  .profile-card {
+    display: none;
   }
-  & span:nth-child(2) {
-    font-size: 14px;
-  }
-}
-a.router-link-active.router-link-exact-active {
-  background: #0d2040;
-  color: white !important;
-  transition: opacity 300ms;
-  opacity: 1;
-  &:hover {
-    opacity: 0.8;
-  }
-}
+  .side-panels {
+    position: fixed;
+    bottom: 0;
+    flex-direction: row !important;
+    align-items: center;
+    width: calc(100vw - 24px);
+    margin: 0;
+    height: 10vh;
+    margin-bottom: 10px;
 
-nav a {
-  color: #50505096;
-  text-decoration: none;
-  &:visited {
-    color: #50505096;
+  }
+  .center-panel {
+    height: 73vh;
   }
 }
-nav {
-  height: fit-content;
-}
-.notifications {
-  position: absolute;
-  right: 20px;
-  width: 20px;
-  height: 20px;
-  border-radius: 7px;
-  font-weight: 600;
+@media screen and (max-width: 400px) {
+  .side-panels {
+    left: 0;
+    width: 100vw;
+    margin-bottom: 0px;
+  }
 }
 </style>

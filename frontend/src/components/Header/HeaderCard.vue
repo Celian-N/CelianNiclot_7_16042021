@@ -1,15 +1,29 @@
 <template>
-  <header class="row items-center justify-between px-md bg-white br-md main-shadow">
-    <img src="../../assets/logo_groupomania.png" alt="Logo groupomania" />
-    <div class="input-container position-relative">
+  <header
+    class="row items-center px-md bg-white br-md main-shadow"
+    :class="searchIsOpen ? 'justify-center' : 'justify-between'"
+  >
+    <img v-if="!searchIsOpen" src="../../assets/logo_groupomania.png" alt="Logo groupomania" />
+    <IconButton
+      v-if="!searchIsOpen"
+      :button="{ size: '30px', icon: 'search', color: 'secondary' }"
+      class="self-center search-button"
+      @onClick="() => (searchIsOpen = true)"
+    />
+    <div
+      class="input-container position-relative"
+      :class="[searchIsOpen && 'input-container__open']"
+      :style="searchIsOpen ? 'width:100%' : 'width : 250px'"
+    >
       <InputField
+        @onClick="() => (searchIsOpen = false)"
         @onInput="(val) => (searchedUser = val)"
         :value="searchedUser"
         :button="buttonConfig"
         :maxLength="255"
         borderRadius="24px"
         placeholder="Rechercher"
-        class="self-stretch"
+        class="self-stretch search-input"
       />
       <div v-if="users && users.length && showMenu" class="users-container bg-white br-md main-shadow" ref="userList">
         <div
@@ -33,6 +47,8 @@ import { onClickOutside, useDebounce } from '@vueuse/core';
 import { useApi } from '../../mixins/api/api.mixins';
 import { IUser } from '../../interface/user/user';
 import Avatar from '../Avatar/Avatar.vue';
+import IconButton from '../IconButton/IconButton.vue';
+
 import { useRouter } from 'vue-router';
 
 export default defineComponent({
@@ -40,6 +56,7 @@ export default defineComponent({
   components: {
     InputField,
     Avatar,
+    IconButton,
   },
   setup() {
     const { getAllUsers } = useApi();
@@ -49,6 +66,7 @@ export default defineComponent({
     const userList = ref(null);
     const users = ref<IUser[] | undefined>(undefined);
     const router = useRouter();
+    const searchIsOpen = ref(false);
 
     onClickOutside(userList, (event) => (showMenu.value = false));
 
@@ -60,7 +78,7 @@ export default defineComponent({
       size: '30px',
     };
     const selectUser = (user: Partial<IUser>) => {
-      if(!user.id) return;
+      if (!user.id) return;
       showMenu.value = false;
       searchedUser.value = '';
       router.push({ name: 'UserPublications', params: { userPublicationId: user.id } });
@@ -72,8 +90,8 @@ export default defineComponent({
       if (!result) return;
       showMenu.value = true;
       users.value = result;
-      console.log('users.value :', users.value);
     };
+
     watch(
       () => searchDebounced.value,
       (newValue, prevValue) => {
@@ -84,23 +102,23 @@ export default defineComponent({
       }
     );
 
-    return { buttonConfig, users, searchedUser, userList, showMenu, selectUser };
+    return { buttonConfig, users, searchedUser, userList, showMenu, selectUser, searchIsOpen };
   },
 });
 </script>
 
 <style lang="scss" scoped>
-img {
-  width: 100px;
+header {
+  height: 10vh;
 }
-.input-container {
-  width: 250px;
+img {
+  width: 120px;
 }
 .users-container {
   position: absolute;
   top: 55px;
   max-height: 300px;
-  width: 250px;
+  width: 100%;
   overflow: scroll;
   z-index: 1000;
 }
@@ -109,6 +127,20 @@ img {
   cursor: pointer;
   &:hover {
     background: rgba(grey, 0.2);
+  }
+}
+.search-button {
+  display: none;
+}
+@media screen and (max-width: 500px) {
+  .search-button {
+    display: block;
+  }
+  .input-container {
+    display: none;
+  }
+  .input-container__open {
+    display: block;
   }
 }
 </style>

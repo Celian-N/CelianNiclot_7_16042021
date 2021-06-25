@@ -1,5 +1,5 @@
 <template>
-  <div class="column justify-between" style="height: 80%">
+  <div class="column justify-between message-panel-container">
     <ul class="messages column" v-if="user" id="message-list">
       <li
         v-for="(message, index) in messages"
@@ -22,7 +22,7 @@
       </div>
     </ul>
 
-    <div style="max-height: 20%">
+    <div>
       <InputField
         v-if="user"
         autogrow
@@ -125,7 +125,6 @@ ul {
 .messages {
   overflow: scroll;
   padding: 20px 50px;
-  max-height: 80%;
 }
 .sender {
   font-weight: 500;
@@ -186,6 +185,9 @@ ul {
 .loader:after {
   left: 20px;
 }
+.message-panel-container{
+  height: calc(90% - 100px);
+}
 @-webkit-keyframes load7 {
   0%,
   80%,
@@ -204,6 +206,17 @@ ul {
   }
   40% {
     box-shadow: 0 2.5em 0 0;
+  }
+}
+@media screen and (max-width: 600px) {
+  .messages {
+    padding: 20px 20px;
+  }
+  .chat-user {
+    max-width: 85%;
+  }
+  .chat-me {
+    max-width: 85%;
   }
 }
 </style>

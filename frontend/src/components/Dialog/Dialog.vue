@@ -49,7 +49,8 @@ export default defineComponent({
 }
 
 .modal-container {
-  width: 300px;
+  width: 400px;
+  box-sizing: border-box;
   overflow: hidden;
   margin: 0px auto;
   padding: 20px 30px;
@@ -80,5 +81,11 @@ export default defineComponent({
 .modal-leave-active .modal-container {
   -webkit-transform: scale(1.1);
   transform: scale(1.1);
+}
+
+@media screen and (max-width : 400px){
+  .modal-container {
+    width: 300px;
+  }
 }
 </style>

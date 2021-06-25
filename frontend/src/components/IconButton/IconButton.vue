@@ -3,6 +3,7 @@
       @click="$emit('onClick')"
       :style="`width:${button.size}; height : ${button.size};`"
       class="row items-center justify-center"
+      :class="`br-${borderRadius} ${customClass}`"
     >
       <span
         class="material-icons-round"
@@ -18,7 +19,9 @@ import { defineComponent } from 'vue'
 export default defineComponent({
   name:'IconButton',
   props:{
-    button: Object
+    button: Object,
+    borderRadius :{type: String, default : 'md'},
+    customClass : String
   }
   
 })
@@ -28,7 +31,6 @@ button {
   cursor: pointer;
   background: transparent;
   border: none;
-  border-radius: 30px;
   transition: background 300ms;
 
   &:hover {

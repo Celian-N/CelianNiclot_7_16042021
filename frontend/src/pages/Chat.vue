@@ -1,10 +1,9 @@
 <template>
-  <div class="chat-container">
+  <div class="main-chat-container">
     <div
-      class="lato bg-white main-shadow pa-sm br-md full-height column position-relative justify-between"
-      style="height: 80vh"
+      class="lato bg-white main-shadow pa-sm br-md full-height column position-relative justify-between chat-container"
     >
-      <div style="height: 10%">
+      <div>
         <InputField
           @onInput="(val) => (searchedUser = val)"
           :value="searchedUser"
@@ -229,7 +228,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.chat-container {
+.main-chat-container {
   overflow: hidden;
   height: 100%;
   margin-right: -150px;
@@ -251,5 +250,9 @@ export default defineComponent({
   &:hover {
     background: rgba(grey, 0.2);
   }
+}
+.chat-container{
+  height:100%;
+  box-sizing: border-box;
 }
 </style>
