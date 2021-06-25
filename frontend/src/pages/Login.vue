@@ -22,7 +22,7 @@
         :style="loginOrSignupStep == 'login' ? 'height:300px;' : 'height:500px;'"
       >
         <div id="login-form" class="column items-center full-width position-absolute">
-          <form class="column items-center full-width" @submit="onLogin">
+          <form class="column items-center full-width" @submit.prevent="onLogin">
             <InputField
               type="email"
               @onInput="(val) => (userMail = val)"
@@ -56,7 +56,7 @@
         </div>
 
         <div id="signup-form" class="column full-width items-center position-absolute">
-          <form class="column items-center full-width" @submit="onSignup">
+          <form class="column items-center full-width" @submit.prevent="onSignup">
             <InputField
               @onInput="(val) => (firstname = val)"
               :value="firstname"
