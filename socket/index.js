@@ -65,18 +65,17 @@ io.on('connection', async (socket) => {
   });
 
   socket.on('readMessages', async ({ userId, sessionId }) => {
-    console.log('USER ID ;', userId)
+    console.log('USER ID ;', userId);
     await db.readMessages(userId, sessionId);
     socket.emit('readMessages', { userId, sessionId });
   });
 
-  socket.on('getUnreadMessages', async (userId)=>{
+  socket.on('getUnreadMessages', async (userId) => {
     const result = await db.getUnreadMessages(userId);
-    console.log('result : ', result)
+    console.log('result : ', result);
 
-    socket.emit('getUnreadMessages',  result );
-
-  })
+    socket.emit('getUnreadMessages', result);
+  });
 
   socket.on('private message', async ({ content, from, to }) => {
     console.log(content, from, to);
