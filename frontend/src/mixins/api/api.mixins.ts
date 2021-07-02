@@ -77,6 +77,24 @@ export const useApi = () => {
       .catch((error) => console.warn('Erreur :' + error));
   };
 
+  const deleteUser = async (userId: number) => {
+    return await fetch(`http://localhost:3000/users/${userId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + Cookies.get('groupomania_token'),
+      },
+    })
+      .then((result) => {
+        return result.json();
+      })
+      .then((res) => {
+        return res;
+      })
+      .catch((error) => {
+        console.warn('Erreur :' + error);
+      });
+  };
   //PUBLICATIONS
 
   const createPublicationCall = async (publication: ICreatePublication, image?: File | null) => {
@@ -561,5 +579,6 @@ export const useApi = () => {
     signalPublication,
     getPostsByUserIdCall,
     getMostLikedPublicationCall,
+    deleteUser
   };
 };
