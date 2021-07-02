@@ -2,7 +2,7 @@
 export const navigationTabs = {
   home : {
     to : '/',
-    label : 'Acceuil',
+    label : 'Accueil',
     icon : 'home'
   },
   notif : {

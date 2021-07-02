@@ -3,15 +3,15 @@
     <div class="modal-mask" v-if="showModal">
       <div class="modal-wrapper">
         <div class="modal-container br-md">
-          <div class="modal-header">
+          <div class="modal-header" :class="customHeaderClass">
             <slot name="header"></slot>
           </div>
 
-          <div class="modal-body">
+          <div class="modal-body" :class="customBodyClass">
             <slot name="body"></slot>
           </div>
 
-          <div class="modal-footer">
+          <div class="modal-footer" :class="customFooterClass">
             <slot name="footer"> </slot>
           </div>
         </div>
@@ -26,6 +26,9 @@ export default defineComponent({
   name: 'Dialog',
   props: {
     showModal: { type: Boolean },
+    customFooterClass: { type: String },
+    customBodyClass: { type: String },
+    customHeaderClass: { type: String },
   },
 });
 </script>
@@ -59,9 +62,9 @@ export default defineComponent({
   transition: all 0.3s ease;
   font-family: 'Poppins', sans-serif;
 }
-.modal-body{
-  max-height:400px;
-  overflow:scroll;
+.modal-body {
+  max-height: 400px;
+  overflow: scroll;
 }
 
 .modal-header h3 {
@@ -83,7 +86,7 @@ export default defineComponent({
   transform: scale(1.1);
 }
 
-@media screen and (max-width : 400px){
+@media screen and (max-width: 400px) {
   .modal-container {
     width: 300px;
   }
