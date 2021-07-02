@@ -1,7 +1,5 @@
-
 import { inject, provide } from 'vue';
 import { socketStore } from './state';
-
 
 export const socketStoreProvider = () => {
   provide('socketStore', socketStore);

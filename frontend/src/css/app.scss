@@ -1,12 +1,12 @@
 //---COLOR /TEXTS/ BG---
-$primary:#0D2040;
-$secondary:#E22A7F;
-$tertiary :#F5F5F5;
-$main : #505050;
-$caption : #50505096;
-$negative:red;
+$primary: #0d2040;
+$secondary: #e22a7f;
+$tertiary: #f5f5f5;
+$main: #505050;
+$caption: #50505096;
+$negative: red;
 
-.text-bold{
+.text-bold {
   font-weight: bold;
 }
 .text-primary {
@@ -54,64 +54,67 @@ $negative:red;
 .bg-green {
   background-color: green;
 }
-.bg-positive{
-  background-color : #2dd385;
+.bg-positive {
+  background-color: #2dd385;
 }
-.font-10{
+.font-10 {
   font-size: 10px;
 }
-.font-12{
+.font-12 {
   font-size: 12px;
 }
-.font-14{
+.font-14 {
   font-size: 14px;
 }
-.font-16{
+.font-16 {
   font-size: 16px;
 }
-.font-20{
+.font-20 {
   font-size: 20px;
 }
 //----BORDER----
-.br-xs{
+.br-xs {
   border-radius: 6px;
 }
-.br-sm{
+.br-sm {
   border-radius: 12px;
 }
-.br-md{
+.br-md {
   border-radius: 18px;
 }
-.br-lg{
+.br-lg {
   border-radius: 24px;
 }
-.br-xl{
+.br-xl {
   border-radius: 32px;
 }
 
 //---SHADOW---
-.main-shadow{
+.main-shadow {
   box-shadow: 0px 7px 40px #00000012;
 }
 
-.input-shadow{
+.input-shadow {
   box-shadow: 0px 2px 15px #00000012;
 }
 
 //--POSITION--
-.position-relative{
+.position-relative {
   position: relative;
 }
-.position-absolute{
+.position-absolute {
   position: absolute;
 }
-.position-fixed{
+.position-fixed {
   position: fixed;
 }
 
 //---OVERFLOW--
-.overflow-hidden{
+.overflow-hidden {
   overflow: hidden;
+}
+.overflow-scroll {
+  overflow: scroll;
 }
 //---SIZE---
 .full-width {
@@ -165,13 +168,13 @@ $negative:red;
 .justify-around {
   justify-content: space-around;
 }
-.justify-end{
+.justify-end {
   justify-content: flex-end;
 }
-.justify-start{
+.justify-start {
   justify-content: flex-start;
 }
-.no-wrap{
+.no-wrap {
   flex-wrap: nowrap;
 }
 
@@ -408,14 +411,15 @@ $negative:red;
   display: none;
 }
 
-input, button{
+input,
+button {
   font-family: 'Poppins', 'Open-Sans';
 }
 
 //---BUTTON--
-button{
+button {
   border: none;
-  background:transparent;
+  background: transparent;
   cursor: pointer;
   padding: 0;
 }
@@ -426,6 +430,6 @@ button{
   height: 1px;
 }
 
-.cursor-pointer{
-  cursor: pointer !important; 
+.cursor-pointer {
+  cursor: pointer !important;
 }

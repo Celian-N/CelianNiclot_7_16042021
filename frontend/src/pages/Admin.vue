@@ -1,41 +1,41 @@
 <template>
-  <div class="column" v-if="signaledPosts.length">
-    <div v-for="signaledPost in signaledPosts" :key="signaledPost.text" class="mt-md column">
-      <div v-if="signaledPost.publicationId" class="br-md bg-white main-shadow column items-start pa-md post mb-sm">
-        <div class="row items-center">
-          <Avatar
-            size="30px"
-            class="mr-sm"
-            :userPic="authorsInfos[signaledPost.authorId] ? authorsInfos[signaledPost.authorId].userPic : null"
-          />
-          <span class="text-main text-bold font-12">{{
-            authorsInfos[signaledPost.authorId] &&
-            authorsInfos[signaledPost.authorId].firstname + ' ' + authorsInfos[signaledPost.authorId].lastname
-          }}</span>
+  <div class="column overflow-hidden full-height" v-if="signaledPosts.length">
+    <div class="overflow-scroll scrollable-container">
+      <div v-for="signaledPost in signaledPosts" :key="signaledPost.text" class="mt-md column">
+        <div v-if="signaledPost.publicationId" class="br-md bg-white main-shadow column items-start pa-md post mb-sm">
+          <div class="row items-center">
+            <Avatar
+              size="30px"
+              class="mr-sm"
+              :userPic="authorsInfos[signaledPost.authorId] ? authorsInfos[signaledPost.authorId].userPic : null"
+            />
+            <span class="text-main text-bold font-12">{{
+              authorsInfos[signaledPost.authorId] &&
+              authorsInfos[signaledPost.authorId].firstname + ' ' + authorsInfos[signaledPost.authorId].lastname
+            }}</span>
+          </div>
+          <div>
+            {{ signaledPost.text }}
+          </div>
         </div>
-        <div>
-          {{ signaledPost.text }}
+        <div v-else class="post">
+          <Publication :publication="signaledPost" :user="user" :admin="true" />
         </div>
-      </div>
-      <div v-else class="post">
-        <Publication :publication="signaledPost" :user="user" :admin="true" />
-      </div>
-      <div class="row items-center justify-around button-banner bg-primary">
-        <button class="negative" @click="deletePostAdmin(signaledPost)">Supprimer</button>
-        <button class="negative" @click="banUserAdmin(signaledPost.authorId)">Bannir l'utilisateur</button>
-        <button class="positive" @click="ignorePostAdmin(signaledPost)">Ignorer</button>
+        <div class="row items-center justify-around button-banner bg-primary">
+          <button class="negative" @click="deletePostAdmin(signaledPost)">Supprimer</button>
+          <button class="negative" @click="banUserAdmin(signaledPost.authorId)">Bannir l'utilisateur</button>
+          <button class="positive" @click="ignorePostAdmin(signaledPost)">Ignorer</button>
+        </div>
       </div>
     </div>
   </div>
-  <div v-else class="column items-center justify-center" style="min-height:100px;" >
-    Aucun post signalé !
-  </div>
+  <div v-else class="column items-center justify-center" style="min-height: 100px">Aucun post signalé !</div>
 </template>
 
 <script lang="ts">
 import { defineComponent, onMounted, ref, computed, watch } from 'vue';
 import { IComment } from '../interface/comments/comments';
-import { IApiPublication, IPublication, IPublicationAuthor } from '../interface/publications/publication';
+import { IPublication, IPublicationAuthor } from '../interface/publications/publication';
 import { useAuthors } from '../store/authors/authors.store';
 import { useUser } from '../store/user/user.store';
 import { useAdmin } from '../store/admin/admin.store';
@@ -77,7 +77,6 @@ export default defineComponent({
     };
     const ignorePostAdmin = async (signaledPost: IComment | IPublication) => {
       const postType = checkPostType(signaledPost);
-      console.log(signaledPost);
       const result = await ignorePost(postType, signaledPost.id);
       if (!result) return showErrorBanner('Une erreur est survenue, impossible de supprimer le post');
     };
@@ -92,19 +91,19 @@ export default defineComponent({
 
     const getAuthorInfos = async (posts: (IComment | IPublication)[]) => {
       for (const post of posts) {
-      const authorInfo = getAuthorInfosById(post.authorId);
+        const authorInfo = getAuthorInfosById(post.authorId);
         if (authorsInfos.value[post.authorId]) return;
         if (authorInfo) {
           return (authorsInfos.value = { ...authorsInfos.value, [post.authorId]: authorInfo });
         }
         const newAuthor = await fetchAuthorInfos(post.authorId);
-        if(!newAuthor) return;
+        if (!newAuthor) return;
         return (authorsInfos.value = { ...authorsInfos.value, [post.authorId]: newAuthor });
       }
     };
 
     onMounted(async () => {
-      if(!user.value.adminRole) return router.push({ name: 'Home' });
+      if (!user.value.adminRole) return router.push({ name: 'Home' });
       await fetchSignaledPosts();
     });
 
@@ -135,5 +134,12 @@ export default defineComponent({
 }
 .post {
   z-index: 0;
+}
+@media screen and (max-width: 706px) {
+  .scrollable-container {
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 }
 </style>

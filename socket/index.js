@@ -39,7 +39,6 @@ io.on('connection', async (socket) => {
     if (connectedUsers.includes(socket.userId)) return;
     connectedUsers.push(socket.userId);
   }
-  console.log(connectedUsers);
 
   socket.broadcast.emit('user_connected', connectedUsers);
 
@@ -65,21 +64,17 @@ io.on('connection', async (socket) => {
   });
 
   socket.on('readMessages', async ({ userId, sessionId }) => {
-    console.log('USER ID ;', userId)
     await db.readMessages(userId, sessionId);
     socket.emit('readMessages', { userId, sessionId });
   });
 
-  socket.on('getUnreadMessages', async (userId)=>{
+  socket.on('getUnreadMessages', async (userId) => {
     const result = await db.getUnreadMessages(userId);
-    console.log('result : ', result)
 
-    socket.emit('getUnreadMessages',  result );
-
-  })
+    socket.emit('getUnreadMessages', result);
+  });
 
   socket.on('private message', async ({ content, from, to }) => {
-    console.log(content, from, to);
     socket
       .to(to)
       .to(socket.userId)
@@ -96,7 +91,6 @@ io.on('connection', async (socket) => {
   });
 
   socket.on('disconnect', async () => {
-    console.log('DISCONNECTED...');
     const matchingSockets = await io.in(socket.userId).allSockets();
     const isDisconnected = matchingSockets.size === 0;
     if (isDisconnected) {

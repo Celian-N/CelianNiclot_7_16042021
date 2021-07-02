@@ -7,9 +7,9 @@ type AdminStateInterface = Record<string, IComment | IPublication>;
 const adminState = ref<AdminStateInterface>({});
 
 const setters = {
-  setPosts: (posts: (IComment |IPublication)[]) => {
+  setPosts: (posts: (IComment | IPublication)[]) => {
     posts.forEach((post) => {
-        adminState.value = { ...adminState.value, [post.id]: post };
+      adminState.value = { ...adminState.value, [post.id]: post };
     });
   },
   removePost: (postId: number) => {

@@ -243,7 +243,7 @@ export default defineComponent({
     });
 
     const cropImage = () => {
-      if (!cropper.value) return console.log('Pas de cropper');
+      if (!cropper.value) return;
       const result = cropper.value.getResult();
       if (!editedUser.value.userPic) return;
       const type = editedUser.value.userPic.type;

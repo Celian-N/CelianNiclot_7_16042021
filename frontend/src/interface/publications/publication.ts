@@ -37,16 +37,16 @@ export interface IMetaLink {
     description: string;
     image: string;
     images: { url: string }[];
-    site_name : string;
-    title : string;
-    type : string;
-    url : string;
+    site_name: string;
+    title: string;
+    type: string;
+    url: string;
   };
 }
 
 export interface IPublicationAuthor {
-  firstname : string,
-  lastname : string,
-  userPic?: string,
+  firstname: string;
+  lastname: string;
+  userPic?: string;
   job?: string;
 }

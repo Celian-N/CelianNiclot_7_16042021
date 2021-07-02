@@ -127,6 +127,7 @@ export default defineComponent({
 .settings-menu {
   position: absolute;
   top: -100px;
+  left: -100px;
   transition: opacity 1000ms;
   & button {
     &:hover {
@@ -235,7 +236,7 @@ nav {
 
     & .notifications {
       top: -5px;
-      right:-5px;
+      right: -5px;
       border-radius: 30px;
     }
   }

@@ -11,7 +11,12 @@
       <div class="position-relative">
         <IconButton :button="{ size: '30px', icon: 'more_horiz', color: 'primary' }" @onClick="showMenu = !showMenu" />
         <transition name="fade">
-          <div v-if="showMenu" class="publication-menu column bg-white br-sm input-shadow overflow-hidden" ref="publicationOptions">
+          <div
+            v-if="showMenu"
+            class="publication-menu column bg-white br-sm input-shadow overflow-hidden"
+            :class="[admin && 'publication-menu__admin']"
+            ref="publicationOptions"
+          >
             <button
               v-if="publication.authorId == user.id"
               class="pa-sm full-width row justify-start items-center font-12"
@@ -138,7 +143,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType, onMounted, ref, computed } from 'vue';
-import { IPublication, IPublicationAuthor } from '../../interface/publications/publication';
+import { IPublication } from '../../interface/publications/publication';
 import { IUser } from '../../interface/user/user';
 import { useRouter } from 'vue-router';
 import { useComments } from '../../store/comments/comments.store';
@@ -213,7 +218,7 @@ export default defineComponent({
 
     const loadMoreComments = async () => {
       currentCommentsPage.value++;
-      const moreComments = await fetchMorePublicationComments(props.publication.id, currentCommentsPage.value);
+      await fetchMorePublicationComments(props.publication.id, currentCommentsPage.value);
 
       if (publicationComments.value.length == commentsLength.value && commentsRef.value)
         return (commentsRef.value.showLoadMoreButton = false);
@@ -300,7 +305,7 @@ export default defineComponent({
       banUserAdmin,
       signalComment,
       goToUserProfile,
-      publicationOptions
+      publicationOptions,
     };
   },
 });
@@ -317,6 +322,10 @@ export default defineComponent({
   top: -10px;
   left: 40px;
   transition: opacity 1000ms;
+  &__admin {
+    top: 0px;
+    left: -120px;
+  }
   & button {
     &:hover {
       background: rgba(grey, 0.1);

@@ -1,8 +1,6 @@
 import { inject, provide } from 'vue';
 import { adminStore } from './state';
 import { useApi } from '../../mixins/api/api.mixins';
-import { IApiPublication, IPublication } from '@/interface/publications/publication';
-import { IComment } from '@/interface/comments/comments';
 import { isComment } from '../../helpers/postType/postType.helper';
 import { metaLinksStore } from '../metadata/state';
 import { asyncCall } from '../api/api.store';

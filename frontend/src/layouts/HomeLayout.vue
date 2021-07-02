@@ -30,7 +30,7 @@
 
 <script lang="ts">
 import socket from '../socket';
-import { defineComponent, onBeforeUnmount, onMounted, ref, computed } from 'vue';
+import { defineComponent, onBeforeUnmount, onMounted, computed } from 'vue';
 import { useUser } from '../store/user/user.store';
 import { useApi } from '../mixins/api/api.mixins';
 import { navigationTabs } from '../mixins/navigation/navigation.mixins';
@@ -191,7 +191,6 @@ export default defineComponent({
     margin: 0;
     height: 10vh;
     margin-bottom: 10px;
-
   }
   .center-panel {
     height: 73vh;

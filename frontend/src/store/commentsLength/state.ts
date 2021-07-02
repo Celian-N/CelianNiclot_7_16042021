@@ -1,18 +1,24 @@
-import { readonly, ref, provide, inject} from 'vue';
+import { readonly, ref, provide, inject } from 'vue';
 
 type CommentsLengthStateInterface = Record<number, number>;
 
 const commentsLengthState = ref<CommentsLengthStateInterface>({});
 
 const setters = {
-  setComment: ( publicationId: number, length : number) => {
+  setComment: (publicationId: number, length: number) => {
     commentsLengthState.value = { ...commentsLengthState.value, [publicationId]: length };
   },
-  addComment: ( publicationId: number) => {
-    commentsLengthState.value = { ...commentsLengthState.value, [publicationId]: commentsLengthState.value[publicationId] + 1 };
+  addComment: (publicationId: number) => {
+    commentsLengthState.value = {
+      ...commentsLengthState.value,
+      [publicationId]: commentsLengthState.value[publicationId] + 1,
+    };
   },
-  removeComment : (publicationId : number)=>{
-    commentsLengthState.value = { ...commentsLengthState.value, [publicationId]: commentsLengthState.value[publicationId] - 1 };
+  removeComment: (publicationId: number) => {
+    commentsLengthState.value = {
+      ...commentsLengthState.value,
+      [publicationId]: commentsLengthState.value[publicationId] - 1,
+    };
   },
   clearComment: () => {
     commentsLengthState.value = {};

@@ -251,8 +251,8 @@ export default defineComponent({
     background: rgba(grey, 0.2);
   }
 }
-.chat-container{
-  height:100%;
+.chat-container {
+  height: 100%;
   box-sizing: border-box;
 }
 </style>

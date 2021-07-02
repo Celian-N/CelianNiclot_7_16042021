@@ -122,9 +122,7 @@
       </div>
     </div>
 
-    <button class="post-button bg-primary text-white br-sm py-xs mt-sm" @click="onCreatePublication">
-      Enregistrer
-    </button>
+    <button class="post-button bg-primary text-white br-sm py-xs mt-sm" @click="onSaveEditedPost">Enregistrer</button>
     <button class="post-button bg-white text-primary br-sm py-xs mt-sm" @click="closeEditingMode">Annuler</button>
 
     <Dialog :showModal="showModal" @close="showModal = false">
@@ -420,12 +418,12 @@ textarea {
     display: none;
   }
   .buttons-container > * {
-      width: 50px;
-    & span:nth-child(1){
-      margin:0;
+    width: 50px;
+    & span:nth-child(1) {
+      margin: 0;
     }
-    & .gif-span-container{
-      margin:0;
+    & .gif-span-container {
+      margin: 0;
     }
   }
   .material-icons-round {

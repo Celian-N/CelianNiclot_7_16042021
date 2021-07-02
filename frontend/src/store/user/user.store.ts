@@ -1,4 +1,4 @@
-import { ICreateUser, IUser } from '@/interface/user/user';
+import { ICreateUser } from '@/interface/user/user';
 import { inject, provide } from 'vue';
 import { userStore } from './state';
 import { useApi } from '../../mixins/api/api.mixins';

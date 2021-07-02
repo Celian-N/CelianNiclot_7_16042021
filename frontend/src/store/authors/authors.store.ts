@@ -1,7 +1,7 @@
 import { inject, provide } from 'vue';
 import { authorsStore } from './state';
 import { useApi } from '../../mixins/api/api.mixins';
-import {asyncCall} from '../api/api.store'
+import { asyncCall } from '../api/api.store';
 
 export const authorsStoreProvider = () => {
   provide('authorsStore', authorsStore);

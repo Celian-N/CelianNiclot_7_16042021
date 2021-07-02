@@ -69,11 +69,6 @@ exports.getAllSignaled = (req, res) => {
               err.message || 'Some error occurred while retrieving comments.',
           });
 
-        console.log('returned signaledPost :', [
-          ...returnedPublications,
-          ...signaledComments,
-        ]);
-
         res.status(200).json([...returnedPublications, ...signaledComments]);
       });
     }

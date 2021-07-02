@@ -9,12 +9,10 @@ exports.getSignaledPublications = (result) => {
         result(errPublications, null);
         return;
       }
-      console.log('resPublications :', resPublications)
 
-      result(null, resPublications)
+      result(null, resPublications);
     }
   );
- 
 };
 
 exports.getSignaledComments = (result) => {
@@ -26,33 +24,26 @@ exports.getSignaledComments = (result) => {
         result(errComments, null);
         return;
       }
-      console.log('resComments :', resComments)
-      result(null, resComments)
+      result(null, resComments);
     }
   );
-
 };
 
 exports.deleteComment = (commentId, result) => {
-  sql.query(
-    'DELETE FROM Comments WHERE id = ?',
-    [commentId],
-    (err, res) => {
-      if (err) {
-        console.log('error: ', err);
-        result(err, null);
-        return;
-      }
-
-      if (res.affectedRows == 0) {
-        result({ kind: 'not_found' }, null);
-        return;
-      }
-
-      console.log('deleted comment with id: ', commentId);
-      result(null, res);
+  sql.query('DELETE FROM Comments WHERE id = ?', [commentId], (err, res) => {
+    if (err) {
+      console.log('error: ', err);
+      result(err, null);
+      return;
     }
-  );
+
+    if (res.affectedRows == 0) {
+      result({ kind: 'not_found' }, null);
+      return;
+    }
+
+    result(null, res);
+  });
 };
 
 exports.deletePublication = (publicationId, result) => {
@@ -70,8 +61,6 @@ exports.deletePublication = (publicationId, result) => {
         result({ kind: 'not_found' }, null);
         return;
       }
-
-      console.log('deleted publication with id: ', publicationId);
       result(null, res);
     }
   );
@@ -83,7 +72,6 @@ exports.ignoreComment = (commentId, result) => {
     [0, commentId],
     (err, res) => {
       if (err) {
-
         result(err, null);
         return;
       }
@@ -93,7 +81,6 @@ exports.ignoreComment = (commentId, result) => {
         return;
       }
 
-      console.log('Comment with id ignored: ', commentId);
       result(null, commentId);
     }
   );
@@ -105,7 +92,6 @@ exports.ignorePublication = (publicationId, result) => {
     [0, publicationId],
     (err, res) => {
       if (err) {
-
         result(err, null);
         return;
       }
@@ -115,7 +101,6 @@ exports.ignorePublication = (publicationId, result) => {
         return;
       }
 
-      console.log('Publication with id ignored: ', publicationId);
       result(null, publicationId);
     }
   );
@@ -137,7 +122,6 @@ exports.banishUser = (userId, result) => {
         return;
       }
 
-      console.log('deleted publication with id: ', userId);
       result(null, res);
     }
   );
@@ -159,7 +143,6 @@ exports.unbanishUser = (userId, result) => {
         return;
       }
 
-      console.log('deleted publication with id: ', userId);
       result(null, res);
     }
   );
@@ -184,5 +167,3 @@ exports.getUserRole = (userId, result) => {
     }
   );
 };
-
-

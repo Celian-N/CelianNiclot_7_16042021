@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, SetupContext, computed, onMounted, ref, watch } from 'vue';
+import { defineComponent, computed, onMounted, ref, watch } from 'vue';
 import { useUser } from '../store/user/user.store';
 import { usePublications } from '../store/publications/publications.store';
 import Publication from '../components/Publications/Publication.vue';
@@ -45,7 +45,7 @@ export default defineComponent({
     Publication,
     Avatar,
   },
-  setup(props, context: SetupContext) {
+  setup() {
     const { logout, getUser } = useUser();
     const {
       deletePublication,
@@ -61,7 +61,7 @@ export default defineComponent({
 
     const { userPublicationId } = route.currentRoute.value.params;
 
-    const selectedUserId = ref(parseInt(userPublicationId as string))
+    const selectedUserId = ref(parseInt(userPublicationId as string));
 
     const authorInfos = computed(() => getAuthorInfosById(selectedUserId.value));
 
@@ -69,11 +69,11 @@ export default defineComponent({
       () => route.currentRoute.value.params.userPublicationId,
       (newValue) => {
         if (!newValue) return;
-        selectedUserId.value = parseInt(newValue as string)
+        selectedUserId.value = parseInt(newValue as string);
       }
     );
 
-     watch(
+    watch(
       () => selectedUserId.value,
       (newValue) => {
         if (!newValue) return;
@@ -134,7 +134,6 @@ export default defineComponent({
 
     onMounted(async () => {
       if (!userPublicationId) return;
-      console.log('onMounted userId :', userPublicationId)
       await getPublications(parseInt(userPublicationId as string));
     });
 
