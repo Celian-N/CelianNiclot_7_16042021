@@ -31,7 +31,7 @@ Comment.create = (newComment, result) => {
   });
 };
 
-Comment.findById = (commentId, userId, result) => {
+Comment.findById = (commentId, userId, authorized, result) => {
   sql.query(
     'SELECT author_id as authorId, publication_id as publicationId, user_liked as userLiked, text, creation_date as creationDate FROM Comments WHERE id = ?',
     commentId,
@@ -43,7 +43,7 @@ Comment.findById = (commentId, userId, result) => {
       }
 
       if (res.length) {
-        if (res[0].authorId !== userId) {
+        if (!authorized && res[0].authorId !== userId) {
           result({ kind: 'unauthorized' }, null);
           return;
         }

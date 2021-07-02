@@ -9,7 +9,7 @@ const Publication = function (publication) {
   this.text = publication.text;
   this.link = publication.link;
   this.creation_date = publication.creationDate;
-  this.signaled = publication.signaled
+  this.signaled = publication.signaled;
 };
 
 Publication.create = (newPublication, result) => {
@@ -26,7 +26,7 @@ Publication.create = (newPublication, result) => {
     });
     result(null, {
       id: res.insertId,
-      text : newPublication.text,
+      text: newPublication.text,
       link: newPublication.link,
       authorId: newPublication.author_id,
       imageUrl: newPublication.image_url,
@@ -34,24 +34,23 @@ Publication.create = (newPublication, result) => {
       videoUrl: newPublication.video_url,
       creationDate: newPublication.creation_date,
       userLiked: JSON.parse(newPublication.user_liked),
-      signaled : newPublication.signaled
+      signaled: newPublication.signaled,
     });
   });
 };
 
-Publication.findById = (publicationId, userId, result) => {
+Publication.findById = (publicationId, userId, authorized, result) => {
   sql.query(
     'SELECT author_id as authorId, user_liked as userLiked, image_url as imageUrl, gif_url as gifUrl, video_url as videoUrl, text, link, creation_date as creationDate FROM Publications WHERE id = ?',
     publicationId,
     (err, res) => {
       if (err) {
-        console.log('error: ', err);
         result(err, null);
         return;
       }
 
       if (res.length) {
-        if (res[0].authorId !== userId) {
+        if (!authorized && res[0].authorId !== userId) {
           result({ kind: 'unauthorized' }, null);
           return;
         }
@@ -66,11 +65,10 @@ Publication.findById = (publicationId, userId, result) => {
 };
 
 Publication.getAll = (selectedPage, result) => {
-
-  const limit = 5
+  const limit = 5;
   // calculate offset
-  const offset = (selectedPage - 1) * limit
-  
+  const offset = (selectedPage - 1) * limit;
+
   sql.query(
     `SELECT id, author_id as authorId, user_liked as userLiked, image_url as imageUrl, gif_url as gifUrl, video_url as videoUrl, text, link, creation_date as creationDate FROM Publications ORDER BY creationDate DESC LIMIT ${offset}, ${limit}`,
     (err, res) => {
@@ -84,7 +82,6 @@ Publication.getAll = (selectedPage, result) => {
 };
 
 Publication.getMostLiked = (result) => {
-  
   sql.query(
     `SELECT id, author_id as authorId, user_liked as userLiked, image_url as imageUrl, gif_url as gifUrl, video_url as videoUrl, text, link, creation_date as creationDate FROM Publications ORDER BY CHAR_LENGTH(userLiked) DESC LIMIT 5`,
     (err, res) => {
@@ -98,9 +95,9 @@ Publication.getMostLiked = (result) => {
 };
 
 Publication.getPostByUserId = (userId, result) => {
-
   sql.query(
-    `SELECT id, author_id as authorId, user_liked as userLiked, image_url as imageUrl, gif_url as gifUrl, video_url as videoUrl, text, link, creation_date as creationDate FROM Publications WHERE author_id = ? ORDER BY creationDate ASC`, userId,
+    `SELECT id, author_id as authorId, user_liked as userLiked, image_url as imageUrl, gif_url as gifUrl, video_url as videoUrl, text, link, creation_date as creationDate FROM Publications WHERE author_id = ? ORDER BY creationDate ASC`,
+    userId,
     (err, res) => {
       if (err) {
         result(err, null);
@@ -182,6 +179,7 @@ Publication.handleLike = (publicationId, publicationLikes, result) => {
     (err, res) => {
       if (err) {
         result(err, null);
+        console.log('ERROR :', err);
         return;
       }
 
@@ -204,7 +202,6 @@ Publication.signal = (publicationId, result) => {
     [1, publicationId],
     (err, res) => {
       if (err) {
-
         result(err, null);
         return;
       }

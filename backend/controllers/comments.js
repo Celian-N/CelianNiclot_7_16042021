@@ -146,6 +146,7 @@ exports.like = (req, res) => {
   Comment.findById(
     req.body.commentId,
     req.userId,
+    true,
     (err, comment) => {
       if (err) {
         if (err.kind === 'not_found') {

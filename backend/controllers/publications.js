@@ -300,14 +300,18 @@ exports.like = (req, res) => {
   }
   Publication.findById(
     req.params.publicationId,
-    req.userId,
+    req.userId, 
+    true,
     (err, publication) => {
       if (err) {
         if (err.kind === 'not_found') {
+          console.log('404 !!');
+
           res.status(404).json({
             message: `Not found Publication with id ${req.params.publicationId}.`,
           });
         } else {
+          console.log('500 !!');
           res.status(500).json({
             message:
               'Error retrieving Publication with id ' +
@@ -326,11 +330,11 @@ exports.like = (req, res) => {
         Publication.handleLike(
           req.params.publicationId,
           JSON.stringify(publicationLikes),
-          (err, publicationLikes) => {
+          (err, likes) => {
             if (err) {
               if (err.kind === 'not_found') {
                 res.status(404).json({
-                  message: `An error occured when liking publication rwith id ${req.params.publicationId}.`,
+                  message: `An error occured when liking publication with id ${req.params.publicationId}.`,
                 });
               } else {
                 res.status(500).json({
@@ -340,9 +344,11 @@ exports.like = (req, res) => {
                 });
               }
             } else {
+              console.log('likes : ', likes);
+
               res.status(200).json({
                 message: `Publication liked successfully!`,
-                publicationLikes: JSON.parse(publicationLikes),
+                publicationLikes: JSON.parse(likes),
               });
             }
           }
