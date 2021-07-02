@@ -13,7 +13,7 @@ export const userStoreProvider = () => {
 export function useUser() {
   const { setUser, getUser, updateUser, clearUser, ...rest } = inject('userStore') as typeof userStore;
 
-  const { loginCall, signupCall, editUser } = useApi();
+  const { loginCall, signupCall, editUser, deleteUser } = useApi();
   const router = useRouter();
 
   const login = async (email: string, password: string) => {
@@ -55,5 +55,12 @@ export function useUser() {
     }
   };
 
-  return { setUser, getUser, updateUser, login, signup, logout, saveEditedUser, ...rest };
+  const deleteMe = async (userId: number) => {
+    const userDeleted = await asyncCall('DELETE_USER', () => deleteUser(userId));
+    if (!userDeleted.message) return;
+
+    logout();
+  };
+
+  return { setUser, getUser, updateUser, login, signup, logout, saveEditedUser, deleteMe, ...rest };
 }

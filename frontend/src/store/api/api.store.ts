@@ -4,6 +4,7 @@ export type RequestKeys =
   | 'LOGIN'
   | 'SIGNUP'
   | 'EDIT_USER'
+  | 'DELETE_USER'
   | 'SIGNUP'
   | 'GET_ARTICLE'
   | 'CREATE_PUBLICATION'

@@ -79,7 +79,7 @@ User.getAll = (search, result) => {
     (err, res) => {
       if (err) {
         console.log('error: ', err);
-        result(null, err);
+        result(err, null);
         return;
       }
 
@@ -104,7 +104,7 @@ User.updateById = (userId, user, result) => {
   sql.query(sqlQuery, requestValues, (err, res) => {
     if (err) {
       console.log('error: ', err);
-      result(null, err);
+      result(err, null);
       return;
     }
 
@@ -122,12 +122,11 @@ User.remove = (id, result) => {
   sql.query('DELETE FROM Users WHERE id = ?', id, (err, res) => {
     if (err) {
       console.log('error: ', err);
-      result(null, err);
+      result(err, null);
       return;
     }
 
     if (res.affectedRows == 0) {
-      // not found Customer with the id
       result({ kind: 'not_found' }, null);
       return;
     }

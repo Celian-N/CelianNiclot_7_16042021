@@ -133,7 +133,28 @@
         </div>
       </div>
       <button @click="logout" class="logout-button self-center text-caption br-xs">Se deconnecter</button>
+      <button @click="showDeleteModal = true" class="delete-user-button self-end font-10 text-caption br-xs">
+        Supprimer mon compte
+      </button>
     </div>
+    <Dialog :showModal="showDeleteModal" @close="showDeleteModal = false" :customFooterClass="'row justify-center'">
+      <template v-slot:body>
+        <div class="column items-start justify-center my-md">
+          <span class="text-main font-14"> Voulez-vous vraiment supprimer définitivement votre compte ? </span>
+          <span class="text-caption font-12">
+            Vous ne pourrez plus envoyer ou recevoir de messages et l'ensemble de vos publications seront supprimées.
+          </span>
+        </div>
+      </template>
+      <template v-slot:footer>
+        <div class="row items-center justify-end">
+          <button @click="showDeleteModal = false" class="cancel-button br-xs pa-xs bg-secondary text-white mr-sm">
+            Annuler
+          </button>
+          <button @click="deleteUser" class="delete-button br-xs pa-xs text-secondary">Supprimer</button>
+        </div>
+      </template>
+    </Dialog>
   </div>
 </template>
 
@@ -163,12 +184,13 @@ export default defineComponent({
   },
   setup(props, context) {
     const showModal = ref(false);
+    const showDeleteModal = ref(false);
 
     const cropper = ref<CropperInterface | null>(null);
 
     const profilPicInput = ref<HTMLInputElement | null>(null);
 
-    const { getUserInfos, getUserPic, logout, saveEditedUser } = useUser();
+    const { getUserInfos, getUserPic, logout, saveEditedUser, deleteMe } = useUser();
     const { getCurrentUser } = useApi();
 
     const editedPassword = ref('');
@@ -212,6 +234,10 @@ export default defineComponent({
       editedPassword.value = '';
       editedPasswordCopy.value = '';
       return showSuccessBanner('Changements sauvegardés avec succès !');
+    };
+
+    const deleteUser = async () => {
+      await deleteMe(user.value.id);
     };
 
     const pickFile = () => {
@@ -283,6 +309,8 @@ export default defineComponent({
       cropImage,
       cropper,
       showModal,
+      showDeleteModal,
+      deleteUser,
     };
   },
 });
@@ -324,6 +352,22 @@ export default defineComponent({
     cursor: no-drop;
   }
 }
+.delete-button {
+  cursor: pointer;
+  transition: all 300ms;
+  &:hover {
+    opacity: 0.8;
+    background: rgba(#e22a7f, 0.2);
+  }
+}
+.cancel-button {
+  cursor: pointer;
+  transition: opacity 300ms;
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
 .input-file {
   display: none;
 }
@@ -347,6 +391,16 @@ label {
   &:hover {
     background: rgba(grey, 0.1);
     color: black !important;
+  }
+}
+
+.delete-user-button {
+  background: transparent;
+  transition: all 300ms;
+  padding: 5px 10px;
+  &:hover {
+    background: rgba(grey, 0.1);
+    color: #e22a7f !important;
   }
 }
 .edit-container {
