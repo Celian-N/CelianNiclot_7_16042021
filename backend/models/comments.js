@@ -57,22 +57,26 @@ Comment.findById = (commentId, userId, authorized, result) => {
   );
 };
 
-Comment.getLength = (publicationId, result)=>{
-  sql.query('SELECT COUNT(*) as commentsLength FROM Comments WHERE publication_id = ?', publicationId, (err, res) => {
-    if (err) {
-      result(err, null);
-      return;
-    }
+Comment.getLength = (publicationId, result) => {
+  sql.query(
+    'SELECT COUNT(*) as commentsLength FROM Comments WHERE publication_id = ?',
+    publicationId,
+    (err, res) => {
+      if (err) {
+        result(err, null);
+        return;
+      }
 
-    console.log('commentsLength: ', res[0]);
-    result(null, res[0].commentsLength);
-  });
-}
+      console.log('commentsLength: ', res[0]);
+      result(null, res[0].commentsLength);
+    }
+  );
+};
 
 Comment.getAll = (publicationId, selectedPage, result) => {
   const limit = 5;
   // calculate offset
-  const offset = ((selectedPage - 1) * limit) +1;
+  const offset = (selectedPage - 1) * limit + 1;
 
   const sqlQuery = `SELECT id, author_id as authorId, publication_id as publicationId, user_liked as userLiked, text, creation_date as creationDate FROM Comments WHERE publication_id = ? ORDER BY creationDate DESC LIMIT ${
     selectedPage ? `${offset}, ${limit}` : '1'
@@ -106,9 +110,9 @@ Comment.updateById = (commentId, userId, newCommentText, result) => {
 
       console.log('updated comment: ', {
         id: commentId,
-        text : newCommentText
+        text: newCommentText,
       });
-      result(null, { id: commentId,  text : newCommentText });
+      result(null, { id: commentId, text: newCommentText });
     }
   );
 };
@@ -134,7 +138,6 @@ Comment.remove = (commentId, userId, result) => {
     }
   );
 };
-
 
 Comment.handleLike = (commentId, commentLikes, result) => {
   sql.query(

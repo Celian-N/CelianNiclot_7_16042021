@@ -5,10 +5,9 @@ module.exports = (req, res, next) => {
 
   try {
     const fileSize = req.file.size;
-    if(fileSize > 4*1024*1024){
+    if (fileSize > 4 * 1024 * 1024) {
       throw 'Fichier trop volumineux !';
-    }
-    else {
+    } else {
       return next();
     }
   } catch (error) {

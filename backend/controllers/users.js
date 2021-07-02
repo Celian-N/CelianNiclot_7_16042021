@@ -4,9 +4,8 @@ const User = require('../models/users.js');
 
 // Retrieve all Users from the database.
 exports.findAll = (req, res) => {
-
-  const search = req.query.search
-  User.getAll( search, (err, user) => {
+  const search = req.query.search;
+  User.getAll(search, (err, user) => {
     if (err)
       res.status(500).json({
         message: err.message || 'Some error occurred while retrieving users.',
@@ -33,7 +32,7 @@ exports.findOne = (req, res) => {
         firstname: user.firstname,
         lastname: user.lastname,
         userPic: user.userPic,
-        job : user.job
+        job: user.job,
       });
   });
 };

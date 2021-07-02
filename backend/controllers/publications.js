@@ -300,7 +300,7 @@ exports.like = (req, res) => {
   }
   Publication.findById(
     req.params.publicationId,
-    req.userId, 
+    req.userId,
     true,
     (err, publication) => {
       if (err) {
