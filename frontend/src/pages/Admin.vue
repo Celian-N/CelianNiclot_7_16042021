@@ -35,7 +35,7 @@
 <script lang="ts">
 import { defineComponent, onMounted, ref, computed, watch } from 'vue';
 import { IComment } from '../interface/comments/comments';
-import { IApiPublication, IPublication, IPublicationAuthor } from '../interface/publications/publication';
+import { IPublication, IPublicationAuthor } from '../interface/publications/publication';
 import { useAuthors } from '../store/authors/authors.store';
 import { useUser } from '../store/user/user.store';
 import { useAdmin } from '../store/admin/admin.store';

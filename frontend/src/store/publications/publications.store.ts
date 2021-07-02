@@ -1,7 +1,7 @@
 import { inject, provide } from 'vue';
 import { publicationsStore } from './state';
 import { useApi } from '../../mixins/api/api.mixins';
-import { ICreatePublication, IApiPublication, IPublication } from '@/interface/publications/publication';
+import { ICreatePublication, IPublication } from '@/interface/publications/publication';
 import { metaLinksStore } from '../metadata/state';
 import { asyncCall } from '../api/api.store';
 
@@ -14,7 +14,6 @@ export function usePublications() {
     setPublications,
     getAllPublications,
     updatePublication,
-    clearPublications,
     removePublication,
     updateLikePublication,
     ...rest

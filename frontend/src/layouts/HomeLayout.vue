@@ -30,7 +30,7 @@
 
 <script lang="ts">
 import socket from '../socket';
-import { defineComponent, onBeforeUnmount, onMounted, ref, computed } from 'vue';
+import { defineComponent, onBeforeUnmount, onMounted, computed } from 'vue';
 import { useUser } from '../store/user/user.store';
 import { useApi } from '../mixins/api/api.mixins';
 import { navigationTabs } from '../mixins/navigation/navigation.mixins';

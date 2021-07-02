@@ -143,7 +143,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType, onMounted, ref, computed } from 'vue';
-import { IPublication, IPublicationAuthor } from '../../interface/publications/publication';
+import { IPublication } from '../../interface/publications/publication';
 import { IUser } from '../../interface/user/user';
 import { useRouter } from 'vue-router';
 import { useComments } from '../../store/comments/comments.store';
@@ -218,7 +218,7 @@ export default defineComponent({
 
     const loadMoreComments = async () => {
       currentCommentsPage.value++;
-      const moreComments = await fetchMorePublicationComments(props.publication.id, currentCommentsPage.value);
+      await fetchMorePublicationComments(props.publication.id, currentCommentsPage.value);
 
       if (publicationComments.value.length == commentsLength.value && commentsRef.value)
         return (commentsRef.value.showLoadMoreButton = false);

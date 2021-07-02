@@ -1,4 +1,4 @@
-import { readonly, ref, computed, watch } from 'vue';
+import { readonly, ref, computed } from 'vue';
 import { IUser } from '../../interface/user/user';
 
 type UserStateInterface = IUser;

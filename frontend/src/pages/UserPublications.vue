@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, SetupContext, computed, onMounted, ref, watch } from 'vue';
+import { defineComponent, computed, onMounted, ref, watch } from 'vue';
 import { useUser } from '../store/user/user.store';
 import { usePublications } from '../store/publications/publications.store';
 import Publication from '../components/Publications/Publication.vue';
@@ -45,7 +45,7 @@ export default defineComponent({
     Publication,
     Avatar,
   },
-  setup(props, context: SetupContext) {
+  setup() {
     const { logout, getUser } = useUser();
     const {
       deletePublication,

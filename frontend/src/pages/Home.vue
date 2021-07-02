@@ -67,7 +67,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, SetupContext, computed, onMounted, ref, watch } from 'vue';
+import { defineComponent, computed, onMounted, ref, watch } from 'vue';
 import { useUser } from '../store/user/user.store';
 import { usePublications } from '../store/publications/publications.store';
 import Publications from '../components/Publications/Publications.vue';
@@ -93,7 +93,7 @@ export default defineComponent({
     Publications,
     Avatar,
   },
-  setup(props, context: SetupContext) {
+  setup() {
     const router = useRouter();
     const { logout, getUser } = useUser();
     const {
@@ -200,7 +200,7 @@ export default defineComponent({
       const result = await getMostLikedPublicationCall();
       if (result) {
         moreLikedPublications.value = result;
-        const auhthors = await Promise.all(
+        await Promise.all(
           moreLikedPublications.value.map(async (publication) => {
             const userInfos = getAuthorInfosById(publication.authorId);
             if (!userInfos) {

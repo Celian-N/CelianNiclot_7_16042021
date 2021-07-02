@@ -9,15 +9,9 @@ export const commentsStoreProvider = () => {
 };
 
 export function useComments() {
-  const {
-    setComments,
-    getAllComments,
-    updateComment,
-    clearComments,
-    removeComment,
-    updateLikeComment,
-    ...rest
-  } = inject('commentsStore') as typeof commentsStore;
+  const { setComments, updateComment, removeComment, updateLikeComment, ...rest } = inject(
+    'commentsStore'
+  ) as typeof commentsStore;
 
   const {
     getCommentsCall,

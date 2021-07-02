@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, SetupContext, onMounted } from 'vue';
+import { defineComponent, onMounted } from 'vue';
 import { isUserLoggedIn } from './mixins/auth/auth.mixins';
 import { useRouter } from 'vue-router';
 import { userStoreProvider } from './store/user/user.store';
@@ -20,7 +20,7 @@ import { socketStoreProvider } from './store/socket/socket.store';
 
 export default defineComponent({
   name: 'App',
-  setup(props, context: SetupContext) {
+  setup() {
     userStoreProvider();
     publicationsStoreProvider();
     commentsStoreProvider();

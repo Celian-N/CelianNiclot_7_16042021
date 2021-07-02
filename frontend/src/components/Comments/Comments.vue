@@ -142,7 +142,6 @@ import Avatar from '../Avatar/Avatar.vue';
 import moment from 'moment';
 import IconButton from '../IconButton/IconButton.vue';
 import InputField from '../InputField/InputField.vue';
-import { IPublicationAuthor } from '../../interface/publications/publication';
 import { useAuthors } from '../../store/authors/authors.store';
 import { useRouter } from 'vue-router';
 
@@ -174,7 +173,7 @@ export default defineComponent({
       if (authorInfos.value[comments[0].authorId]) return;
       for (const comment of comments) {
         if (authorInfos.value[comment.authorId]) return;
-        const newAuthor = await fetchAuthorInfos(comment.authorId);
+        await fetchAuthorInfos(comment.authorId);
       }
     };
 

@@ -1,4 +1,4 @@
-import { ICreateUser, IUser } from '../../interface/user/user';
+import { ICreateUser } from '../../interface/user/user';
 import {
   IApiPublication,
   ICreatePublication,
