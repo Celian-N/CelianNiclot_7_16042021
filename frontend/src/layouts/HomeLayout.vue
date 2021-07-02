@@ -191,7 +191,6 @@ export default defineComponent({
     margin: 0;
     height: 10vh;
     margin-bottom: 10px;
-
   }
   .center-panel {
     height: 73vh;

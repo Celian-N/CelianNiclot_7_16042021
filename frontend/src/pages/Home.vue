@@ -21,7 +21,7 @@
           v-for="publication in moreLikedPublications"
           :key="publication.id"
         >
-          <div v-if="authorsInfos[publication.authorId]"  class="row items-center full-width">
+          <div v-if="authorsInfos[publication.authorId]" class="row items-center full-width">
             <Avatar size="35px" :userPic="authorsInfos[publication.authorId].userPic" class="mr-sm" />
             <div class="row items-start justify-between" style="flex: 1">
               <span class="text-main font-12"
@@ -298,8 +298,8 @@ export default defineComponent({
     text-overflow: ellipsis;
   }
 }
-@media screen and (max-width : 980px){
-  .right-panel{
+@media screen and (max-width: 980px) {
+  .right-panel {
     display: none;
   }
 }

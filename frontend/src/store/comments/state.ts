@@ -8,7 +8,7 @@ const commentsState = ref<CommentStateInterface>({});
 const setters = {
   setComments: (comments: IComment[]) => {
     comments.forEach((comment) => {
-        commentsState.value = { ...commentsState.value, [comment.id]: comment };
+      commentsState.value = { ...commentsState.value, [comment.id]: comment };
     });
   },
   removeComment: (commentId: number) => {
@@ -16,10 +16,10 @@ const setters = {
     delete copy[commentId];
     commentsState.value = { ...copy };
   },
-  updateComment: (commentId: number, updatedComment : string) => {
+  updateComment: (commentId: number, updatedComment: string) => {
     commentsState.value = {
       ...commentsState.value,
-      [commentId]: { ...commentsState.value[commentId], text : updatedComment },
+      [commentId]: { ...commentsState.value[commentId], text: updatedComment },
     };
   },
   updateLikeComment: (commentId: number, userId: number) => {
@@ -50,12 +50,12 @@ const getters = {
     });
     return copy;
   },
-  getMyComments:(userId:number)=>{
-    return Object.values(commentsState.value).filter(comment => comment.authorId == userId)
+  getMyComments: (userId: number) => {
+    return Object.values(commentsState.value).filter((comment) => comment.authorId == userId);
   },
-  getCommentsByPublication:(publicationId:number)=>{
-   return  Object.values(commentsState.value).filter(comment => comment.publicationId == publicationId)
-  }
+  getCommentsByPublication: (publicationId: number) => {
+    return Object.values(commentsState.value).filter((comment) => comment.publicationId == publicationId);
+  },
 };
 
 export const commentsStore = {

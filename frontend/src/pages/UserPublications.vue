@@ -61,7 +61,7 @@ export default defineComponent({
 
     const { userPublicationId } = route.currentRoute.value.params;
 
-    const selectedUserId = ref(parseInt(userPublicationId as string))
+    const selectedUserId = ref(parseInt(userPublicationId as string));
 
     const authorInfos = computed(() => getAuthorInfosById(selectedUserId.value));
 
@@ -69,11 +69,11 @@ export default defineComponent({
       () => route.currentRoute.value.params.userPublicationId,
       (newValue) => {
         if (!newValue) return;
-        selectedUserId.value = parseInt(newValue as string)
+        selectedUserId.value = parseInt(newValue as string);
       }
     );
 
-     watch(
+    watch(
       () => selectedUserId.value,
       (newValue) => {
         if (!newValue) return;
@@ -134,7 +134,7 @@ export default defineComponent({
 
     onMounted(async () => {
       if (!userPublicationId) return;
-      console.log('onMounted userId :', userPublicationId)
+      console.log('onMounted userId :', userPublicationId);
       await getPublications(parseInt(userPublicationId as string));
     });
 

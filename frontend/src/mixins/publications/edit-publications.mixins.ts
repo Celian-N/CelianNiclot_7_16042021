@@ -14,16 +14,16 @@ export const useEditPublications = (context: SetupContext) => {
   const searchGif = ref('');
   const showAddLink = ref(false);
   const showVideoLink = ref(false);
-  const articleData = ref({})
+  const articleData = ref({});
   const { getArticleCall } = useApi();
 
   const setArticle = async () => {
-    if(!writeArticleLink.value) return;
+    if (!writeArticleLink.value) return;
     const metadata = await getArticleCall(writeArticleLink.value);
     if (!metadata) return;
-    articleData.value = metadata.articleData
+    articleData.value = metadata.articleData;
 
-    return writeArticleLink.value
+    return writeArticleLink.value;
   };
 
   const showVideo = () => {
@@ -143,6 +143,6 @@ export const useEditPublications = (context: SetupContext) => {
     gifs,
     writeArticleLink,
     setArticle,
-    articleData
+    articleData,
   };
 };

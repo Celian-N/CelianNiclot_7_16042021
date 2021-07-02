@@ -56,11 +56,10 @@ const getters = {
 
       return !!asyncStatus.value[requestKeys]?.isLoading;
     });
-  }
+  },
 };
 
 export const asyncCall = async <T>(requestKey: RequestKeys, apiCall: () => Promise<T>) => {
-
   setters.startLoading(requestKey);
   try {
     const result = await apiCall();
@@ -81,7 +80,7 @@ export const apiStoreProvider = () => {
 };
 
 export const useApiStore = () => {
-  const { isLoading,...rest } = inject('apiStore') as typeof apiStore;
+  const { isLoading, ...rest } = inject('apiStore') as typeof apiStore;
 
   return { isLoading, ...rest };
 };

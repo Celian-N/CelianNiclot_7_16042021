@@ -185,7 +185,7 @@ ul {
 .loader:after {
   left: 20px;
 }
-.message-panel-container{
+.message-panel-container {
   height: calc(90% - 100px);
 }
 @-webkit-keyframes load7 {

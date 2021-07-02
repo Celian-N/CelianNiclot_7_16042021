@@ -136,9 +136,9 @@ export default defineComponent({
 .post {
   z-index: 0;
 }
-@media screen and (max-width:706px){
-  .scrollable-container{
-    &::-webkit-scrollbar{
+@media screen and (max-width: 706px) {
+  .scrollable-container {
+    &::-webkit-scrollbar {
       display: none;
     }
   }

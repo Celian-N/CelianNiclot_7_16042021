@@ -9,7 +9,7 @@ const userState = ref<UserStateInterface>({
   firstname: '',
   lastname: '',
   active: true,
-  adminRole : false
+  adminRole: false,
 });
 
 const setters = {
@@ -20,7 +20,7 @@ const setters = {
     userState.value = { ...userState.value, ...updatedProperties };
   },
   clearUser: () => {
-    userState.value = { id: 0, email: '', firstname: '', lastname: '', active: true, adminRole : false };
+    userState.value = { id: 0, email: '', firstname: '', lastname: '', active: true, adminRole: false };
   },
 };
 
@@ -33,7 +33,7 @@ const getters = {
       firstname: userState.value.firstname,
       lastname: userState.value.lastname,
       email: userState.value.email,
-      job: userState.value.job
+      job: userState.value.job,
     };
   }),
   getUserEmail: computed(() => userState.value.email),

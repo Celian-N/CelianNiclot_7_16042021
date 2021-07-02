@@ -3,7 +3,7 @@
     class="row"
     :class="`${dense ? 'px-xs' : 'pa-xs'} ${autogrow ? 'items-end' : 'items-center'} ${
       withBackground ? 'bg-tertiary input-shadow' : ''
-    } ${disabled ?  'disabled-container' : ''}`"
+    } ${disabled ? 'disabled-container' : ''}`"
     :style="`border-radius :${borderRadius};`"
   >
     <input
@@ -20,8 +20,8 @@
       :autofocus="autofocus"
       :disabled="disabled"
       :style="`font-size : ${fontSize}`"
-      :class="disabled ? 'disabled-input' : '' "
-      :autocomplete="type =='password' ? 'off' : ''"
+      :class="disabled ? 'disabled-input' : ''"
+      :autocomplete="type == 'password' ? 'off' : ''"
     />
 
     <textarea
@@ -77,7 +77,7 @@ export default defineComponent({
       }
     }
 
-    function onChange(event : any){
+    function onChange(event: any) {
       context.emit('onChange', event.target.value);
     }
 
@@ -114,8 +114,7 @@ textarea {
   cursor: not-allowed;
 }
 .disabled-input {
-  color: rgba(grey, 0.3); ;
+  color: rgba(grey, 0.3);
   cursor: not-allowed;
 }
-
 </style>

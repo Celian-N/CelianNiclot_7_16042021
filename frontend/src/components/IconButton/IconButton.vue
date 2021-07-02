@@ -1,30 +1,29 @@
 <template>
   <button
-      @click="$emit('onClick')"
-      :style="`width:${button.size}; height : ${button.size};`"
-      class="row items-center justify-center"
-      :class="`br-${borderRadius} ${customClass}`"
+    @click="$emit('onClick')"
+    :style="`width:${button.size}; height : ${button.size};`"
+    class="row items-center justify-center"
+    :class="`br-${borderRadius} ${customClass}`"
+  >
+    <span
+      class="material-icons-round"
+      :class="`text-${button.color}`"
+      :style="`font-size:calc(${button.size} - 5px);`"
+      >{{ button.icon }}</span
     >
-      <span
-        class="material-icons-round"
-        :class="`text-${button.color}`"
-        :style="`font-size:calc(${button.size} - 5px);`"
-        >{{ button.icon }}</span
-      >
-    </button>
+  </button>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent } from 'vue';
 export default defineComponent({
-  name:'IconButton',
-  props:{
+  name: 'IconButton',
+  props: {
     button: Object,
-    borderRadius :{type: String, default : 'md'},
-    customClass : String
-  }
-  
-})
+    borderRadius: { type: String, default: 'md' },
+    customClass: String,
+  },
+});
 </script>
 <style lang="scss" scoped>
 button {

@@ -236,7 +236,7 @@ nav {
 
     & .notifications {
       top: -5px;
-      right:-5px;
+      right: -5px;
       border-radius: 30px;
     }
   }

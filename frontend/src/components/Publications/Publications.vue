@@ -10,7 +10,7 @@
           @onLikePublication="(val) => $emit('likePublication', val)"
           @onDeleteAdminPublication="(val) => $emit('deleteAdminPublication', val)"
           @onBanUserAdmin="(val) => $emit('banUserAdmin', val)"
-          @onSignalPublication="val => $emit('signalPublication', val)"
+          @onSignalPublication="(val) => $emit('signalPublication', val)"
         />
       </div>
     </div>

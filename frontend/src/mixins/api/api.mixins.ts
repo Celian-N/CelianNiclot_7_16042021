@@ -1,5 +1,10 @@
 import { ICreateUser, IUser } from '../../interface/user/user';
-import { IApiPublication, ICreatePublication, IPublication, IPublicationAuthor } from '../../interface/publications/publication';
+import {
+  IApiPublication,
+  ICreatePublication,
+  IPublication,
+  IPublicationAuthor,
+} from '../../interface/publications/publication';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 import { IComment } from '@/interface/comments/comments';
@@ -47,7 +52,12 @@ export const useApi = () => {
       .catch((error) => console.warn('Erreur :' + error));
   };
 
-  const editUser = async (userId: number, user: Omit<ICreateUser, 'password'>, newPassword?: string, image?: File | null) => {
+  const editUser = async (
+    userId: number,
+    user: Omit<ICreateUser, 'password'>,
+    newPassword?: string,
+    image?: File | null
+  ) => {
     const formData = new FormData();
     formData.append('user', JSON.stringify(user));
     if (newPassword) {
@@ -265,7 +275,7 @@ export const useApi = () => {
   };
   //USERS
 
-  const getAllUsers = async (searchedUser :string) => {
+  const getAllUsers = async (searchedUser: string) => {
     const queryUser = `?search=${searchedUser}`;
     return await fetch(`http://localhost:3000/users${queryUser}`, { method: 'GET' })
       .then((result) => {
@@ -552,6 +562,6 @@ export const useApi = () => {
     signalComment,
     signalPublication,
     getPostsByUserIdCall,
-    getMostLikedPublicationCall
+    getMostLikedPublicationCall,
   };
 };

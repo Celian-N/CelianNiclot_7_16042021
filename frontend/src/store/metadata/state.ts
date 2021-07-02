@@ -1,13 +1,12 @@
 import { IMetaLink } from '@/interface/publications/publication';
 import { readonly, ref, provide, inject } from 'vue';
 
-
 type MetaLinkStateInterface = Record<string, IMetaLink>;
 
 const metaLinksState = ref<MetaLinkStateInterface>({});
 
 const setters = {
-  setData: (publicationId : number, metaData: IMetaLink[]) => {
+  setData: (publicationId: number, metaData: IMetaLink[]) => {
     metaData.forEach((data) => {
       metaLinksState.value = { ...metaLinksState.value, [publicationId]: data };
     });
@@ -17,16 +16,16 @@ const setters = {
     delete copy[publicationId];
     metaLinksState.value = { ...copy };
   },
-  updateData: (publicationId: number, updatedProperties : Partial<IMetaLink>) => {
+  updateData: (publicationId: number, updatedProperties: Partial<IMetaLink>) => {
     metaLinksState.value = {
       ...metaLinksState.value,
       [publicationId]: { ...metaLinksState.value[publicationId], ...updatedProperties },
     };
   },
-}
+};
 
 const getters = {
-  getDataById: (publicationId: number) =>  metaLinksState.value[publicationId]
+  getDataById: (publicationId: number) => metaLinksState.value[publicationId],
 };
 
 export const metaLinksStore = {
@@ -40,9 +39,7 @@ export const metaLinksStoreProvider = () => {
 };
 
 export const useMetaLinks = () => {
-  const { ...rest} = inject(
-    'metaLinksStore'
-  ) as typeof metaLinksStore;
+  const { ...rest } = inject('metaLinksStore') as typeof metaLinksStore;
 
   return { ...rest };
 };

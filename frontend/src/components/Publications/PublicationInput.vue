@@ -348,12 +348,12 @@ textarea {
     display: none;
   }
   .buttons-container > * {
-      width: 50px;
-    & span:nth-child(1){
-      margin:0;
+    width: 50px;
+    & span:nth-child(1) {
+      margin: 0;
     }
-    & .gif-span-container{
-      margin:0;
+    & .gif-span-container {
+      margin: 0;
     }
   }
   .material-icons-round {
