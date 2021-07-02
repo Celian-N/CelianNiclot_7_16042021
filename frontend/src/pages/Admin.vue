@@ -77,7 +77,6 @@ export default defineComponent({
     };
     const ignorePostAdmin = async (signaledPost: IComment | IPublication) => {
       const postType = checkPostType(signaledPost);
-      console.log(signaledPost);
       const result = await ignorePost(postType, signaledPost.id);
       if (!result) return showErrorBanner('Une erreur est survenue, impossible de supprimer le post');
     };

@@ -42,8 +42,3 @@ export const authorsStore = {
   ...setters,
   ...getters,
 };
-
-// console.log('author :', author)
-// console.log('firstname :', author.firstname == authorInfos.firstname)
-// console.log('lastname :', author.lastname == authorInfos.lastname)
-// console.log('job :', author.job == authorInfos.job)

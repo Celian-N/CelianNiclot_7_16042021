@@ -139,7 +139,6 @@ exports.like = (req, res) => {
   if (!req.body) {
     res.status(400).json({ message: 'Content can not be empty!' });
   }
-  console.log('BODY :', req.body);
   Comment.findById(req.body.commentId, req.userId, true, (err, comment) => {
     if (err) {
       if (err.kind === 'not_found') {
@@ -152,7 +151,6 @@ exports.like = (req, res) => {
         });
       }
     } else {
-      console.log('BODY IN LIKE :', req.body);
       const commentLikes = JSON.parse(comment.userLiked);
       const userIndex = commentLikes.indexOf(req.body.userId);
 
@@ -161,7 +159,6 @@ exports.like = (req, res) => {
       } else {
         commentLikes.push(req.body.userId);
       }
-      console.log(commentLikes);
       Comment.handleLike(
         req.body.commentId,
         JSON.stringify(commentLikes),

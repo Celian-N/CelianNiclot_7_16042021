@@ -61,9 +61,6 @@ exports.update = (req, res) => {
     res.status(400).json({ message: 'Content can not be empty!' });
   }
 
-  console.log('BODY :', req.body);
-  console.log('FILE :', req.file);
-
   const userRequest = req.file
     ? {
         ...JSON.parse(req.body.user),

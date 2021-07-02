@@ -9,7 +9,6 @@ exports.getSignaledPublications = (result) => {
         result(errPublications, null);
         return;
       }
-      console.log('resPublications :', resPublications);
 
       result(null, resPublications);
     }
@@ -25,7 +24,6 @@ exports.getSignaledComments = (result) => {
         result(errComments, null);
         return;
       }
-      console.log('resComments :', resComments);
       result(null, resComments);
     }
   );
@@ -44,7 +42,6 @@ exports.deleteComment = (commentId, result) => {
       return;
     }
 
-    console.log('deleted comment with id: ', commentId);
     result(null, res);
   });
 };
@@ -64,8 +61,6 @@ exports.deletePublication = (publicationId, result) => {
         result({ kind: 'not_found' }, null);
         return;
       }
-
-      console.log('deleted publication with id: ', publicationId);
       result(null, res);
     }
   );
@@ -86,7 +81,6 @@ exports.ignoreComment = (commentId, result) => {
         return;
       }
 
-      console.log('Comment with id ignored: ', commentId);
       result(null, commentId);
     }
   );
@@ -107,7 +101,6 @@ exports.ignorePublication = (publicationId, result) => {
         return;
       }
 
-      console.log('Publication with id ignored: ', publicationId);
       result(null, publicationId);
     }
   );
@@ -129,7 +122,6 @@ exports.banishUser = (userId, result) => {
         return;
       }
 
-      console.log('deleted publication with id: ', userId);
       result(null, res);
     }
   );
@@ -151,7 +143,6 @@ exports.unbanishUser = (userId, result) => {
         return;
       }
 
-      console.log('deleted publication with id: ', userId);
       result(null, res);
     }
   );

@@ -134,7 +134,6 @@ export default defineComponent({
 
     onMounted(async () => {
       if (!userPublicationId) return;
-      console.log('onMounted userId :', userPublicationId);
       await getPublications(parseInt(userPublicationId as string));
     });
 

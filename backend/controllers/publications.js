@@ -305,13 +305,11 @@ exports.like = (req, res) => {
     (err, publication) => {
       if (err) {
         if (err.kind === 'not_found') {
-          console.log('404 !!');
 
           res.status(404).json({
             message: `Not found Publication with id ${req.params.publicationId}.`,
           });
         } else {
-          console.log('500 !!');
           res.status(500).json({
             message:
               'Error retrieving Publication with id ' +
@@ -344,8 +342,6 @@ exports.like = (req, res) => {
                 });
               }
             } else {
-              console.log('likes : ', likes);
-
               res.status(200).json({
                 message: `Publication liked successfully!`,
                 publicationLikes: JSON.parse(likes),

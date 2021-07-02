@@ -20,10 +20,6 @@ Publication.create = (newPublication, result) => {
       return;
     }
 
-    console.log('created publication: ', {
-      id: res.insertId,
-      ...newPublication,
-    });
     result(null, {
       id: res.insertId,
       text: newPublication.text,
@@ -143,10 +139,6 @@ Publication.updateById = (publicationId, userId, publication, result) => {
       return;
     }
 
-    console.log('updated publication: ', {
-      id: publicationId,
-      ...publication,
-    });
     result(null, { id: publicationId, ...publication });
   });
 };
@@ -166,7 +158,6 @@ Publication.remove = (publicationId, userId, result) => {
         return;
       }
 
-      console.log('deleted publication with id: ', publicationId);
       result(null, res);
     }
   );
@@ -184,13 +175,11 @@ Publication.handleLike = (publicationId, publicationLikes, result) => {
       }
 
       if (res.affectedRows == 0) {
-        console.log('res :', res);
         // not found Customer with the id
         result({ kind: 'not_found' }, null);
         return;
       }
 
-      console.log('Liked publication with id: ', publicationId);
       result(null, publicationLikes);
     }
   );
@@ -211,7 +200,6 @@ Publication.signal = (publicationId, result) => {
         return;
       }
 
-      console.log('Publication with id signaled: ', publicationId);
       result(null, publicationId);
     }
   );

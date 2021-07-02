@@ -96,7 +96,6 @@ export default defineComponent({
       () => searchDebounced.value,
       (newValue, prevValue) => {
         if (newValue != prevValue) {
-          console.log('SEARCH');
           searchUser(newValue);
         }
       }

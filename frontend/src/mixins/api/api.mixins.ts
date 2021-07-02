@@ -27,7 +27,6 @@ export const useApi = () => {
         return result.json();
       })
       .then((res) => {
-        console.log(res);
         return res;
       })
       .catch((error) => {
@@ -459,7 +458,6 @@ export const useApi = () => {
       });
   };
   const ignorePostAdmin = async (type: string, postId: number) => {
-    console.log('postId : ', postId);
     return await fetch(`http://localhost:3000/admin/${type}/${postId}`, {
       method: 'POST',
       headers: {

@@ -16,10 +16,6 @@ Comment.create = (newComment, result) => {
       return;
     }
 
-    console.log('created comment: ', {
-      id: res.insertId,
-      ...newComment,
-    });
     result(null, {
       id: res.insertId,
       text: newComment.text,
@@ -67,7 +63,6 @@ Comment.getLength = (publicationId, result) => {
         return;
       }
 
-      console.log('commentsLength: ', res[0]);
       result(null, res[0].commentsLength);
     }
   );
@@ -88,7 +83,6 @@ Comment.getAll = (publicationId, selectedPage, result) => {
       return;
     }
 
-    console.log('comments: ', res);
     result(null, res);
   });
 };
@@ -108,10 +102,6 @@ Comment.updateById = (commentId, userId, newCommentText, result) => {
         return;
       }
 
-      console.log('updated comment: ', {
-        id: commentId,
-        text: newCommentText,
-      });
       result(null, { id: commentId, text: newCommentText });
     }
   );
@@ -133,7 +123,6 @@ Comment.remove = (commentId, userId, result) => {
         return;
       }
 
-      console.log('deleted comment with id: ', commentId);
       result(null, res);
     }
   );
@@ -155,7 +144,6 @@ Comment.handleLike = (commentId, commentLikes, result) => {
         return;
       }
 
-      console.log('Liked comment with id: ', commentId);
       result(null, commentLikes);
     }
   );
@@ -176,7 +164,6 @@ Comment.signal = (commentId, result) => {
         return;
       }
 
-      console.log('Comment with id signaled: ', commentId);
       result(null, commentId);
     }
   );

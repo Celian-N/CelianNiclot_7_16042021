@@ -41,13 +41,10 @@ export const useEditPublications = (context: SetupContext) => {
   const setVideo = (post: ICreatePublication) => {
     removeFiles(post);
     if (!writeVideoLink.value) return (post.videoUrl = null);
-    console.log('writeVideoLink : ', writeVideoLink.value);
     const createdLink = createVideoLink(writeVideoLink.value);
-    console.log('createdLink : ', createdLink);
 
     if (!createdLink) return (post.videoUrl = null);
     post.videoUrl = createdLink.match(embedRegex) ? createdLink : null;
-    console.log('post.videoUrl : ', post.videoUrl);
   };
   const createVideoLink = (writeVideoLink: string) => {
     const splitLink = writeVideoLink.split('=');

@@ -19,7 +19,6 @@ User.create = (newUser, result) => {
       return;
     }
 
-    console.log('created user: ', { id: res.insertId, ...newUser });
     result(null, {
       id: res.insertId,
       email: newUser.email,
@@ -115,7 +114,6 @@ User.updateById = (userId, user, result) => {
       return;
     }
 
-    console.log('updated user: ', { id: userId, ...user });
     result(null, { id: userId, ...user });
   });
 };
@@ -134,7 +132,6 @@ User.remove = (id, result) => {
       return;
     }
 
-    console.log('deleted user with id: ', id);
     result(null, res);
   });
 };
