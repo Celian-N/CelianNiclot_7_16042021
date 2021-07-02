@@ -122,7 +122,7 @@
       </div>
     </div>
 
-    <button class="post-button bg-primary text-white br-sm py-xs mt-sm" @click="onCreatePublication">
+    <button class="post-button bg-primary text-white br-sm py-xs mt-sm" @click="onSaveEditedPost">
       Enregistrer
     </button>
     <button class="post-button bg-white text-primary br-sm py-xs mt-sm" @click="closeEditingMode">Annuler</button>
