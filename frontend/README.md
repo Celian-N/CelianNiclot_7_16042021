@@ -1,13 +1,24 @@
 # frontend
 
+## Access frontend 
+
+Access frontend in terminal :
+```
+$ cd frontend
+```
+
 ## Project setup
 ```
-yarn install
+yarn
 ```
 
 ### Compiles and hot-reloads for development
 ```
 yarn serve
+```
+### Compiles and hot-reloads for development
+```
+yarn start
 ```
 
 ### Compiles and minifies for production

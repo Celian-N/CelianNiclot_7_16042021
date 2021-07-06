@@ -14,7 +14,10 @@ const User = function (user) {
 User.create = (newUser, result) => {
   sql.query('INSERT INTO Users SET ?', newUser, (err, res) => {
     if (err) {
-      console.log('error :', err);
+      if (err.code == 'ER_DUP_ENTRY') {
+       result({ kind: 'duplicate' }, null);
+       return;
+      }
       result(err, null);
       return;
     }

@@ -27,6 +27,7 @@ export function useUser() {
 
   const signup = async (user: ICreateUser) => {
     const userCreated = await asyncCall('SIGNUP', () => signupCall(user));
+    if (userCreated.message == 'duplicate_mail') return { error: 'duplicate_mail' };
     if (!userCreated.email || !userCreated.active) return;
 
     await asyncCall('LOGIN', () => login(userCreated.email, user.password));

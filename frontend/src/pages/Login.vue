@@ -166,8 +166,8 @@ export default defineComponent({
 
     const onSignup = async () => {
       if (validEmail(createUser.email)) {
-        await signup(createUser);
-        return;
+        const result = await signup(createUser);
+        if(result && result.error == 'duplicate_mail') return showErrorBanner('Cette e-mail est déjà utilisé, veuillez utiliser un autre e-mail');
       }
       showErrorBanner('Impossible de créer un compte, veuillez vérifier vos informations');
     };

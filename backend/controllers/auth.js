@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const User = require('../models/users.js');
+require('dotenv').config();
 
 exports.signup = (req, res, next) => {
   if (!req.body) {
@@ -23,11 +24,17 @@ exports.signup = (req, res, next) => {
 
     // Save User in the database
     User.create(user, (err, user) => {
-      if (err)
+      if (err) {
+        if (err.kind === 'duplicate') {
+          return res.status(500).json({
+            message: 'duplicate_mail',
+          });
+        }
         return res.status(500).json({
           message:
             err.message || 'Some error occurred while creating the user.',
         });
+      }
       return res.status(201).json(user);
     });
   });
@@ -58,7 +65,7 @@ exports.login = (req, res, next) => {
           }
           return res.status(200).json({
             userId: user.id,
-            token: jwt.sign({ userId: user.id }, 'RANDOM_TOKEN_SECRET', {
+            token: jwt.sign({ userId: user.id }, process.env.SECRET_TOKEN, {
               expiresIn: '24h',
             }),
           });
