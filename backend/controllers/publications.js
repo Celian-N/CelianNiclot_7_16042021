@@ -147,6 +147,7 @@ exports.findOne = (req, res) => {
   Publication.findById(
     req.params.publicationId,
     req.userId,
+    false,
     async (err, publication) => {
       if (err) {
         if (err.kind === 'not_found') {
@@ -238,6 +239,7 @@ exports.delete = (req, res) => {
   Publication.findById(
     req.params.publicationId,
     req.userId,
+    false,
     (err, publication) => {
       if (err) {
         if (err.kind === 'not_found') {

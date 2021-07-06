@@ -579,6 +579,6 @@ export const useApi = () => {
     signalPublication,
     getPostsByUserIdCall,
     getMostLikedPublicationCall,
-    deleteUser
+    deleteUser,
   };
 };
